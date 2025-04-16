@@ -1,0 +1,119 @@
+
+.covoiturage-details {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.details-content {
+    position: relative;
+    max-width: 80%;
+    max-height: 100%; /* Adjust this value to make the modal smaller */
+    background-color: transparent;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    overflow-y: auto; /* Allow vertical scrolling if content exceeds the height */
+}
+
+#modal-img {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Button Styling */
+.annuler-btn {
+    position: absolute;
+    top: 30px;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.4);  /* Slight transparent background to blend with image */
+    color: white;
+    border: none;
+    font-size: 2rem;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;  /* To make sure it's above the image */
+    transition: background-color 0.3s;
+}
+
+.annuler-btn:hover {
+    background-color: rgba(0, 0, 0, 0.6);  /* Darker background on hover */
+}
+
+#reserver-form {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#reserver-form:hover {
+    background-color: #0056b3;
+}
+
+/* Initially hide the edit form */
+@keyframes greenWaveReveal {
+    0% {
+        clip-path: ellipse(100% 0% at 50% 0%);
+        background-color: #66bb6a;
+        opacity: 0;
+    }
+    50% {
+        clip-path: ellipse(120% 100% at 50% 50%);
+        background-color: #66bb6a;
+        opacity: 1;
+    }
+    100% {
+        clip-path: inset(0% 0% 0% 0%);
+        background-color: white;
+        opacity: 1;
+    }
+}
+
+.edit-form-animate {
+    animation: greenWaveReveal 0.8s ease forwards;
+    background-color: white;
+    
+    overflow: hidden;
+    padding: 15px;
+    position: relative;
+}
+.edit-form-animate {
+    box-shadow: 0 8px 16px rgba(102, 187, 106, 0.2);
+}
+@keyframes greenBubbleClose {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+        background: radial-gradient(circle at 50% 100%, #66bb6a 0%, #a5d6a7 60%, transparent 100%);
+        clip-path: circle(150% at 50% 100%);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.05);
+        clip-path: circle(80% at 50% 60%);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.95);
+        clip-path: circle(0% at 50% 0%);
+    }
+}
+
+.edit-form-bubble-close {
+    animation: greenBubbleClose 1.2s ease forwards;
+    pointer-events: none;
+}
