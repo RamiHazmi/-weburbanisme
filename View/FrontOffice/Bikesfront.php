@@ -1,6 +1,9 @@
 <?php
 // Inclure la connexion à la base de données et le modèle BikeController
 require_once __DIR__ . '/../../Controller/BikeController.php';
+require_once __DIR__ . '/../../Controller/BikeStationController.php';
+
+$bikeStationController = new BikeStationController();
 
 // Récupérer l'ID de la station depuis l'URL
 $station_id = isset($_GET['station_id']) ? $_GET['station_id'] : null;
@@ -15,6 +18,25 @@ if ($station_id) {
     $bikes = [];
 }
 ?>
+<?php
+// Include necessary files for database connection
+require_once __DIR__ . '/../../database.php';
+require_once __DIR__ . '/../../Controller/BikeStationController.php'; // Nouveau contrôleur à créer
+
+
+// Retrieve only the station names from the 'bikestation' table
+$sql = "SELECT id_station, name FROM bikestation";
+$db = config::getConnexion();
+$stations = [];
+try {
+    $query = $db->query($sql);
+    $stations = $query->fetchAll(PDO::FETCH_ASSOC); // Fetch only associative arrays
+} catch (Exception $e) {
+    die('Error: ' . $e->getMessage());
+}
+?>
+
+
 
 
 <!DOCTYPE html>
@@ -52,12 +74,6 @@ if ($station_id) {
     <!-- Template Stylesheet -->
     <link href="assets/css/style.css" rel="stylesheet">
 
-    
-
-
-
-
-
 </head>
 
 <body>
@@ -82,7 +98,7 @@ if ($station_id) {
             <div class="navbar-nav ms-auto p-4 p-lg-0">
                 <a href="index.html" class="nav-item nav-link">Home</a>
                 <a href="about.html" class="nav-item nav-link">About</a>
-                <a href="service.html" class="nav-item nav-link">Services</a>
+                <a href="Rentals.php" class="nav-item nav-link">Services</a>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
                     <div class="dropdown-menu fade-up m-0">
@@ -127,20 +143,39 @@ if ($station_id) {
             <div class="flip-card-inner">
                 <div class="flip-card-front"></div>
                 <div class="flip-card-back">
-                <h5 class="bike-id">Bike #<?= htmlspecialchars($bike['id_bike']) ?></h5>
-                <p class="bike-km"><?= htmlspecialchars($bike['total_kilometers']) ?> km</p>
-                <span class="status-badge <?= $bike['status'] === 'Active' ? 'status-active' : 'status-inactive' ?>">
-                    <?= $bike['status'] ?>
-                </span>
+                    <h5 class="bike-id">Bike #<?= htmlspecialchars($bike['id_bike']) ?></h5>
+                    <p class="bike-km"><?= htmlspecialchars($bike['total_kilometers']) ?> km</p>
+                    <span class="status-badge <?= $bike['status'] === 'Active' ? 'status-active' : 'status-inactive' ?>">
+                        <?= $bike['status'] ?>
+                    </span>
 
-                <button class="btn-details">Details</button>
+                    <?php if ($bike['status'] === 'Inactive'): ?>
+                        <!-- Rent button if the bike is inactive -->
+                        <a href="#" 
+                            class="btn-details rent-btn" 
+                            data-bike-id="<?= $bike['id_bike'] ?>" 
+                            data-station-id="<?= $bike['station_id'] ?>" 
+                            data-user-id="1">
+                            Rent
+                            </a>
+
+                    <?php else: ?>
+                        <p>
+
+                        </p>
+                        <span class="error-message" style="color: red; font-weight: bold;">This bike is already rented.</span>
+                    <?php endif; ?>
+
                 </div>
             </div>
         </div>
-
-
     <?php endforeach; ?>
 </div>
+
+
+
+
+
 
 
 
@@ -365,10 +400,205 @@ if ($station_id) {
 }
 
 
+
+
+
+
+.modal {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+ 
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;      /* Centrage vertical */
+  justify-content: center;  /* Centrage horizontal */
+}
+
+.modal-content {
+  background-color: #ffffff;
+  border-radius: 15px;
+  padding: 30px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  animation: fadeIn 0.3s ease-in-out;
+  position: relative;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-content h3 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+  text-align: center;
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 22px;
+  color: #888;
+  cursor: pointer;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 5px;
+}
+
+.info-value {
+  font-size: 16px;
+  color: #333;
+  background-color: #f4f4f4;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  font-size: 16px;
+}
+
+.btn-confirm {
+  background-color: #3f51b5;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.btn-confirm:hover {
+  background-color: #303f9f;
+}
+
+
+
 </style>
+<!-- Modal Overlay -->
+<div id="rentModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h3>🚲 Confirmer votre location</h3>
+
+    <form action="rentBike.php" method="POST">
+      <input type="hidden" name="user_id" id="modal-user-id">
+      <input type="hidden" name="bike_id" id="modal-bike-id">
+
+      <div class="form-group">
+        <label>🔢 ID du vélo :</label>
+        <span id="display-bike-id" class="info-value"></span>
+      </div>
+
+      <div class="form-group">
+        <label>📍 Station de départ :</label>
+        <span id="display-station-id" class="info-value"></span>
+      </div>
+
+      <div class="form-group">
+        <label>🎯 Choisissez la station de destination :</label>
+        <select name="end_station" required>
+          <?php foreach ($stations as $station): ?>
+            <option value="<?= $station['id_station'] ?>">
+              <?= htmlspecialchars($station['name']) ?>
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>⏰ Heure de début :</label>
+        <span id="current-time" class="info-value"></span>
+        <input type="hidden" name="start_time" id="hidden-time">
+      </div>
+
+      <button type="submit" class="btn-confirm">✅ Confirmer la location</button>
+    </form>
+  </div>
+</div>
+
+
   
 
 </body>
+<script>
+  document.querySelectorAll('.rent-btn').forEach(button => {
+    button.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      // Get values
+      const bikeId = this.getAttribute('data-bike-id');
+      const stationId = this.getAttribute('data-station-id');
+      const userId = this.getAttribute('data-user-id');
+
+      // Fill modal fields
+      document.getElementById('modal-bike-id').value = bikeId;
+      document.getElementById('modal-user-id').value = userId;
+      document.getElementById('display-bike-id').innerText = bikeId;
+
+      fetch(`get_station_name.php?station_id=${stationId}`)
+        .then(response => response.json())
+        .then(data => {
+        if (data.name) {
+            document.getElementById('display-station-id').innerText = data.name;
+        } else {
+            document.getElementById('display-station-id').innerText = "Station name not found";
+        }
+        })
+        .catch(error => console.error('Error:', error));
+
+
+      // Get current time
+      const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+      document.getElementById('current-time').innerText = now;
+      document.getElementById('hidden-time').value = now;
+
+      // Show modal
+      document.getElementById('rentModal').style.display = 'block';
+    });
+  });
+
+  // Close modal
+  document.querySelector('.close').addEventListener('click', function () {
+    document.getElementById('rentModal').style.display = 'none';
+  });
+
+  // Optional: close modal when clicking outside
+  window.onclick = function (event) {
+    const modal = document.getElementById('rentModal');
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  }
+</script>
+
+
+
+
 
 
 </html>

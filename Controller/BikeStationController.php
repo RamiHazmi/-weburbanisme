@@ -16,6 +16,20 @@ class BikeStationController
             die('Error: ' . $e->getMessage());
         }
     }
+    public function getStationNameById($station_id)
+{
+    $sql = 'SELECT name FROM bikestation WHERE id_station = :station_id';
+    $db = config::getConnexion();
+    try {
+        $query = $db->prepare($sql);
+        $query->execute(['station_id' => $station_id]);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+        return $result['name']; // Retourne le nom de la station
+    } catch (Exception $e) {
+        die('Error: ' . $e->getMessage());
+    }
+}
+
 
 
     public function addStation(BikeStation $station)

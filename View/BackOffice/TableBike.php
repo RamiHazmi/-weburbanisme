@@ -696,7 +696,7 @@ $bikeStations = $controller->listStations();
 										</ul>
 									</li>
 									<li>
-										<a href="http://themeforest.net/item/porto-responsive-html5-template/4106987?ref=Okler" target="_blank">
+										<a href="http://localhost/urbanisme/View/FrontOffice/Stations.php" target="_blank">
 											<i class="fa fa-external-link" aria-hidden="true"></i>
 											<span>Front-End <em class="not-included">(Not Included)</em></span>
 										</a>

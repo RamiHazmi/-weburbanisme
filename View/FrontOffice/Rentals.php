@@ -1,9 +1,171 @@
 <?php
-include __DIR__ . '/../../Controller/BikeStationController.php';
+require_once '/xampp/htdocs/urbanisme/database.php';
+$pdo = config::getConnexion();
+$id_user = 1; // 🔁 Later: use $_SESSION['id_user']
 
-$controller = new BikeStationController();
-$stations = $controller->listStations();
+// 🧠 Handle POST actions (delete or checkout)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['delete_rental'])) {
+        $stmt = $pdo->prepare("DELETE FROM BikeRental WHERE id_rental = :id AND id_user = :user");
+        $stmt->execute(['id' => $_POST['rental_id'], 'user' => $id_user]);
+    }
+
+    if (isset($_POST['checkout_rental'])) {
+        $rental_id = $_POST['rental_id'];
+        $feedback = $_POST['feedback'] ?? null;
+        $end_time = date('Y-m-d H:i:s');
+        $start_station = $_POST['start_station'];
+
+        // 🔸 Récupérer la location
+        $stmt = $pdo->prepare("SELECT * FROM BikeRental WHERE id_rental = :rental_id");
+        $stmt->execute(['rental_id' => $rental_id]);
+        $rental = $stmt->fetch();
+
+        if ($rental) {
+            $bike_id = $rental['id_bike'];
+            $end_station = $rental['end_station'];
+
+            // 🔹 Mettre à jour la location
+            $updateRental = $pdo->prepare("UPDATE BikeRental SET end_time = :end_time, feedback = :feedback, start_station = :start_station WHERE id_rental = :rental_id");
+            $updateRental->execute([
+                'end_time' => $end_time,
+                'feedback' => $feedback,
+                'rental_id' => $rental_id,
+                'start_station' => $start_station
+            ]);
+
+            // 🔹 Marquer le vélo comme Inactive
+            $updateBike = $pdo->prepare("UPDATE Bike SET status = 'Inactive' WHERE id_bike = :bike_id");
+            $updateBike->execute(['bike_id' => $bike_id]);
+
+            // 🔹 Incrémenter la disponibilité de la station
+            $updateStation = $pdo->prepare("UPDATE BikeStation SET available_bikes = available_bikes + 1 WHERE id_station = :end_station");
+            $updateStation->execute(['end_station' => $end_station]);
+
+            header('Location: Rentals.php');
+            exit;
+        } else {
+            echo "Location non trouvée.";
+        }
+    }
+}
+
+// 🛒 Fetch Rentals
+$sql = "
+    SELECT 
+        r.id_rental,
+        r.id_bike,
+        r.start_time,
+        r.end_time,
+        r.feedback,
+        r.start_station,
+        s.name AS end_station_name
+    FROM 
+        BikeRental r
+    JOIN 
+        BikeStation s ON r.end_station = s.id_station
+    WHERE 
+        r.id_user = :id_user
+    ORDER BY 
+        r.start_time DESC
+";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute(['id_user' => $id_user]);
+$rentals = $stmt->fetchAll();
 ?>
+
+<!-- 🌈 CSS stylé -->
+<style>
+    table {
+        width: 90%;
+        margin: auto;
+        border-collapse: collapse;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        margin-top: 30px;
+    }
+    th, td {
+        padding: 15px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+    thead {
+        background-color: #3f51b5;
+        color: white;
+    }
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+    .btn {
+        padding: 8px 15px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+    .delete-btn {
+        background-color: #e53935;
+    }
+    .checkout-btn {
+        background-color: #43a047;
+    }
+    .feedback-form textarea {
+        width: 90%;
+        height: 60px;
+        margin: 10px 0;
+        resize: vertical;
+    }
+    .dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.action-menu {
+  background-color: #3f51b5;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 120px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+  z-index: 1;
+  right: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dropdown-content form {
+  margin: 0;
+}
+
+.dropdown-content .dropdown-item {
+  color: black;
+  padding: 10px 15px;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdown-content .dropdown-item:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+</style>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -70,7 +232,7 @@ $stations = $controller->listStations();
             <div class="navbar-nav ms-auto p-4 p-lg-0">
                 <a href="index.html" class="nav-item nav-link">Home</a>
                 <a href="about.html" class="nav-item nav-link">About</a>
-                <a href="Rentals.php" class="nav-item nav-link">Services</a>
+                <a href="service.html" class="nav-item nav-link">Services</a>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
                     <div class="dropdown-menu fade-up m-0">
@@ -93,12 +255,10 @@ $stations = $controller->listStations();
     <!-- Page Header Start -->
     <div class="container-fluid page-header py-5" style="margin-bottom: 6rem;">
         <div class="container py-5">
-            <h1 class="display-3 text-white mb-3 animated slideInDown">Stations</h1>
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Rentals</h1>
             <nav aria-label="breadcrumb animated slideInDown">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Home</a></li>
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Pages</a></li>
-                    <li class="breadcrumb-item text-white active" aria-current="page">Stations</li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">Rentals</li>
                 </ol>
             </nav>
         </div>
@@ -107,27 +267,76 @@ $stations = $controller->listStations();
 
 
     <!-- Stations Start -->
-    <div class="container d-flex flex-wrap justify-content-center mt-5">
-        <?php foreach ($stations as $station): ?>
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        <h4><i class="fa fa-bicycle me-2"></i><?= htmlspecialchars($station['name']) ?></h4>
-                        <p><i class="fa fa-map-marker-alt me-2"></i><?= htmlspecialchars($station['location']) ?></p>
-                    </div>
-                    <div class="flip-card-back">
-                        <p>Total Bikes: <?= $station['total_bikes'] ?></p>
-                        <p>Available: <?= $station['available_bikes'] ?></p>
-                        <span class="status-badge <?= $station['status'] > 0 ? 'status-active' : 'status-inactive' ?>">
-                            <?= $station['status'] > 0 ? 'Active' : 'Inactive' ?>
-                        </span>
-                        <button class="btn-details" onclick="window.location.href='Bikesfront.php?station_id=<?= $station['id_station'] ?>';">Show Bikes</button>
-                        </div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
+    
+    <h2 style="text-align:center;">🚲 Mes locations</h2>
 
+    <table>
+    <thead>
+        <tr>
+            <th>Vélo</th>
+            <th>Date début</th>
+            <th>Date fin</th>
+            <th>Station Debut</th>
+            <th>Station Retour</th>
+            <th>Feedback</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($rentals as $rental): ?>
+            <tr>
+                <td><?= htmlspecialchars($rental['id_bike']) ?></td>
+                <td><?= htmlspecialchars($rental['start_time']) ?></td>
+                <td><?= $rental['end_time'] ?? 'En cours...' ?></td>
+                <td><?= htmlspecialchars($rental['start_station']) ?></td>
+                <td><?= htmlspecialchars($rental['end_station_name']) ?></td>
+                <td><?= htmlspecialchars($rental['feedback'] ?? '-') ?></td>
+                <td>
+  <div class="dropdown">
+    <button class="btn action-menu">⚙️ Actions</button>
+    <div class="dropdown-content">
+      
+      <?php if (!$rental['end_time']): ?>
+        <!-- Modifier -->
+        <form method="POST">
+          <input type="hidden" name="rental_id" value="<?= $rental['id_rental'] ?>">
+          <button type="submit" name="edit_rental" class="dropdown-item">✏️ Modifier</button>
+        </form>
+
+        <!-- Afficher feedback form -->
+        <button type="button" class="dropdown-item show-feedback-btn" data-rental-id="<?= $rental['id_rental'] ?>">✔️ Terminer</button>
+      <?php endif; ?>
+
+      <!-- Supprimer -->
+      <form method="POST">
+        <input type="hidden" name="rental_id" value="<?= $rental['id_rental'] ?>">
+        <button type="submit" name="delete_rental" class="dropdown-item">🗑️ Supprimer</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Formulaire de feedback caché -->
+  <?php if (!$rental['end_time']): ?>
+    <div class="feedback-popup" id="feedback-form-<?= $rental['id_rental'] ?>" style="display: none;">
+      <form method="POST" class="feedback-form">
+        <input type="hidden" name="rental_id" value="<?= $rental['id_rental'] ?>">
+        <input type="hidden" name="start_station" value="<?= htmlspecialchars($rental['start_station']) ?>">
+        <textarea name="feedback" placeholder="Ajoutez un retour..."></textarea>
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 5px;">
+          <button type="submit" name="checkout_rental" class="btn checkout-btn">✔️ Terminer</button>
+          <button type="button" class="btn cancel-btn" data-rental-id="<?= $rental['id_rental'] ?>">❌ Annuler</button>
+        </div>
+      </form>
+    </div>
+  <?php endif; ?>
+</td>
+
+
+
+            </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
     
 
     <!-- Quote End -->
@@ -213,124 +422,26 @@ $stations = $controller->listStations();
   
 
 </body>
-<style>
-.flip-card {
-    background-color: transparent;
-    width: 320px;
-    height: 220px;
-    perspective: 1200px;
-    margin: 1rem;
-    border-radius: 20px;
-}
+<script>
+  // Quand on clique sur "Terminer"
+  document.querySelectorAll('.show-feedback-btn').forEach(button => {
+    button.addEventListener('click', function () {
+      const rentalId = this.getAttribute('data-rental-id');
+      const form = document.getElementById(`feedback-form-${rentalId}`);
+      if (form) form.style.display = 'block';
+    });
+  });
 
-.flip-card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transition: transform 0.9s cubic-bezier(0.4, 0.2, 0.2, 1);
-    transform-style: preserve-3d;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-    border-radius: 20px;
-}
-
-.flip-card:hover .flip-card-inner {
-    transform: rotateY(180deg);
-}
-
-.flip-card-front, .flip-card-back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 20px;
-    backface-visibility: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-}
-
-.flip-card-front {
-    background: url('assets/img/station1.png') center center / cover no-repeat;
-    color: white;
-    font-weight: bold;
-    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
-}
-.flip-card-front h4 {
-    background-color: rgba(0, 0, 0, 0.4);
-    padding: 6px 12px;
-    border-radius: 10px;
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
-    margin: 5px 0;
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.3rem;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-align: center;
-}
-
-.flip-card-front p {
-    background-color: rgba(0, 0, 0, 0.3);
-    padding: 5px 10px;
-    border-radius: 10px;
-    backdrop-filter: blur(3px);
-    -webkit-backdrop-filter: blur(3px);
-    margin: 5px 0;
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    font-size: 1rem;
-    font-weight: 400;
-    text-align: center;
-}
+  // Quand on clique sur "Annuler"
+  document.querySelectorAll('.cancel-btn').forEach(button => {
+    button.addEventListener('click', function () {
+      const rentalId = this.getAttribute('data-rental-id');
+      const form = document.getElementById(`feedback-form-${rentalId}`);
+      if (form) form.style.display = 'none';
+    });
+  });
+</script>
 
 
-
-.flip-card-back {
-    background: #f1f8f4;
-    color: rgb(24, 158, 104);
-    transform: rotateY(180deg);
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
-}
-
-.status-badge {
-    padding: 0.5em 1em;
-    border-radius: 30px;
-    font-size: 0.85em;
-    font-weight: bold;
-    letter-spacing: 1px;
-    display: inline-block;
-    margin-top: 10px;
-}
-
-.status-active {
-    background-color: rgb(24, 158, 104);
-    color: white;
-}
-
-.status-inactive {
-    background-color: #d32f2f;
-    color: white;
-}
-
-.btn-details {
-    margin-top: 15px;
-    background-color: rgb(24, 158, 104);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.btn-details:hover {
-    background-color: rgb(17, 117, 77);
-}
-
-
-
-</style>
 
 </html>
