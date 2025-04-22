@@ -556,8 +556,8 @@ try {
 												</a>
 											</li>
 											<li>
-												<a href="tables-responsive.html">
-													 Responsive
+											<a href="showRentals.php">
+													 Rentals History
 												</a>
 											</li>
 											<li>

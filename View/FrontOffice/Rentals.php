@@ -1,53 +1,194 @@
 <?php
+
 require_once '/xampp/htdocs/urbanisme/database.php';
 $pdo = config::getConnexion();
-$id_user = 1; // 🔁 Later: use $_SESSION['id_user']
+$id_user = 2; // 🔁 Later: use $_SESSION['id_user']
 
 // 🧠 Handle POST actions (delete or checkout)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['delete_rental'])) {
-        $stmt = $pdo->prepare("DELETE FROM BikeRental WHERE id_rental = :id AND id_user = :user");
-        $stmt->execute(['id' => $_POST['rental_id'], 'user' => $id_user]);
+        $rental_id = $_POST['rental_id'];
+    
+        // 🔍 Récupérer la location
+        $stmt = $pdo->prepare("SELECT * FROM BikeRental WHERE id_rental = :id AND id_user = :user");
+        $stmt->execute(['id' => $rental_id, 'user' => $id_user]);
+        $rental = $stmt->fetch();
+    
+        if ($rental) {
+            if ($rental['end_time'] === null) {
+                // 🚲 Location encore en cours → réincrémenter la station de départ
+    
+                $start_station_name = $rental['start_station'];
+                $bike_id = $rental['id_bike'];
+    
+                // 🎯 Récupérer id_station depuis le nom
+                $stationQuery = $pdo->prepare("SELECT id_station FROM BikeStation WHERE name = :name");
+                $stationQuery->execute(['name' => $start_station_name]);
+                $station = $stationQuery->fetch();
+    
+                if ($station) {
+                    $station_id = $station['id_station'];
+    
+                    // 🔁 Réincrémenter la dispo
+                    $updateStation = $pdo->prepare("UPDATE BikeStation SET available_bikes = available_bikes + 1 WHERE id_station = :id");
+                    $updateStation->execute(['id' => $station_id]);
+                }
+    
+                // 🔧 Remettre le vélo en disponible
+                $updateBike = $pdo->prepare("UPDATE Bike SET status = 'Inactive' WHERE id_bike = :bike_id");
+                $updateBike->execute(['bike_id' => $bike_id]);
+            }
+    
+            // 🗑️ Supprimer la location
+            $deleteRental = $pdo->prepare("DELETE FROM BikeRental WHERE id_rental = :id AND id_user = :user");
+            $deleteRental->execute(['id' => $rental_id, 'user' => $id_user]);
+        }
+    
+        header('Location: Rentals.php');
+        exit;
     }
+    
 
     if (isset($_POST['checkout_rental'])) {
         $rental_id = $_POST['rental_id'];
         $feedback = $_POST['feedback'] ?? null;
         $end_time = date('Y-m-d H:i:s');
-        $start_station = $_POST['start_station'];
-
-        // 🔸 Récupérer la location
+        $start_station_name = $_POST['start_station'];
+    
+        // 🔍 Récupérer la location
         $stmt = $pdo->prepare("SELECT * FROM BikeRental WHERE id_rental = :rental_id");
         $stmt->execute(['rental_id' => $rental_id]);
         $rental = $stmt->fetch();
-
+    
         if ($rental) {
             $bike_id = $rental['id_bike'];
-            $end_station = $rental['end_station'];
-
-            // 🔹 Mettre à jour la location
-            $updateRental = $pdo->prepare("UPDATE BikeRental SET end_time = :end_time, feedback = :feedback, start_station = :start_station WHERE id_rental = :rental_id");
+            $end_station_id = $rental['end_station'];
+    
+            // 🔹 Update rental with end time and feedback
+            $updateRental = $pdo->prepare("UPDATE BikeRental SET end_time = :end_time, feedback = :feedback WHERE id_rental = :rental_id");
             $updateRental->execute([
                 'end_time' => $end_time,
                 'feedback' => $feedback,
-                'rental_id' => $rental_id,
-                'start_station' => $start_station
+                'rental_id' => $rental_id
             ]);
-
-            // 🔹 Marquer le vélo comme Inactive
-            $updateBike = $pdo->prepare("UPDATE Bike SET status = 'Inactive' WHERE id_bike = :bike_id");
-            $updateBike->execute(['bike_id' => $bike_id]);
-
-            // 🔹 Incrémenter la disponibilité de la station
-            $updateStation = $pdo->prepare("UPDATE BikeStation SET available_bikes = available_bikes + 1 WHERE id_station = :end_station");
-            $updateStation->execute(['end_station' => $end_station]);
-
+    
+            // 🔹 Obtenir l’ID de la station de départ à partir de son nom
+            $getStartId = $pdo->prepare("SELECT id_station FROM BikeStation WHERE name = :name");
+            $getStartId->execute(['name' => $start_station_name]);
+            $start_station = $getStartId->fetch();
+    
+            if ($start_station) {
+                $start_station_id = $start_station['id_station'];
+    
+                // 🔻 Décrémenter total_bikes dans la station de départ
+                $decreaseStart = $pdo->prepare("UPDATE BikeStation SET total_bikes = total_bikes - 1 WHERE id_station = :id");
+                $decreaseStart->execute(['id' => $start_station_id]);
+            }
+    
+            // 🔺 Incrémenter total et available_bikes dans la station d’arrivée
+            $increaseEnd = $pdo->prepare("
+                UPDATE BikeStation 
+                SET total_bikes = total_bikes + 1, available_bikes = available_bikes + 1 
+                WHERE id_station = :id
+            ");
+            $increaseEnd->execute(['id' => $end_station_id]);
+    
+            // 🚲 Mettre à jour le vélo (statut + station actuelle)
+            $updateBike = $pdo->prepare("UPDATE Bike SET status = 'Inactive', station_id = :station_id WHERE id_bike = :bike_id");
+            $updateBike->execute([
+                'station_id' => $end_station_id,
+                'bike_id' => $bike_id
+            ]);
+    
             header('Location: Rentals.php');
             exit;
         } else {
             echo "Location non trouvée.";
         }
     }
+    if (isset($_POST['update_end_station'])) {
+        $rentalId = $_POST['rental_id'];
+    $newEndStationId = $_POST['new_end_station'];
+
+    // Mettre à jour la base de données
+    $update = $pdo->prepare("
+        UPDATE bikerental 
+        SET end_station = :new_station 
+        WHERE id_rental = :rental_id
+    ");
+    $update->execute([
+        ':new_station' => $newEndStationId,
+        ':rental_id' => $rentalId
+    ]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       /* $rental_id = $_POST['rental_id'];
+        $new_end_station = $_POST['new_end_station'];
+    
+        // Mise à jour de la station de retour dans la location
+        $updateRental = $pdo->prepare("UPDATE BikeRental SET end_station = :new_end_station WHERE id_rental = :rental_id");
+        $updateResult = $updateRental->execute([
+            'new_end_station' => $new_end_station,
+            'rental_id' => $rental_id
+        ]);
+    
+        if ($updateResult) {
+            echo "La station de retour a été mise à jour avec succès dans la base de données.<br>";
+        } else {
+            echo "Erreur lors de la mise à jour de la station de retour dans la base de données.<br>";
+        }
+    
+        // Décrémenter l'ancienne station de retour (si elle est différente de la nouvelle)
+        $stmt = $pdo->prepare("SELECT end_station FROM BikeRental WHERE id_rental = :rental_id");
+        $stmt->execute(['rental_id' => $rental_id]);
+        $rental = $stmt->fetch();
+    
+        if ($rental && $rental['end_station'] != $new_end_station) {
+            $old_station_id = $rental['end_station'];
+            
+            // Décrémenter l'ancienne station
+            $decreaseOldStation = $pdo->prepare("UPDATE BikeStation SET total_bikes = total_bikes - 1, available_bikes = available_bikes - 1 WHERE id_station = :old_station_id");
+            if ($decreaseOldStation->execute(['old_station_id' => $old_station_id])) {
+                echo "Ancienne station décrémentée.<br>";
+            } else {
+                echo "Erreur lors de la décrémentation de l'ancienne station.<br>";
+            }
+    
+            // Incrémenter la nouvelle station
+            $increaseNewStation = $pdo->prepare("UPDATE BikeStation SET total_bikes = total_bikes + 1, available_bikes = available_bikes + 1 WHERE id_station = :new_end_station");
+            if ($increaseNewStation->execute(['new_end_station' => $new_end_station])) {
+                echo "Nouvelle station incrémentée.<br>";
+            } else {
+                echo "Erreur lors de l'incrémentation de la nouvelle station.<br>";
+            }
+        }
+    
+        // Rediriger après la modification
+        header('Location: Rentals.php');
+        exit;*/ 
+    }
+    
+    
+    
+    
+    
+    
+
+    
 }
 
 // 🛒 Fetch Rentals
@@ -73,6 +214,7 @@ $sql = "
 $stmt = $pdo->prepare($sql);
 $stmt->execute(['id_user' => $id_user]);
 $rentals = $stmt->fetchAll();
+
 ?>
 
 <!-- 🌈 CSS stylé -->
@@ -167,9 +309,9 @@ $rentals = $stmt->fetchAll();
 </style>
 
 
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <title>Logistica - Shipping Company Website Template</title>
@@ -268,6 +410,7 @@ $rentals = $stmt->fetchAll();
 
     <!-- Stations Start -->
     
+
     <h2 style="text-align:center;">🚲 Mes locations</h2>
 
     <table>
@@ -276,7 +419,7 @@ $rentals = $stmt->fetchAll();
             <th>Vélo</th>
             <th>Date début</th>
             <th>Date fin</th>
-            <th>Station Debut</th>
+            <th>Station Début</th>
             <th>Station Retour</th>
             <th>Feedback</th>
             <th>Actions</th>
@@ -295,19 +438,15 @@ $rentals = $stmt->fetchAll();
   <div class="dropdown">
     <button class="btn action-menu">⚙️ Actions</button>
     <div class="dropdown-content">
-      
       <?php if (!$rental['end_time']): ?>
-        <!-- Modifier -->
-        <form method="POST">
-          <input type="hidden" name="rental_id" value="<?= $rental['id_rental'] ?>">
-          <button type="submit" name="edit_rental" class="dropdown-item">✏️ Modifier</button>
-        </form>
+        <!-- ✏️ Modifier la station de retour -->
+        <button type="button" class="dropdown-item show-edit-form-btn" data-rental-id="<?= $rental['id_rental'] ?>">✏️ Modifier la destination</button>
 
-        <!-- Afficher feedback form -->
+        <!-- ✔️ Terminer (affiche le formulaire de feedback) -->
         <button type="button" class="dropdown-item show-feedback-btn" data-rental-id="<?= $rental['id_rental'] ?>">✔️ Terminer</button>
       <?php endif; ?>
 
-      <!-- Supprimer -->
+      <!-- 🗑️ Supprimer -->
       <form method="POST">
         <input type="hidden" name="rental_id" value="<?= $rental['id_rental'] ?>">
         <button type="submit" name="delete_rental" class="dropdown-item">🗑️ Supprimer</button>
@@ -315,7 +454,7 @@ $rentals = $stmt->fetchAll();
     </div>
   </div>
 
-  <!-- Formulaire de feedback caché -->
+  <!-- 🔒 Formulaire de feedback caché -->
   <?php if (!$rental['end_time']): ?>
     <div class="feedback-popup" id="feedback-form-<?= $rental['id_rental'] ?>" style="display: none;">
       <form method="POST" class="feedback-form">
@@ -329,15 +468,33 @@ $rentals = $stmt->fetchAll();
       </form>
     </div>
   <?php endif; ?>
+<!-- Formulaire de modification de station de retour -->
+<div class="edit-form-popup" id="edit-form-<?= $rental['id_rental'] ?>" style="display: none;">
+  <form method="POST">
+    <input type="hidden" name="rental_id" value="<?= $rental['id_rental'] ?>">
+    <label for="new_end_station">Nouvelle station de retour :</label>
+    <select name="new_end_station" required>
+      <?php
+        $stations = $pdo->query("SELECT id_station, name FROM BikeStation")->fetchAll();
+        foreach ($stations as $station) {
+          echo "<option value='{$station['id_station']}'>{$station['name']}</option>";
+        }
+      ?>
+    </select>
+    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+      <button type="submit" name="update_end_station" class="btn">✅ Confirmer</button>
+      <button type="button" class="btn cancel-edit-btn" data-rental-id="<?= $rental['id_rental'] ?>">❌ Annuler</button>
+    </div>
+  </form>
+</div>
+
 </td>
-
-
 
             </tr>
         <?php endforeach; ?>
     </tbody>
 </table>
-    
+
 
     <!-- Quote End -->
         
@@ -424,6 +581,46 @@ $rentals = $stmt->fetchAll();
 </body>
 <script>
   // Quand on clique sur "Terminer"
+ // Afficher le formulaire de modification de la station de retour
+// Afficher le formulaire de modification de la station de retour
+document.querySelectorAll('.show-edit-form-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const rentalId = this.getAttribute('data-rental-id');
+        const form = document.getElementById(`edit-form-${rentalId}`);
+        if (form) form.style.display = 'block';
+    });
+});
+
+// Masquer le formulaire de modification de la station de retour
+document.querySelectorAll('.cancel-edit-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const rentalId = this.getAttribute('data-rental-id');
+        const form = document.getElementById(`edit-form-${rentalId}`);
+        if (form) form.style.display = 'none';
+    });
+});
+
+// Afficher le formulaire de feedback lorsque le bouton 'Terminer' est cliqué
+document.querySelectorAll('.show-feedback-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const rentalId = this.getAttribute('data-rental-id');
+        const form = document.getElementById(`feedback-form-${rentalId}`);
+        if (form) form.style.display = 'block';
+    });
+});
+
+// Masquer le formulaire de feedback lorsque le bouton 'Annuler' est cliqué
+document.querySelectorAll('.cancel-feedback-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const rentalId = this.getAttribute('data-rental-id');
+        const form = document.getElementById(`feedback-form-${rentalId}`);
+        if (form) form.style.display = 'none';
+    });
+});
+
+</script>
+<script>
+  // Affiche le formulaire de feedback
   document.querySelectorAll('.show-feedback-btn').forEach(button => {
     button.addEventListener('click', function () {
       const rentalId = this.getAttribute('data-rental-id');
@@ -432,7 +629,7 @@ $rentals = $stmt->fetchAll();
     });
   });
 
-  // Quand on clique sur "Annuler"
+  // Ferme le formulaire de feedback
   document.querySelectorAll('.cancel-btn').forEach(button => {
     button.addEventListener('click', function () {
       const rentalId = this.getAttribute('data-rental-id');
@@ -440,7 +637,27 @@ $rentals = $stmt->fetchAll();
       if (form) form.style.display = 'none';
     });
   });
+  // Afficher formulaire de modification
+document.querySelectorAll('.show-edit-form-btn').forEach(button => {
+  button.addEventListener('click', function () {
+    const rentalId = this.getAttribute('data-rental-id');
+    const form = document.getElementById(`edit-form-${rentalId}`);
+    if (form) form.style.display = 'block';
+  });
+});
+
+// Cacher formulaire de modification
+document.querySelectorAll('.cancel-edit-btn').forEach(button => {
+  button.addEventListener('click', function () {
+    const rentalId = this.getAttribute('data-rental-id');
+    const form = document.getElementById(`edit-form-${rentalId}`);
+    if (form) form.style.display = 'none';
+  });
+});
+
 </script>
+
+
 
 
 

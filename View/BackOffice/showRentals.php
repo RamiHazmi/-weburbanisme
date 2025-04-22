@@ -1,3 +1,18 @@
+<?php
+require_once __DIR__ . '/../../Controller/RentalController.php';
+
+$rentalController = new BikeRentalController();
+$rentals = $rentalController->listRentals();
+
+// Group rentals by user ID
+$users = [];
+foreach ($rentals as $rental) {
+    $id_user = $rental['id_user'];
+    $users[$id_user][] = $rental;
+}
+?>
+
+
 <!doctype html>
 <html class="fixed">
 	<head>
@@ -5,7 +20,7 @@
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
-		<title>Form Layouts | Okler Themes | Porto-Admin</title>
+		<title>Basic Tables | Okler Themes | Porto-Admin</title>
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
@@ -21,6 +36,8 @@
 		<link rel="stylesheet" href="assets/vendor/font-awesome/css/font-awesome.css" />
 		<link rel="stylesheet" href="assets/vendor/magnific-popup/magnific-popup.css" />
 		<link rel="stylesheet" href="assets/vendor/bootstrap-datepicker/css/datepicker3.css" />
+		<link rel="stylesheet" href="assets/stylesheets/popUp.css"> <!-- Path to your CSS file -->
+
 
 		<!-- Theme CSS -->
 		<link rel="stylesheet" href="assets/stylesheets/theme.css" />
@@ -33,8 +50,15 @@
 
 		<!-- Head Libs -->
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        
+
+
+
 
 	</head>
+
 	<body>
 		<section class="body">
 
@@ -48,6 +72,7 @@
 						<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
 					</div>
 				</div>
+
 			
 				<!-- start: search & user box -->
 				<div class="header-right">
@@ -485,20 +510,15 @@
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent">
 										<a>
 											<i class="fa fa-list-alt" aria-hidden="true"></i>
 											<span>Forms</span>
 										</a>
 										<ul class="nav nav-children">
 											<li>
-												<a href="forms-basic.html">
-													 User
-												</a>
-											</li>
-											<li>
-												<a href="forms-advanced.html">
-													 Recharge Electrique
+												<a href="Bike.php">
+													 Bike Stations
 												</a>
 											</li>
 											<li>
@@ -506,14 +526,19 @@
 													 Bikes
 												</a>
 											</li>
-											<li class="nav-active">
-												<a href="Bike.php">
-                                                    Bike Stations
+											<li>
+												<a href="forms-validation.html">
+													 Validation
+												</a>
+											</li>
+											<li>
+												<a href="forms-layouts.html">
+													 Layouts
 												</a>
 											</li>
 											<li>
 												<a href="forms-wizard.html">
-													 Parking
+													 Wizard
 												</a>
 											</li>
 											<li>
@@ -523,13 +548,13 @@
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent">
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-table" aria-hidden="true"></i>
 											<span>Tables</span>
 										</a>
 										<ul class="nav nav-children">
-											<li>
+											<li class="nav-active">
 												<a href="TableBike.php">
 													 Bike Stations List
 												</a>
@@ -540,7 +565,7 @@
 												</a>
 											</li>
 											<li>
-											<a href="showRentals.php">
+                                            <a href="showRentals.php">
 													 Rentals History
 												</a>
 											</li>
@@ -568,8 +593,8 @@
 										</a>
 										<ul class="nav nav-children">
 											<li>
-												<a href="TableBike.php">
-													 Bike Stations 
+												<a href="Bike.php">
+													 Smart Bike Sharing
 												</a>
 											</li>
 											<li>
@@ -718,7 +743,7 @@
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Form Layouts</h2>
+						<h2>Basic Tables</h2>
 					
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -727,8 +752,8 @@
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li><span>Forms</span></li>
-								<li><span>Layouts</span></li>
+								<li><span>Tables</span></li>
+								<li><span>Basic</span></li>
 							</ol>
 					
 							<a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
@@ -736,66 +761,52 @@
 					</header>
 
 					<!-- start: page -->
+                    <h2>Rentals By User</h2>
+
+<?php foreach ($users as $userId => $userRentals): ?>
+    <div class="user-block" onclick="toggleRentals(<?= $userId ?>)">
+        <strong>User ID:</strong> <?= $userId ?>
+    </div>
+
+    <div class="rental-table table-responsive" id="rentals-<?= $userId ?>" style="display: none;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Rental ID</th>
+                    <th>Bike ID</th>
+                    <th>Start Station</th>
+                    <th>End Station</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Feedback</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($userRentals as $rental): ?>
+                    <tr>
+                        <td><?= $rental['id_rental'] ?></td>
+                        <td><?= $rental['id_bike'] ?></td>
+                        <td><?= $rental['start_station'] ?></td>
+                        <td><?= $rental['end_station'] ?></td>
+                        <td><?= $rental['start_time'] ?></td>
+                        <td><?= $rental['end_time'] ?></td>
+                        <td><?= $rental['feedback'] ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+<?php endforeach; ?>
+
+						
+						
+					
 
 
-					<div class="row">
-						<div class="col-md-6">
-							<form id="form1" class="form-horizontal" method="POST" action="AddStation.php" onsubmit="return validateForm()">
-								<section class="panel">
-									<header class="panel-heading">
-										<div class="panel-actions">
-											<a href="#" class="fa fa-caret-down"></a>
-											<a href="#" class="fa fa-times"></a>
-										</div>
-
-										<h2 class="panel-title">Bike Station Form</h2>
-										<p class="panel-subtitle">
-											Please Fill Out The Blanks To Enter A New Bike Station.
-										</p>
-									</header>
-
-									<div class="panel-body">
-										<!-- Station Name Field -->
-										<div class="form-group">
-											<label class="col-sm-4 control-label">Station Name:</label>
-											<div class="col-sm-8">
-												<input type="text" name="name" class="form-control" placeholder="Enter station name" id="name" required>
-												<small id="name-error" style="color: red; display: none;">This field cannot be empty.</small>
-											</div>
-										</div>
-
-										<!-- Location Field -->
-										<div class="form-group">
-											<label class="col-sm-4 control-label">Location:</label>
-											<div class="col-sm-8">
-												<input type="text" name="location" class="form-control" placeholder="Enter address or location" id="location" required>
-												<small id="location-error" style="color: red; display: none;">Location cannot contain numbers.</small>
-											</div>
-										</div>
 
 
-										<!-- Status Field -->
-										<div class="form-group">
-											<label class="col-sm-4 control-label">Status:</label>
-											<div class="col-sm-8">
-												<select name="status" class="form-control" required>
-													<option value="1">Active</option>
-													<option value="0">Inactive</option>
-												</select>
-											</div>
-										</div>
-									</div>
-
-									<footer class="panel-footer">
-										<button type="submit" class="btn btn-primary">Submit</button>
-										<button type="reset" class="btn btn-default">Reset</button>
-									</footer>
-								</section>
-							</form>
-						</div>
-					</div>
-
-
+						
+						
 						
 					<!-- end: page -->
 				</section>
@@ -887,57 +898,74 @@
 		
 		<!-- Theme Initialization Files -->
 		<script src="assets/javascripts/theme.init.js"></script>
-		<script>
-    // Real-time validation function
-			function validateRealTime() {
+        <style>
+    .user-block {
+        background-color:rgb(77, 88, 95);
+        color: white;
+        padding: 15px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: background-color 0.3s ease;
+    }
 
-				var location = document.querySelector('#location').value;
-				var name = document.querySelector('#name').value;
+    .user-block:hover {
+        background-color:rgb(202, 222, 235);
+    }
 
-				// Reset all error messages
-				document.getElementById('name-error').style.display = "none";
-				document.getElementById('location-error').style.display = "none";
+    .rental-table {
+        margin-bottom: 30px;
+        border: 1px solid #ddd;
+        padding: 10px;
+        border-radius: 10px;
+        background: #f9f9f9;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
 
+    .rental-table table {
+        margin-top: 10px;
+    }
 
-				// Check if any field is empty
-				if (name === "") {
-					document.getElementById('name-error').style.display = "block";
-				}
+    .rental-table th {
+        background-color: #f1f1f1;
+        font-weight: 600;
+    }
 
-				if (location === "") {
-					document.getElementById('location-error').style.display = "block";
-				}
-
-				// Validate location field (no numbers allowed)
-				if (/\d/.test(location)) {
-					document.getElementById('location-error').style.display = "block";
-				}
-
-
-
-				// Validate if available bikes are not greater than total bikes
-			}
-
-			// Add event listeners for real-time validation
-			document.querySelector('#name').addEventListener('input', validateRealTime);
-			document.querySelector('#location').addEventListener('input', validateRealTime);
+    .rental-table td, .rental-table th {
+        padding: 10px;
+        text-align: center;
+    }
+</style>
 
 
-			// Form submission validation
-			function validateForm() {
-				var location = document.querySelector('#location').value;
-				var name = document.querySelector('#name').value;
-
-				// If there are any validation errors, prevent form submission and show a popup
-				if (name === "" || location === ""|| /\d/.test(location) ) {
-					alert("Please fix the errors in the form before submitting.");
-					return false;  // Prevent form submission
-				}
-
-				return true;  // Allow form submission if no validation errors
-			}
-		</script>
-
+<script>
+function toggleRentals(userId) {
+    const section = document.getElementById("rentals-" + userId);
+    if (section.style.display === "none" || section.style.display === "") {
+        section.style.display = "block";
+    } else {
+        section.style.display = "none";
+    }
+}
+</script>
 
 	</body>
+    <!-- Modal -->
+
+    
+
+
+	
+
+
+
+
+
+
+
 </html>
+
+
+

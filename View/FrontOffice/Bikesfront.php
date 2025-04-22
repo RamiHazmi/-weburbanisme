@@ -155,7 +155,7 @@ try {
                             class="btn-details rent-btn" 
                             data-bike-id="<?= $bike['id_bike'] ?>" 
                             data-station-id="<?= $bike['station_id'] ?>" 
-                            data-user-id="1">
+                            data-user-id="2">
                             Rent
                             </a>
 

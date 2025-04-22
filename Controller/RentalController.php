@@ -18,6 +18,8 @@ class BikeRentalController
         }
     }
 
+
+
     // Add a new rental
     public function addRental(BikeRental $rental)
     {
