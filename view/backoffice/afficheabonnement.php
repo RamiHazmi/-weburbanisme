@@ -1,5 +1,6 @@
 <?php
 require_once 'C:/xampp/htdocs/Urbanisme/db_connect.php';
+require_once 'C:/xampp/htdocs/Urbanisme/Model/abonnement.php';
 
 $conn = config::getConnexion();
 
@@ -11,6 +12,9 @@ $sql = "SELECT a.*, p.nom_parking, u.username
 $stmt = $conn->prepare($sql);
 $stmt->execute();
 $abonnements = $stmt->fetchAll();
+
+
+ 
 ?>
 
 
@@ -775,16 +779,204 @@ $abonnements = $stmt->fetchAll();
                                         <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['places_reservees']) ?></td>
                                         <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
                                             <!-- Exemple de bouton de suppression ou modification -->
-                                            <form method="POST" action="controller/SupprimerAbonnement.php" style="display: inline;">
-                                                <input type="hidden" name="id_abonnement" value="<?= $abonnement['id_abonnement'] ?>">
-                                                <button type="submit" style="padding: 6px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Supprimer</button>
-                                            </form>
+                                            <form class="form_supp_abonnement" method="POST" onsubmit="return false;" style="display: inline;">
+												<input type="hidden" name="id_abonnement" value="<?= $abonnement['id_abonnement'] ?>">
+												<button type="button" class="btn-delete-abonnement" data-id="<?= $abonnement['id_abonnement'] ?>" style="padding: 6px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+													Supprimer
+												</button>
+											</form>
+
+											<button class="btn-edit-abonnement" data-id="<?= $abonnement['id_abonnement'] ?>" data-username="<?= htmlspecialchars($abonnement['username']) ?>" data-parking="<?= htmlspecialchars($abonnement['nom_parking']) ?>" data-debut="<?= $abonnement['date_debut'] ?>" data-fin="<?= $abonnement['date_fin'] ?>" data-places="<?= $abonnement['places_reservees'] ?>" style="padding: 6px 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+												Modifier
+											</button>
+
+
                                             <!-- Tu peux ajouter ici un bouton Modifier avec une modale si besoin -->
                                         </td>
                                     </tr>
+									<div id="modal-supp-abonnement" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
+										<div style="background: white; padding: 20px; border-radius: 5px; width: 350px;">
+											<h4>Confirmation</h4>
+											<p>Voulez-vous vraiment supprimer cet abonnement ?</p>
+											<form id="form-confirm-supp-abonnement" method="POST" action="../../controller/suppabonnement.php">
+												<input type="hidden" name="id_abonnement" id="id-abonnement-supp">  <!-- ID caché -->
+												<button type="submit" style="background-color: red; color: white; padding: 10px 20px; border: none; border-radius: 5px;">Supprimer</button>
+												<button type="button" onclick="$('#modal-supp-abonnement').hide();" style="margin-left: 10px; padding: 10px 20px;">Annuler</button>
+											</form>
+										</div>
+									</div>
+
+									
+
+
+									
+
                                 <?php endforeach; ?>
+								<div id="modal-edit-abonnement" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
+									<div style="background: white; padding: 20px; border-radius: 5px; width: 400px;">
+										<h4>Modifier l'abonnement</h4>
+										<form id="form-edit-abonnement" method="POST" action="../../controller/modifierabonnement.php">
+											<input type="hidden" name="id_abonnement" id="edit-id-abonnement">
+											
+											<label>Nom Client :</label>
+											<input type="text" name="username" id="edit-username" style="width: 100%; padding: 8px; margin-bottom: 10px;" readonly>
+
+											<label>Parking :</label>
+											<input type="text" name="nom_parking" id="edit-parking" style="width: 100%; padding: 8px; margin-bottom: 10px;" readonly>
+
+											<label>Date Début :</label>
+											<input type="date" name="date_debut" id="edit-date-debut" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+											<span id="erreur_nom" class="erreur-message"></span>
+
+											<label>Date Fin :</label>
+											<input type="date" name="date_fin" id="edit-date-fin" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+											<label>Places Réservées :</label>
+											<input type="number" name="places_reservees" id="edit-places" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+											<!-- ✅ Champ caché pour stocker l’ancienne valeur des places -->
+											<input type="hidden" id="edit-old-places" name="old_places_reservees">
+
+											<div id="error-message" class="erreur-message" style="color: red; margin-bottom: 10px;"></div>
+
+											<button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px;">Enregistrer</button>
+											<button type="button" onclick="$('#modal-edit-abonnement').hide();" style="margin-left: 10px; padding: 10px 20px;">Annuler</button>
+										</form>
+									</div>
+								</div>
+
                             </tbody>
                         </table>
+						
+						<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+						<script>
+							$(document).ready(function() {
+								// Ouvrir la modale lors du clic sur le bouton de suppression
+								$(".btn-delete-abonnement").click(function() {
+									var id = $(this).data('id');  // Récupère l'ID depuis l'attribut data-id
+									$("#id-abonnement-supp").val(id);  // Remplir l'input caché avec l'ID
+									$("#modal-supp-abonnement").css("display", "flex");  // Affiche la modale
+								});
+
+								// Fermeture de la modale si on clique en dehors de la boîte
+								$("#modal-supp-abonnement").on("click", function(e) {
+									if (e.target === this) {
+										$(this).hide();
+									}
+								});
+
+								// Soumission du formulaire de confirmation de suppression (AJAX)
+								$("#form-confirm-supp-abonnement").submit(function(e) {
+									e.preventDefault();  // Empêche la soumission classique du formulaire
+									var formData = $(this).serialize();  // Sérialise les données du formulaire
+
+									// Envoi de la requête AJAX
+									$.ajax({
+										type: "POST",
+										url: "../../controller/suppabonnement.php",  // Le fichier PHP pour traiter la suppression
+										data: formData,  // Données à envoyer (ID de l'abonnement)
+										success: function(response) {
+											console.log(response);  // Affiche la réponse pour le debug
+
+											if (response === "success") {  // Si la suppression a réussi
+												$("#modal-supp-abonnement").hide();  // Cache la modale
+												$("tr[data-id='" + $("#id-abonnement-supp").val() + "']").fadeOut();  // Masque l'élément correspondant à l'ID dans le tableau
+
+												// Recharge la page après un court délai (1 seconde ici)
+												setTimeout(function() {
+													location.reload();
+												}, 1000);
+											} else {
+												// Si la suppression échoue, affiche un message d'erreur
+												$("#message").html("<span style='color:red;'>Erreur lors de la suppression de l'abonnement.</span>");
+											}
+										},
+										error: function() {
+											// En cas d'erreur AJAX
+											$("#message").html("<span style='color:red;'>Erreur lors de la suppression.</span>");
+										}
+									});
+								});
+							});
+
+						</script>
+					<script>
+						function afficherErreurModal(message) {
+							$("#error-message").text(message);
+						}
+
+						$(document).ready(function () {
+
+							// Afficher le formulaire de modification rempli avec les données
+							$(".btn-edit-abonnement").click(function () {
+								var id = $(this).data('id');
+								var username = $(this).data('username');
+								var parking = $(this).data('parking');
+								var debut = $(this).data('debut');
+								var fin = $(this).data('fin');
+								var places = $(this).data('places');
+
+								$("#edit-id-abonnement").val(id);
+								$("#edit-username").val(username);
+								$("#edit-parking").val(parking);
+								$("#edit-date-debut").val(debut);
+								$("#edit-date-fin").val(fin);
+								$("#edit-places").val(places);
+								$("#edit-old-places").val(places); // important pour la logique de comparaison
+
+								$("#modal-edit-abonnement").css("display", "flex");
+							});
+
+							// Formulaire de modification
+							$("#form-edit-abonnement").submit(function (e) {
+								e.preventDefault();
+
+								if (!validerFormulaire()) {
+									return;
+								}
+
+								var formData = $(this).serialize();
+
+								$.ajax({
+									type: "POST",
+									url: "../../controller/modabonnement.php",
+									data: formData,
+									success: function(response) {
+										try {
+											var data = JSON.parse(response);
+
+											if (data.status === "success") {
+												// Remplacer l'alerte par un message dans une modale ou un autre feedback
+												// alert(data.message); // Supprimer ou commenter cette ligne
+												$("#notification").text(data.message).fadeIn().delay(2000).fadeOut(); // Afficher un message discret
+												location.reload();
+											} else {
+												// Si c'est une erreur, l'afficher proprement
+												$('#error-message').text(data.message); // ce div existe déjà dans ton formulaire
+											}
+										} catch (e) {
+											console.error("Erreur de parsing JSON :", e, response);
+											$('#error-message').text("Erreur inattendue. Veuillez réessayer.");
+										}
+									}
+								});
+							});
+
+							// Fermer la modale si on clique à l'extérieur
+							$("#modal-edit-abonnement").on("click", function (e) {
+								if (e.target === this) {
+									$(this).hide();
+								}
+							});
+
+						});
+					</script>
+
+
+
+
+
 
 					<!-- end: page -->
 				</section>
@@ -877,6 +1069,7 @@ $abonnements = $stmt->fetchAll();
 			
 			<!-- Theme Initialization Files -->
 			<script src="assets/javascripts/theme.init.js"></script>
+			<script src="validationmodabonnement.js"></script>
 
 		</section>
 	</body>

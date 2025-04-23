@@ -7,16 +7,24 @@ function effacerErreurs() {
     const errorMessageDiv = document.getElementById("error-message");
     errorMessageDiv.innerText = '';
 }
-
 function validerFormulaire() {
     effacerErreurs();
 
-    const dateDebut = document.getElementById("modal-date-debut").value.trim();
-    const dateFin = document.getElementById("modal-date-fin").value.trim();
-    const placesReserveesValue = document.getElementById("modal-places-reservees").value.trim();
-    const idParking = document.getElementById("modal-id-parking").value.trim();
+    // Vérification que les éléments existent
+    const dateDebutElement = document.getElementById("edit-date-debut");
+    const dateFinElement = document.getElementById("edit-date-fin");
+    const placesReserveesElement = document.getElementById("edit-places");
 
-    if (!dateDebut || !dateFin || !placesReserveesValue || !idParking) {
+    if (!dateDebutElement || !dateFinElement || !placesReserveesElement) {
+        afficherErreur("Certains champs sont manquants.");
+        return false;
+    }
+
+    const dateDebut = dateDebutElement.value.trim();
+    const dateFin = dateFinElement.value.trim();
+    const placesReserveesValue = placesReserveesElement.value.trim();
+
+    if (!dateDebut || !dateFin || !placesReserveesValue) {
         afficherErreur("Tous les champs doivent être remplis.");
         return false;
     }
@@ -34,6 +42,3 @@ function validerFormulaire() {
 
     return true; // ✅ Formulaire valide
 }
- 
-
-  
