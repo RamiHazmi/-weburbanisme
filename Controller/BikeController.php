@@ -29,6 +29,21 @@ class BikeController
             die('Error: ' . $e->getMessage());
         }
     }
+    public function getBikeById($id_bike)
+{
+    $sql = 'SELECT * FROM bike WHERE id_bike = :id';
+    $db = config::getConnexion();
+
+    try {
+        $query = $db->prepare($sql);
+        $query->bindParam(':id', $id_bike, PDO::PARAM_INT);
+        $query->execute();
+        return $query->fetch(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        die('Error: ' . $e->getMessage());
+    }
+}
+
 
     // Ajouter un nouveau vélo
     public function addBike(Bike $bike)

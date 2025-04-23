@@ -46,19 +46,7 @@ $stations = $stationController->listStations();
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
 		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-        <script>
-            $(document).ready(function() {
-                $('.delete-row').click(function(e) {
-                e.preventDefault(); // Stop default action
-
-                var result = confirm("Are you sure you want to delete this station?");
-                if (result) {
-                    var id = $(this).data('id');
-                    window.location.href = 'DeleteBike.php?id=' + id;
-                }
-                });
-            });
-            </script>
+        
             <script>
   $(document).ready(function() {
     $('.edit-bike-btn').click(function() {
@@ -959,6 +947,32 @@ function toggleBikes(stationId) {
     table.style.display = (table.style.display === "none") ? "block" : "none";
 }
 </script>
+<script>
+$(document).ready(function () {
+    $('.delete-row').click(function (e) {
+        e.preventDefault();
+
+        // Get the status from a nearby element or data attribute
+        var row = $(this).closest('td');
+        var status = row.find('.edit-bike-btn').data('status');
+
+        if (status === 'Rented' || status === 'Active') {
+            alert('❌ You cannot delete a bike that is currently Rented or Active.');
+            return; // Stop here, don’t proceed to deletion
+        }else{
+			var result = confirm("Are you sure you want to delete this bike?");
+        if (result) {
+            var id = $(this).data('id');
+            window.location.href = 'DeleteBike.php?id=' + id;
+        }
+
+		}
+
+        
+    });
+});
+</script>
+
 
 	</body>
     <!-- Modal -->

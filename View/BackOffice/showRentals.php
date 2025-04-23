@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../../Controller/RentalController.php';
+require_once __DIR__ . '/../../Controller/BikeStationController.php';
 
+$stationController = new BikeStationController();
 $rentalController = new BikeRentalController();
 $rentals = $rentalController->listRentals();
 
@@ -8,6 +10,8 @@ $rentals = $rentalController->listRentals();
 $users = [];
 foreach ($rentals as $rental) {
     $id_user = $rental['id_user'];
+	$rental['end_station_name'] = $stationController->getStationNameById($rental['end_station']);
+
     $users[$id_user][] = $rental;
 }
 ?>
@@ -787,7 +791,7 @@ foreach ($rentals as $rental) {
                         <td><?= $rental['id_rental'] ?></td>
                         <td><?= $rental['id_bike'] ?></td>
                         <td><?= $rental['start_station'] ?></td>
-                        <td><?= $rental['end_station'] ?></td>
+						<td><?= $rental['end_station_name'] ?? 'Unknown' ?></td>
                         <td><?= $rental['start_time'] ?></td>
                         <td><?= $rental['end_time'] ?></td>
                         <td><?= $rental['feedback'] ?></td>

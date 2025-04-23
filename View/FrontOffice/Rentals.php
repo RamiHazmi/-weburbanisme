@@ -2,7 +2,7 @@
 
 require_once '/xampp/htdocs/urbanisme/database.php';
 $pdo = config::getConnexion();
-$id_user = 2; // 🔁 Later: use $_SESSION['id_user']
+$id_user = 1; // 🔁 Later: use $_SESSION['id_user']
 
 // 🧠 Handle POST actions (delete or checkout)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
