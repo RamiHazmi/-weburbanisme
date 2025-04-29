@@ -1,0 +1,52 @@
+/* Style de la vidéo */
+#background-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 120%;
+    height: 100%;
+    object-fit: cover; /* Ajuste la vidéo pour couvrir tout l'écran */
+    z-index: -1; /* Place la vidéo derrière le contenu */
+}
+
+/* Style du conteneur pour le rendre transparent */
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: rgba(255, 255, 255, 0.3); /* Légèrement transparent */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px); /* Effet de flou pour améliorer la lisibilité */
+}
+
+/* Autres styles du formulaire */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    color: #fff; /* Couleur du texte en blanc */
+}
+
+input, textarea {
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+button.submit-btn {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button.submit-btn:hover {
+    background-color: #2980b9;
+}

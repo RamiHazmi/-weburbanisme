@@ -1,0 +1,70 @@
+/* Style pour le formulaire */
+.input-group {
+    margin-bottom: 20px;
+}
+
+/* Style de l'input pour la localisation */
+.input-group .form-control {
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+/* Style du bouton "Choisir sur la carte" */
+.input-group .btn {
+    border-radius: 4px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.input-group .btn:hover {
+    background-color: #0056b3;
+}
+
+/* Style de la carte */
+#map {
+  
+    display: block !important;
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ccc;  /* Bordure légère autour de la carte */
+    border-radius: 8px;  /* Coins arrondis */
+    margin-top: 10px;
+    transition: all 0.3s ease-in-out;  /* Transition douce pour l'affichage */
+}
+
+/* Erreur de localisation */
+.error-message {
+    font-size: 14px;
+    color: red;
+    margin-top: 10px;
+}
+
+/* Centrer le formulaire et ajuster son espacement */
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Style des marqueurs sur la carte */
+.leaflet-marker-icon {
+    border-radius: 50%;
+    background-color: #007bff;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Style de la popup des marqueurs */
+.leaflet-popup-content-wrapper {
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}

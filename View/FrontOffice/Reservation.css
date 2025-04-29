@@ -1,0 +1,152 @@
+
+.form-wrapper {
+    border: 2px solid #ccc;       /* Bordure grise */
+    border-radius: 12px;          /* Coins arrondis */
+    padding: 30px;                /* Espace intérieur */
+    background-color: #fdfdfd;    /* Fond clair */
+    max-width: 700px;             /* Limite la taille */
+    margin: 40px auto;            /* Centrer verticalement et horizontalement */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1); /* Ombre douce */
+}
+
+h2 {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 600px; /* Limite la largeur du formulaire */
+    width: 100%; /* Pour que le formulaire soit responsive */
+    margin: 0 auto; /* Centrer le formulaire horizontalement */
+    padding: 20px;
+    text-align: center;
+}
+/* Formulaire global */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 600px; /* Limite la largeur du formulaire */
+    width: 100%; /* Pour que le formulaire soit responsive */
+    margin: 0 auto; /* Centrer le formulaire horizontalement */
+    padding: 20px;
+}
+
+/* Style pour les groupes de champs */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    width: 100%; /* Pour que les champs occupent toute la largeur */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 600px; /* Limite la largeur du formulaire */
+    width: 100%; /* Pour que le formulaire soit responsive */
+    margin: 0 auto; /* Centrer le formulaire horizontalement */
+    padding: 20px;
+}
+
+/* Style pour les éléments select */
+select {
+    width: 100%; /* Prendre toute la largeur disponible */
+    padding: 12px;
+    margin: 8px 0; /* Ajouter un espace autour */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box; /* Prendre en compte les bordures dans le calcul de la largeur */
+    margin: 0 auto; /* Centrer le formulaire horizontalement */
+
+}
+
+/* Assurer l'alignement correct du bouton Soumettre */
+button[type="submit"] {
+    align-self: center; /* Centrer le bouton */
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 600px; /* Limite la largeur du formulaire */
+    width: 100%; /* Pour que le formulaire soit responsive */
+    margin: 0 auto; /* Centrer le formulaire horizontalement */
+    padding: 20px;
+}
+
+button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Style des boutons radio */
+input[type="radio"] {
+    margin-right: 8px;
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+/* Séparation entre le statut de réservation et les autres champs */
+.statut-reservation-container {
+    margin-top: 10px;
+}
+
+/* Style pour la zone de paiement en ligne */
+.online-payment-info {
+    background-color: #e8f0fe;
+    padding: 15px;
+    margin-top: 15px;
+    border-left: 5px solid #2196F3;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Ajustement de l'affichage des radios */
+.radio-group {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px; /* Augmenter l'espace entre les options */
+    margin-top: 10px;
+}
+
+#pourcentage_charge {
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #2980b9; /* valeur par défaut */
+    border-radius: 5px;
+    outline: none;
+    transition: background 0.3s ease;
+  }
+
+  #pourcentage_charge::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: white;
+    border: 2px solid #333;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  #outputPourcentage {
+    display: inline-block;
+    margin-left: 10px;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+  }
+
+  /* Couleurs associées */
+  .color-20 { color: #e74c3c; }       /* Rouge */
+  .color-40 { color: #e67e22; }       /* Orange */
+  .color-60 { color: #f1c40f; }       /* Jaune */
+  .color-80 { color: #27ae60; }       /* Vert */
+  .color-100 { color: #2980b9; }      /* Bleu */
+  

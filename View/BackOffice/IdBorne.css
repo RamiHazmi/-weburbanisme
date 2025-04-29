@@ -1,0 +1,45 @@
+.btn-default {
+    background: linear-gradient(135deg, #007BFF, #00C6FF);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'Segoe UI', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+}
+
+.btn-default:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.5);
+    background: linear-gradient(135deg, #0062E6);
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.max-power-text {
+    font-size: 14px;
+    color: #555;
+    font-style: italic;
+    margin-left: 10px;
+    color: #4CAF50;
+}
+
+.power-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.power-wrapper input {
+    width: 150px;
+}
+#generateBtn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
