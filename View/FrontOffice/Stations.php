@@ -3,6 +3,21 @@ include __DIR__ . '/../../Controller/BikeStationController.php';
 
 $controller = new BikeStationController();
 $stations = $controller->listStations();
+// Function to get station by name
+function getStationByName($station_name)
+{
+    $sql = 'SELECT * FROM bikestation WHERE name LIKE :station_name';
+    $db = config::getConnexion();
+    try {
+        $query = $db->prepare($sql);
+        // Use LIKE for partial match (case-insensitive)
+        $query->execute(['station_name' => '%' . $station_name . '%']);
+        return $query->fetchAll(PDO::FETCH_ASSOC); // Return all stations that match the name
+    } catch (Exception $e) {
+        die('Error: ' . $e->getMessage());
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -108,25 +123,35 @@ $stations = $controller->listStations();
 
     <!-- Stations Start -->
     <div class="container d-flex flex-wrap justify-content-center mt-5">
-        <?php foreach ($stations as $station): ?>
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        <h4><i class="fa fa-bicycle me-2"></i><?= htmlspecialchars($station['name']) ?></h4>
-                        <p><i class="fa fa-map-marker-alt me-2"></i><?= htmlspecialchars($station['location']) ?></p>
-                    </div>
-                    <div class="flip-card-back">
-                        <p>Total Bikes: <?= $station['total_bikes'] ?></p>
-                        <p>Available: <?= $station['available_bikes'] ?></p>
-                        <span class="status-badge <?= $station['status'] > 0 ? 'status-active' : 'status-inactive' ?>">
-                            <?= $station['status'] > 0 ? 'Active' : 'Inactive' ?>
-                        </span>
-                        <button class="btn-details" onclick="window.location.href='Bikesfront.php?station_id=<?= $station['id_station'] ?>';">Show Bikes</button>
-                        </div>
+    <h2>Bike Stations</h2>
+
+    <!-- Search bar for filtering stations by name -->
+    <div class="mb-3 w-100 d-flex justify-content-center">
+        <input type="text" id="station-search" class="form-control w-50" placeholder="Search Stations by Name" onkeyup="filterStations()">
+        <button id="start-voice-button" class="btn btn-primary">Start Voice Command</button>
+    </div>
+ 
+    <!-- Station Cards -->
+    <?php foreach ($stations as $station): ?>
+        <div class="flip-card station-card" data-station-name="<?= strtolower($station['name']) ?>">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <h4><i class="fa fa-bicycle me-2"></i><?= htmlspecialchars($station['name']) ?></h4>
+                    <p><i class="fa fa-map-marker-alt me-2"></i><?= htmlspecialchars($station['location']) ?></p>
+                </div>
+                <div class="flip-card-back">
+                    <p>Total Bikes: <?= $station['total_bikes'] ?></p>
+                    <p>Available: <?= $station['available_bikes'] ?></p>
+                    <span class="status-badge <?= $station['status'] > 0 ? 'status-active' : 'status-inactive' ?>">
+                        <?= $station['status'] > 0 ? 'Active' : 'Inactive' ?>
+                    </span>
+                    <button class="btn-details" onclick="window.location.href='Bikesfront.php?station_id=<?= $station['id_station'] ?>';">Show Bikes</button>
                 </div>
             </div>
-        <?php endforeach; ?>
-    </div>
+        </div>
+    <?php endforeach; ?>
+</div>
+
 
     
 
@@ -210,6 +235,83 @@ $stations = $controller->listStations();
 
 
 
+
+
+
+
+
+
+
+
+
+<!-- Voice assistant -->
+
+    
+  <script>
+// Check if the browser supports the Web Speech API
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
+if (SpeechRecognition) {
+    recognition = new SpeechRecognition();
+    recognition.lang = 'en-US'; // Set language to English
+    recognition.interimResults = false; // No interim results
+    recognition.maxAlternatives = 1; // Only return the best match
+}
+
+// Function to start voice recognition
+function startVoiceRecognition() {
+    console.log("Voice recognition started...");
+    recognition.start();  // Start the voice recognition process
+}
+
+// Event listener to handle the result of speech recognition
+recognition.onresult = function(event) {
+    const command = event.results[0][0].transcript.toLowerCase(); // Get the speech command and convert to lowercase
+    console.log('Speech recognized:', command);  // Log the recognized speech
+
+    // Check if the command includes "find station"
+    if (command.includes('find station')) {
+        const stationName = command.replace('find station', '').trim(); // Extract station name from command
+        console.log('Searching for station:', stationName);  // Log the station name extracted
+        filterStations(stationName);  // Filter stations based on the spoken name
+    } else {
+        console.log('No valid command detected.');  // Log if no valid command is detected
+    }
+};
+
+// Handle any errors in speech recognition
+recognition.onerror = function(event) {
+    console.error('Error occurred in speech recognition: ', event.error);  // Log any errors
+};
+// Function to get station by name
+
+
+
+// Function to filter stations based on voice command or search input
+function filterStations(stationName = '') {
+    var input = document.getElementById('station-search');
+    var filter = stationName || input.value.toLowerCase(); // Use voice command or manual input
+    var cards = document.querySelectorAll('.station-card');
+
+    cards.forEach(function(card) {
+        var stationCardName = card.getAttribute('data-station-name');
+        if (stationCardName.indexOf(filter) > -1) {
+            card.style.display = ''; // Show matching cards
+            console.log(`Showing station card: ${stationCardName}`); // Log when a card is shown
+        } else {
+            card.style.display = 'none'; // Hide non-matching cards
+            console.log(`Hiding station card: ${stationCardName}`); // Log when a card is hidden
+        }
+    });
+}
+
+// Event listener for the start voice button
+document.getElementById('start-voice-button').addEventListener('click', function() {
+    startVoiceRecognition();  // Start voice recognition when the button is clicked
+});
+
+
+  </script>
   
 
 </body>
@@ -332,5 +434,22 @@ $stations = $controller->listStations();
 
 
 </style>
+<script>
+function filterStations() {
+    var input = document.getElementById('station-search');
+    var filter = input.value.toLowerCase();
+    var cards = document.querySelectorAll('.station-card');
+    
+    cards.forEach(function(card) {
+        var stationName = card.getAttribute('data-station-name');
+        if (stationName.indexOf(filter) > -1) {
+            card.style.display = ''; // Show matching cards
+        } else {
+            card.style.display = 'none'; // Hide non-matching cards
+        }
+    });
+}
+</script>
+
 
 </html>

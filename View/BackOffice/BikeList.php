@@ -773,6 +773,18 @@ $stations = $stationController->listStations();
                         </div>
 
                         <div class="bike-table table-responsive" id="bikes-<?= $station['id_station'] ?>" style="display: none;">
+						<div class="bike-controls">
+    <!-- Search bar -->
+    <input type="text" class="bike-search form-control" placeholder="Search bikes..." onkeyup="searchBikes(<?= $station['id_station'] ?>)">
+
+    <!-- Sort dropdown -->
+    <select class="bike-sort form-control" onchange="sortBikes(<?= $station['id_station'] ?>)">
+        <option value="">Sort by...</option>
+        <option value="status">Status</option>
+        <option value="kilometers">Total Kilometers</option>
+    </select>
+</div>
+
                             <table class="table mb-none">
                                 <thead>
                                     <tr>
@@ -1023,8 +1035,60 @@ $(document).ready(function () {
   </div>
 </div>
 
-    
+    <Script>
+		function searchBikes(stationId) {
+    let input = document.querySelector(`#bikes-${stationId} .bike-search`);
+    let filter = input.value.toLowerCase();
+    let rows = document.querySelectorAll(`#bikes-${stationId} tbody tr`);
 
+    rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? "" : "none";
+    });
+}
+
+function sortBikes(stationId) {
+    let select = document.querySelector(`#bikes-${stationId} .bike-sort`);
+    let value = select.value;
+    let tbody = document.querySelector(`#bikes-${stationId} tbody`);
+    let rows = Array.from(tbody.querySelectorAll('tr'));
+
+    rows.sort((a, b) => {
+        if (value === 'status') {
+            let statusA = a.children[4].innerText.toLowerCase();
+            let statusB = b.children[4].innerText.toLowerCase();
+            return statusA.localeCompare(statusB);
+        } else if (value === 'kilometers') {
+            let kmA = parseFloat(a.children[3].innerText);
+            let kmB = parseFloat(b.children[3].innerText);
+            return kmA - kmB;
+        }
+        return 0;
+    });
+
+    // Re-add sorted rows
+    rows.forEach(row => tbody.appendChild(row));
+}
+
+	</Script>
+
+<style>
+.bike-controls {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px; /* space between search and sort */
+}
+
+.bike-controls input.bike-search,
+.bike-controls select.bike-sort {
+    width: 180px; /* smaller width */
+    height: 32px; /* smaller height */
+    font-size: 14px; /* smaller font */
+    padding: 4px 8px;
+}
+</style>
 
 	
 

@@ -794,8 +794,21 @@ $bikeStations = $controller->listStations();
 								<header class="panel-heading">
 									<h2 class="panel-title">Bike Stations</h2>
 								</header>
+								<div class="row mb-3">
+									<div class="col-md-6">
+										<input type="text" id="searchInput" class="form-control" placeholder="Search stations...">
+									</div>
+									<div class="col-md-6 text-right">
+										<select id="sortSelect" class="form-control" style="width: auto; display: inline-block;">
+											<option value="">Sort by...</option>
+											<option value="available_bikes">Available Bikes (Most First)</option>
+										</select>
+									</div>
+								</div>
+
 								<div class="panel-body">
 									<div class="table-responsive">
+										
 										<table class="table mb-none">
 											<thead>
 												<tr>
@@ -1043,7 +1056,48 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
 </script>
+<script>
+$(document).ready(function() {
+    // Search functionality
+    $('#searchInput').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $('table tbody tr').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    // Sort functionality when changing the select
+    
+
+});
+</script>
+<script>
+document.getElementById('sortSelect').addEventListener('change', function() {
+    var tbody = document.querySelector('table tbody');
+    var rows = Array.from(tbody.querySelectorAll('tr')).filter(row => {
+        return row.querySelectorAll('td').length > 0;
+    });
+
+    var selectedOption = this.value;
+
+    if (selectedOption === 'available_bikes') {
+        rows.sort(function(a, b) {
+            var aAvailable = parseInt(a.children[4].textContent.trim(), 10) || 0;
+            var bAvailable = parseInt(b.children[4].textContent.trim(), 10) || 0;
+            return bAvailable - aAvailable; // biggest first
+        });
+    }
+
+    // Clear and re-append sorted rows
+    tbody.innerHTML = '';
+    rows.forEach(function(row) {
+        tbody.appendChild(row);
+    });
+});
+</script>
+
 
 
 

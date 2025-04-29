@@ -1,20 +1,3 @@
-<?php
-require_once __DIR__ . '/../../Controller/RentalController.php';
-require_once __DIR__ . '/../../Controller/BikeStationController.php';
-
-$stationController = new BikeStationController();
-$rentalController = new BikeRentalController();
-$rentals = $rentalController->listRentals();
-
-// Group rentals by user ID
-$users = [];
-foreach ($rentals as $rental) {
-    $id_user = $rental['id_user'];
-	$rental['end_station_name'] = $stationController->getStationNameById($rental['end_station']);
-
-    $users[$id_user][] = $rental;
-}
-?>
 
 
 <!doctype html>
@@ -24,7 +7,7 @@ foreach ($rentals as $rental) {
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
-		<title>Basic Tables | Okler Themes | Porto-Admin</title>
+		<title>Form Layouts | Okler Themes | Porto-Admin</title>
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
@@ -40,8 +23,6 @@ foreach ($rentals as $rental) {
 		<link rel="stylesheet" href="assets/vendor/font-awesome/css/font-awesome.css" />
 		<link rel="stylesheet" href="assets/vendor/magnific-popup/magnific-popup.css" />
 		<link rel="stylesheet" href="assets/vendor/bootstrap-datepicker/css/datepicker3.css" />
-		<link rel="stylesheet" href="assets/stylesheets/popUp.css"> <!-- Path to your CSS file -->
-
 
 		<!-- Theme CSS -->
 		<link rel="stylesheet" href="assets/stylesheets/theme.css" />
@@ -54,15 +35,14 @@ foreach ($rentals as $rental) {
 
 		<!-- Head Libs -->
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
-		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- Leaflet CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
-        
-
-
+        <!-- Leaflet JS -->
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 
 	</head>
-
 	<body>
 		<section class="body">
 
@@ -76,7 +56,6 @@ foreach ($rentals as $rental) {
 						<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
 					</div>
 				</div>
-
 			
 				<!-- start: search & user box -->
 				<div class="header-right">
@@ -514,15 +493,20 @@ foreach ($rentals as $rental) {
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent">
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-list-alt" aria-hidden="true"></i>
 											<span>Forms</span>
 										</a>
 										<ul class="nav nav-children">
 											<li>
-												<a href="Bike.php">
-													 Bike Stations
+												<a href="forms-basic.html">
+													 User
+												</a>
+											</li>
+											<li>
+												<a href="forms-advanced.html">
+													 Recharge Electrique
 												</a>
 											</li>
 											<li>
@@ -530,19 +514,14 @@ foreach ($rentals as $rental) {
 													 Bikes
 												</a>
 											</li>
-											<li>
-												<a href="forms-validation.html">
-													 Validation
-												</a>
-											</li>
-											<li>
-												<a href="forms-layouts.html">
-													 Layouts
+											<li class="nav-active">
+												<a href="Bike.php">
+                                                    Bike Stations
 												</a>
 											</li>
 											<li>
 												<a href="forms-wizard.html">
-													 Wizard
+													 Parking
 												</a>
 											</li>
 											<li>
@@ -552,13 +531,13 @@ foreach ($rentals as $rental) {
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent">
 										<a>
 											<i class="fa fa-table" aria-hidden="true"></i>
 											<span>Tables</span>
 										</a>
 										<ul class="nav nav-children">
-											<li class="nav-active">
+											<li>
 												<a href="TableBike.php">
 													 Bike Stations List
 												</a>
@@ -569,7 +548,7 @@ foreach ($rentals as $rental) {
 												</a>
 											</li>
 											<li>
-                                            <a href="showRentals.php">
+											<a href="showRentals.php">
 													 Rentals History
 												</a>
 											</li>
@@ -597,8 +576,8 @@ foreach ($rentals as $rental) {
 										</a>
 										<ul class="nav nav-children">
 											<li>
-												<a href="Bike.php">
-													 Smart Bike Sharing
+												<a href="TableBike.php">
+													 Bike Stations 
 												</a>
 											</li>
 											<li>
@@ -747,7 +726,7 @@ foreach ($rentals as $rental) {
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Basic Tables</h2>
+						<h2>Form Layouts</h2>
 					
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -756,8 +735,8 @@ foreach ($rentals as $rental) {
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li><span>Tables</span></li>
-								<li><span>Basic</span></li>
+								<li><span>Forms</span></li>
+								<li><span>Layouts</span></li>
 							</ol>
 					
 							<a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
@@ -765,61 +744,164 @@ foreach ($rentals as $rental) {
 					</header>
 
 					<!-- start: page -->
-                    <h2>Rentals By User</h2>
 
-<?php foreach ($users as $userId => $userRentals): ?>
-    <div class="user-block" onclick="toggleRentals(<?= $userId ?>)">
-        <strong>User ID:</strong> <?= $userId ?>
-    </div>
-
-    <div class="rental-table table-responsive" id="rentals-<?= $userId ?>" style="display: none;">
-        
-        <!-- 🚀 Add the search and sort controls here -->
-        <div class="rental-controls">
-            <input type="text" class="rental-search" placeholder="Search Rentals..." onkeyup="filterRentals(<?= $userId ?>)">
-            <select class="rental-sort" onchange="sortRentals(<?= $userId ?>)">
-                <option value="">Sort By</option>
-                <option value="end_time_asc">End Time (Asc)</option>
-                <option value="end_time_desc">End Time (Desc)</option>
-            </select>
-        </div>
-
-        <table class="table" id="rental-table-<?= $userId ?>">
-            <thead>
-                <tr>
-                    <th>Rental ID</th>
-                    <th>Bike ID</th>
-                    <th>Start Station</th>
-                    <th>End Station</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Feedback</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($userRentals as $rental): ?>
-                    <tr>
-                        <td><?= $rental['id_rental'] ?></td>
-                        <td><?= $rental['id_bike'] ?></td>
-                        <td><?= $rental['start_station'] ?></td>
-                        <td><?= $rental['end_station_name'] ?? 'Unknown' ?></td>
-                        <td><?= $rental['start_time'] ?></td>
-                        <td><?= $rental['end_time'] ?></td>
-                        <td><?= $rental['feedback'] ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-<?php endforeach; ?>
 
 					
 
 
 
 
-						
-						
+
+                    <section class="content-with-menu" data-theme-gmap-builder>
+                    <div class="content-with-menu-container">
+
+<div class="inner-menu-toggle">
+    <a href="#" class="inner-menu-expand" data-open="inner-menu">
+        Show Options <i class="fa fa-chevron-right"></i>
+    </a>
+</div>
+
+<menu id="content-menu" class="inner-menu" role="menu">
+    <div class="nano">
+        <div class="nano-content">
+
+            <div class="inner-menu-toggle-inside">
+                <a href="#" class="inner-menu-collapse">
+                    <i class="fa fa-chevron-up visible-xs-inline"></i><i class="fa fa-chevron-left hidden-xs-inline"></i> Hide Options
+                </a>
+                <a href="#" class="inner-menu-expand" data-open="inner-menu">
+                    Show Options <i class="fa fa-chevron-down"></i>
+                </a>
+            </div>
+
+
+                <p class="title">Configuration</p>
+
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-xs-12 control-label" for="stationSelect">Select a Bike Station</label>
+                        <div class="col-xs-12">
+                            <select id="stationSelect" name="stationSelect" class="form-control">
+                                <?php
+                                require_once __DIR__ . '/../../Controller/BikeStationController.php'; // Nouveau contrôleur à créer
+
+                                $stationController = new BikeStationController();
+                                $stations = $stationController->listStations();
+
+                                foreach ($stations as $station) {
+                                    echo '<option value="' . $station['id_station'] . '">' . htmlspecialchars($station['name']) . '</option>';
+                                }
+                                ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+            
+
+                <hr class="separator" />
+
+                <p class="title">Map Center</p>
+
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-xs-12 control-label" for="latitude">Latitude</label>
+                        <div class="col-xs-12">
+                            <input id="latitude" name="latitude" class="form-control" type="text" data-builder-field="latlng">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-xs-12 control-label" for="longitude">Longitude</label>
+                        <div class="col-xs-12">
+                            <input id="longitude" name="longitude" class="form-control" type="text" data-builder-field="latlng">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <label class="col-xs-12 control-label" for="zoomLevel">Zoom Level</label>
+                        <div class="col-xs-12">
+                            <select id="zoomLevel" class="form-control mb-md" data-plugin-selectTwo data-plugin-options='{ "minimumResultsForSearch": -1 }' data-builder-field="zoomlevel">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="separator" />
+                <div class="form-group">
+                    <ul id="MarkersList" class="list-markers list-unstyled mb-lg hidden">
+                    </ul>
+                    <div class="col-sm-12 text-center">
+    <button id="saveCoordinates" class="btn btn-primary">Add</button>
+</div>
+
+                    <div>
+                        '  
+                    </div>
+                    <div class="col-sm-12">
+    <button id="showStationsBtn" class="btn btn-success btn-block mb-lg" type="button">Show All Stations</button>
+</div>
+
+
+                    
+                </div>
+
+
+                
+
+                
+            </div>
+        </div>
+    </div>
+</menu>
+<div class="inner-body">
+    <div id="gmap"></div>
+    
+
+</div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 						
 					<!-- end: page -->
 				</section>
@@ -911,130 +993,88 @@ foreach ($rentals as $rental) {
 		
 		<!-- Theme Initialization Files -->
 		<script src="assets/javascripts/theme.init.js"></script>
-        <style>
-    .user-block {
-        background-color:rgb(77, 88, 95);
-        color: white;
-        padding: 15px;
-        margin-bottom: 10px;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 18px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        transition: background-color 0.3s ease;
-    }
-
-    .user-block:hover {
-        background-color:rgb(202, 222, 235);
-    }
-
-    .rental-table {
-        margin-bottom: 30px;
-        border: 1px solid #ddd;
-        padding: 10px;
-        border-radius: 10px;
-        background: #f9f9f9;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    .rental-table table {
-        margin-top: 10px;
-    }
-
-    .rental-table th {
-        background-color: #f1f1f1;
-        font-weight: 600;
-    }
-
-    .rental-table td, .rental-table th {
-        padding: 10px;
-        text-align: center;
-    }
-</style>
-<style>
-.rental-controls {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-bottom: 10px;
-    gap: 10px;
-}
-
-.rental-controls input.rental-search,
-.rental-controls select.rental-sort {
-    width: 180px;
-    height: 32px;
-    font-size: 14px;
-    padding: 4px 8px;
-}
-</style>
 
 
 
-<script>
-function toggleRentals(userId) {
-    const section = document.getElementById("rentals-" + userId);
-    if (section.style.display === "none" || section.style.display === "") {
-        section.style.display = "block";
-    } else {
-        section.style.display = "none";
-    }
-}
-</script>
-<script>
-function filterRentals(userId) {
-    var input = document.querySelector('#rentals-' + userId + ' .rental-search');
-    var filter = input.value.toUpperCase();
-    var table = document.getElementById('rental-table-' + userId);
-    var tr = table.getElementsByTagName('tr');
+        <script>
+    let map;
+    let marker; // Only one marker at a time
 
-    for (var i = 1; i < tr.length; i++) { // start from 1 to skip table headers
-        var tdArray = tr[i].getElementsByTagName('td');
-        var found = false;
-        for (var j = 0; j < tdArray.length; j++) {
-            if (tdArray[j]) {
-                if (tdArray[j].innerText.toUpperCase().indexOf(filter) > -1) {
-                    found = true;
-                }
+    function initMap() {
+        map = L.map('gmap').setView([36.8065, 10.1815], 13); // Centered at Tunis for example
+
+        // Add OpenStreetMap tiles (free)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // On map click, add a marker
+        map.on('click', function (e) {
+            const { lat, lng } = e.latlng;
+
+            // If marker already exists, remove it
+            if (marker) {
+                map.removeLayer(marker);
             }
-        }
-        tr[i].style.display = found ? "" : "none";
+
+            // Create new marker
+            marker = L.marker([lat, lng]).addTo(map);
+
+            // Fill latitude and longitude inputs
+            document.getElementById('latitude').value = lat.toFixed(6);
+            document.getElementById('longitude').value = lng.toFixed(6);
+        });
     }
-}
 
-function sortRentals(userId) {
-    var select = document.querySelector('#rentals-' + userId + ' .rental-sort');
-    var table = document.getElementById('rental-table-' + userId).getElementsByTagName('tbody')[0];
-    var rows = Array.from(table.getElementsByTagName('tr'));
-    var direction = select.value.includes('asc') ? 1 : -1;
-
-    rows.sort(function(a, b) {
-        var timeA = a.cells[5].innerText;
-        var timeB = b.cells[5].innerText;
-        return (timeA > timeB ? 1 : -1) * direction;
-    });
-
-    rows.forEach(function(row) {
-        table.appendChild(row);
-    });
-}
+    window.onload = initMap;
 </script>
+<script>
+    document.getElementById('saveCoordinates').addEventListener('click', function() {
+        const stationId = document.getElementById('stationSelect').value;
+        const latitude = document.getElementById('latitude').value;
+        const longitude = document.getElementById('longitude').value;
+
+        if (!stationId || !latitude || !longitude) {
+            alert('Please select a station and place a marker on the map.');
+            return;
+        }
+
+        // Send the data to PHP using Fetch API (AJAX)
+        fetch('save_coordinates.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `stationId=${stationId}&latitude=${latitude}&longitude=${longitude}`
+        })
+        .then(response => response.text())
+        .then(data => {
+            alert(data); // Success message from server
+            // Optionally, clear fields or refresh page
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+<script>
+    document.getElementById('showStationsBtn').addEventListener('click', function() {
+    fetch('get_stations.php')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(station => {
+                if (station.latitude && station.longitude) {
+                    L.marker([station.latitude, station.longitude])
+                        .addTo(map)
+                        .bindPopup(`<b>${station.name}</b>`);
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching stations:', error));
+});
+
+</script>
+
 
 	</body>
-    <!-- Modal -->
-
-    
-
-
-	
-
-
-
-
-
-
-
 </html>
-
-
-

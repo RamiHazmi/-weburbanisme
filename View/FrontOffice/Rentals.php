@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // 🔧 Remettre le vélo en disponible
                 $updateBike = $pdo->prepare("UPDATE Bike SET status = 'Inactive' WHERE id_bike = :bike_id");
                 $updateBike->execute(['bike_id' => $bike_id]);
+                
             }
     
             // 🗑️ Supprimer la location
@@ -54,6 +55,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $feedback = $_POST['feedback'] ?? null;
         $end_time = date('Y-m-d H:i:s');
         $start_station_name = $_POST['start_station'];
+        $distance = $_POST['distance']; // Fetch the distance from the form or POST data
+
     
         // 🔍 Récupérer la location
         $stmt = $pdo->prepare("SELECT * FROM BikeRental WHERE id_rental = :rental_id");
@@ -94,8 +97,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $increaseEnd->execute(['id' => $end_station_id]);
     
             // 🚲 Mettre à jour le vélo (statut + station actuelle)
-            $updateBike = $pdo->prepare("UPDATE Bike SET status = 'Inactive', station_id = :station_id WHERE id_bike = :bike_id");
+            $updateBike = $pdo->prepare("UPDATE Bike SET total_kilometers =  total_kilometers + :distance , status = 'Inactive', station_id = :station_id WHERE id_bike = :bike_id");
             $updateBike->execute([
+                'distance' => $distance,
                 'station_id' => $end_station_id,
                 'bike_id' => $bike_id
             ]);
@@ -121,71 +125,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ':rental_id' => $rentalId
     ]);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-       /* $rental_id = $_POST['rental_id'];
-        $new_end_station = $_POST['new_end_station'];
-    
-        // Mise à jour de la station de retour dans la location
-        $updateRental = $pdo->prepare("UPDATE BikeRental SET end_station = :new_end_station WHERE id_rental = :rental_id");
-        $updateResult = $updateRental->execute([
-            'new_end_station' => $new_end_station,
-            'rental_id' => $rental_id
-        ]);
-    
-        if ($updateResult) {
-            echo "La station de retour a été mise à jour avec succès dans la base de données.<br>";
-        } else {
-            echo "Erreur lors de la mise à jour de la station de retour dans la base de données.<br>";
-        }
-    
-        // Décrémenter l'ancienne station de retour (si elle est différente de la nouvelle)
-        $stmt = $pdo->prepare("SELECT end_station FROM BikeRental WHERE id_rental = :rental_id");
-        $stmt->execute(['rental_id' => $rental_id]);
-        $rental = $stmt->fetch();
-    
-        if ($rental && $rental['end_station'] != $new_end_station) {
-            $old_station_id = $rental['end_station'];
-            
-            // Décrémenter l'ancienne station
-            $decreaseOldStation = $pdo->prepare("UPDATE BikeStation SET total_bikes = total_bikes - 1, available_bikes = available_bikes - 1 WHERE id_station = :old_station_id");
-            if ($decreaseOldStation->execute(['old_station_id' => $old_station_id])) {
-                echo "Ancienne station décrémentée.<br>";
-            } else {
-                echo "Erreur lors de la décrémentation de l'ancienne station.<br>";
-            }
-    
-            // Incrémenter la nouvelle station
-            $increaseNewStation = $pdo->prepare("UPDATE BikeStation SET total_bikes = total_bikes + 1, available_bikes = available_bikes + 1 WHERE id_station = :new_end_station");
-            if ($increaseNewStation->execute(['new_end_station' => $new_end_station])) {
-                echo "Nouvelle station incrémentée.<br>";
-            } else {
-                echo "Erreur lors de l'incrémentation de la nouvelle station.<br>";
-            }
-        }
-    
-        // Rediriger après la modification
-        header('Location: Rentals.php');
-        exit;*/ 
+       
     }
-    
-    
-    
-    
-    
     
 
     
@@ -413,87 +354,104 @@ $rentals = $stmt->fetchAll();
 
     <h2 style="text-align:center;">🚲 Mes locations</h2>
 
-    <table>
-    <thead>
-        <tr>
-            <th>Vélo</th>
-            <th>Date début</th>
-            <th>Date fin</th>
-            <th>Station Début</th>
-            <th>Station Retour</th>
-            <th>Feedback</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach ($rentals as $rental): ?>
-            <tr>
-                <td><?= htmlspecialchars($rental['id_bike']) ?></td>
-                <td><?= htmlspecialchars($rental['start_time']) ?></td>
-                <td><?= $rental['end_time'] ?? 'En cours...' ?></td>
-                <td><?= htmlspecialchars($rental['start_station']) ?></td>
-                <td><?= htmlspecialchars($rental['end_station_name']) ?></td>
-                <td><?= htmlspecialchars($rental['feedback'] ?? '-') ?></td>
-                <td>
-  <div class="dropdown">
-    <button class="btn action-menu">⚙️ Actions</button>
-    <div class="dropdown-content">
-      <?php if (!$rental['end_time']): ?>
-        <!-- ✏️ Modifier la station de retour -->
-        <button type="button" class="dropdown-item show-edit-form-btn" data-rental-id="<?= $rental['id_rental'] ?>">✏️ Modifier la destination</button>
+<!-- Search and Sort Controls -->
+<div class="w-100 d-flex justify-content-center mb-4">
+  <div class="d-flex align-items-center">
+    <label for="rental-search" class="me-2 mb-0 small">Search Bike:</label>
+    <input type="text" id="rental-search" class="form-control form-control-sm me-3" placeholder="Search by Bike ID" onkeyup="filterRentals()" style="width: 200px;">
 
-        <!-- ✔️ Terminer (affiche le formulaire de feedback) -->
-        <button type="button" class="dropdown-item show-feedback-btn" data-rental-id="<?= $rental['id_rental'] ?>">✔️ Terminer</button>
-      <?php endif; ?>
-
-      <!-- 🗑️ Supprimer -->
-      <form method="POST">
-        <input type="hidden" name="rental_id" value="<?= $rental['id_rental'] ?>">
-        <button type="submit" name="delete_rental" class="dropdown-item">🗑️ Supprimer</button>
-      </form>
-    </div>
-  </div>
-
-  <!-- 🔒 Formulaire de feedback caché -->
-  <?php if (!$rental['end_time']): ?>
-    <div class="feedback-popup" id="feedback-form-<?= $rental['id_rental'] ?>" style="display: none;">
-      <form method="POST" class="feedback-form">
-        <input type="hidden" name="rental_id" value="<?= $rental['id_rental'] ?>">
-        <input type="hidden" name="start_station" value="<?= htmlspecialchars($rental['start_station']) ?>">
-        <textarea name="feedback" placeholder="Ajoutez un retour..."></textarea>
-        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 5px;">
-          <button type="submit" name="checkout_rental" class="btn checkout-btn">✔️ Terminer</button>
-          <button type="button" class="btn cancel-btn" data-rental-id="<?= $rental['id_rental'] ?>">❌ Annuler</button>
-        </div>
-      </form>
-    </div>
-  <?php endif; ?>
-<!-- Formulaire de modification de station de retour -->
-<div class="edit-form-popup" id="edit-form-<?= $rental['id_rental'] ?>" style="display: none;">
-  <form method="POST">
-    <input type="hidden" name="rental_id" value="<?= $rental['id_rental'] ?>">
-    <label for="new_end_station">Nouvelle station de retour :</label>
-    <select name="new_end_station" required>
-      <?php
-        $stations = $pdo->query("SELECT id_station, name FROM BikeStation")->fetchAll();
-        foreach ($stations as $station) {
-          echo "<option value='{$station['id_station']}'>{$station['name']}</option>";
-        }
-      ?>
+    <label for="sort-rentals" class="me-2 mb-0 small">Sort by:</label>
+    <select id="sort-rentals" class="form-select form-select-sm" onchange="sortRentals()" style="width: 180px;">
+      <option value="none">No Sorting</option>
+      <option value="recent">Recent Ended First</option>
+      <option value="ongoing">Still Ongoing First</option>
     </select>
-    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
-      <button type="submit" name="update_end_station" class="btn">✅ Confirmer</button>
-      <button type="button" class="btn cancel-edit-btn" data-rental-id="<?= $rental['id_rental'] ?>">❌ Annuler</button>
-    </div>
-  </form>
+  </div>
 </div>
 
-</td>
+<table>
+  <thead>
+    <tr>
+      <th>Vélo</th>
+      <th>Date début</th>
+      <th>Date fin</th>
+      <th>Station Début</th>
+      <th>Station Retour</th>
+      <th>Feedback</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody id="rental-container">
+    <?php foreach ($rentals as $rental): ?>
+      <tr class="rental-row" data-bike-id="<?= strtolower($rental['id_bike']) ?>" data-end-time="<?= $rental['end_time'] ? strtotime($rental['end_time']) : 0 ?>">
+        <td><?= htmlspecialchars($rental['id_bike']) ?></td>
+        <td><?= htmlspecialchars($rental['start_time']) ?></td>
+        <td><?= $rental['end_time'] ?? 'En cours...' ?></td>
+        <td><?= htmlspecialchars($rental['start_station']) ?></td>
+        <td><?= htmlspecialchars($rental['end_station_name']) ?></td>
+        <td><?= htmlspecialchars($rental['feedback'] ?? '-') ?></td>
+        <td>
+          <!-- Actions dropdown and forms exactly as you already have -->
+          <div class="dropdown">
+            <button class="btn action-menu">⚙️ Actions</button>
+            <div class="dropdown-content">
+              <?php if (!$rental['end_time']): ?>
+                <button type="button" class="dropdown-item show-edit-form-btn" data-rental-id="<?= $rental['id_rental'] ?>">✏️ Modifier la destination</button>
+                <button type="button" 
+        class="dropdown-item show-track-map-btn" 
+        data-start-station="<?= htmlspecialchars($rental['start_station']) ?>" 
+        data-end-station="<?= htmlspecialchars($rental['end_station_name']) ?>">
+  🗺️ Suivre le trajet
+</button>
 
-            </tr>
-        <?php endforeach; ?>
-    </tbody>
+                <button type="button" class="dropdown-item show-feedback-btn" data-rental-id="<?= $rental['id_rental'] ?>">✔️ Terminer</button>
+              <?php endif; ?>
+              <form method="POST">
+                <input type="hidden" name="rental_id" value="<?= $rental['id_rental'] ?>">
+                <button type="submit" name="delete_rental" class="dropdown-item">🗑️ Supprimer</button>
+              </form>
+            </div>
+          </div>
+
+          <?php if (!$rental['end_time']): ?>
+            <div class="feedback-popup" id="feedback-form-<?= $rental['id_rental'] ?>" style="display: none;">
+              <form method="POST" class="feedback-form">
+                <input type="hidden" name="rental_id" value="<?= $rental['id_rental'] ?>">
+                <input type="hidden" name="start_station" value="<?= htmlspecialchars($rental['start_station']) ?>">
+                <textarea name="feedback" placeholder="Ajoutez un retour..."></textarea>
+                <input type="hidden" name="distance" class="distance-input" value="">
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 5px;">
+                  <button type="submit" name="checkout_rental" class="btn checkout-btn">✔️ Terminer</button>
+                  <button type="button" class="btn cancel-btn" data-rental-id="<?= $rental['id_rental'] ?>">❌ Annuler</button>
+                </div>
+              </form>
+            </div>
+          <?php endif; ?>
+
+          <div class="edit-form-popup" id="edit-form-<?= $rental['id_rental'] ?>" style="display: none;">
+            <form method="POST">
+              <input type="hidden" name="rental_id" value="<?= $rental['id_rental'] ?>">
+              <label for="new_end_station">Nouvelle station de retour :</label>
+              <select name="new_end_station" required>
+                <?php
+                  $stations = $pdo->query("SELECT id_station, name FROM BikeStation")->fetchAll();
+                  foreach ($stations as $station) {
+                    echo "<option value='{$station['id_station']}'>{$station['name']}</option>";
+                  }
+                ?>
+              </select>
+              <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+                <button type="submit" name="update_end_station" class="btn">✅ Confirmer</button>
+                <button type="button" class="btn cancel-edit-btn" data-rental-id="<?= $rental['id_rental'] ?>">❌ Annuler</button>
+              </div>
+            </form>
+          </div>
+        </td>
+      </tr>
+    <?php endforeach; ?>
+  </tbody>
 </table>
+
 
 
     <!-- Quote End -->
@@ -570,13 +528,32 @@ $rentals = $stmt->fetchAll();
     <script src="assets/lib/waypoints/waypoints.min.js"></script>
     <script src="assets/lib/counterup/counterup.min.js"></script>
     <script src="assets/lib/owlcarousel/owl.carousel.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Leaflet Routing Machine CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+
+<!-- Leaflet Routing Machine JS -->
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+
 
     <!-- Template Javascript -->
     <script src="assets/js/main.js"></script>
 
 
 
-  
+    <!-- MAP MODAL -->
+<!-- Modal for displaying the map -->
+<div id="track-map-modal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.6); z-index:1000; justify-content:center; align-items:center;">
+  <div style="background:white; padding:20px; border-radius:8px; width:90%; height:90%; max-width:1000px; position:relative; display: flex; flex-direction: column;">
+    <h4 style="text-align:center; margin-bottom: 10px;">🗺️ Track Route</h4>
+    <div id="track-map" style="flex: 1 1 auto; width: 100%;"></div>
+    <div id="route-info" style="margin-top:10px; text-align:center; font-size: 18px; font-weight: bold;"></div>
+    <button id="close-map-btn" class="btn btn-danger" style="position:absolute; top:10px; right:10px;">✖️</button>
+  </div>
+</div>
+
 
 </body>
 <script>
@@ -657,7 +634,273 @@ document.querySelectorAll('.cancel-edit-btn').forEach(button => {
 
 </script>
 
+<script> 
+  // Array of important locations you want to track
+const weatherLocations = [
+  { name: 'Tunis', lat: 36.8065, lng: 10.1815 },
+  { name: 'Sousse', lat: 35.8256, lng: 10.6084 },
+  { name: 'Sfax', lat: 34.7406, lng: 10.7603 },
+  { name: 'Gabes', lat: 33.8815, lng: 10.0982 },
+  { name: 'Bizerte', lat: 37.2744, lng: 9.8739 },
+  { name: 'Ariana', lat: 36.8664, lng: 10.1415 },
+  { name: 'Manouba', lat: 36.7833, lng: 9.9667 },
+  { name: 'Ben Arous', lat: 36.7373, lng: 10.1855 },
+  { name: 'Kairouan', lat: 35.6752, lng: 9.8760 },
+  { name: 'Kasserine', lat: 35.1667, lng: 8.8333 },
+  { name: 'Sidi Bouzid', lat: 35.0333, lng: 9.4667 },
+  { name: 'Siliana', lat: 36.0667, lng: 9.3833 },
+  { name: 'Tozeur', lat: 33.9180, lng: 8.1267 },
+  { name: 'Gafsa', lat: 34.4250, lng: 8.7760 },
+  { name: 'Tataouine', lat: 32.9333, lng: 10.4667 },
+  { name: 'Medenine', lat: 33.3717, lng: 10.5030 },
+  { name: 'Zaghouan', lat: 36.3992, lng: 10.1481 },
+  { name: 'Beja', lat: 36.7333, lng: 9.1833 },
+  { name: 'Nabeul', lat: 36.4565, lng: 10.7341 },
+  { name: 'Monastir', lat: 35.7769, lng: 10.8250 },
+  { name: 'Mahdia', lat: 35.5101, lng: 11.0626 },
+  { name: 'Jendouba', lat: 36.5000, lng: 8.7833 },
+  { name: 'Le Kef', lat: 36.1833, lng: 8.7125 },
+  { name: 'El Kef', lat: 36.1833, lng: 8.7125 },
+  { name: 'Tunis', lat: 36.8065, lng: 10.1815 }
+];
 
+
+// Function to fetch and display weather for all locations
+function displayWeatherOnMap() {
+  weatherLocations.forEach(location => {
+    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lng}&units=metric&appid=8f3194baf68b70b1535f1d0818f3d3bf`)
+      .then(response => response.json())
+      .then(weatherData => {
+        const weather = weatherData.weather[0].main; // Example: Clear, Rain, Clouds
+        const windSpeed = weatherData.wind.speed; // m/s
+
+        console.log(`${location.name} weather: ${weather}`); // Log weather condition
+
+        let weatherEmoji = '🌤️'; // Default to "partly cloudy"
+
+        // Determine emoji based on weather condition
+        if (weather.includes('Clear')) {
+          weatherEmoji = '☀️'; // Sunny
+        } else if (weather.includes('Clouds')) {
+          weatherEmoji = '☁️'; // Cloudy
+        } else if (weather.includes('Rain')) {
+          weatherEmoji = '🌧️'; // Rainy
+        } else if (weather.includes('Snow')) {
+          weatherEmoji = '❄️'; // Snowy
+        }
+
+        const weatherMarker = L.marker([location.lat, location.lng], {
+          icon: L.divIcon({
+            className: 'weather-icon',
+            html: `<span style="font-size: 24px;">${weatherEmoji}</span>`, // Emoji in marker
+            iconSize: [30, 30] // Size of the icon
+          })
+        }).addTo(trackMap);
+
+        // Optionally, add a popup with weather info
+        weatherMarker.bindPopup(`
+          ${location.name} <br>
+          🌬️ Wind Speed: ${windSpeed} m/s
+        `);
+      })
+      .catch(error => {
+        console.error(`Erreur météo pour ${location.name}:`, error);
+      });
+  });
+}
+
+// ➡️ Call this function after map initialization
+
+</script>
+
+
+<script>
+    function filterRentals() {
+  var input = document.getElementById('rental-search').value.toLowerCase();
+  var rows = document.querySelectorAll('.rental-row');
+
+  rows.forEach(function(row) {
+    var bikeId = row.getAttribute('data-bike-id');
+    if (bikeId.includes(input)) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
+}
+
+function sortRentals() {
+  var sortType = document.getElementById('sort-rentals').value;
+  var container = document.getElementById('rental-container');
+  var rows = Array.from(document.querySelectorAll('.rental-row'));
+
+  rows.sort(function(a, b) {
+    var endA = parseInt(a.getAttribute('data-end-time'));
+    var endB = parseInt(b.getAttribute('data-end-time'));
+
+    if (sortType === 'recent') {
+      // Rentals that ended recently first
+      return endB - endA;
+    } else if (sortType === 'ongoing') {
+      // Rentals still ongoing first (those with end_time = 0)
+      if (endA === 0 && endB !== 0) return -1;
+      if (endB === 0 && endA !== 0) return 1;
+      return 0;
+    } else {
+      return 0; // No sorting
+    }
+  });
+
+  rows.forEach(function(row) {
+    container.appendChild(row);
+  });
+}
+
+let trackMap;
+let startMarker, endMarker;
+let routingControl;
+
+// When "Track Route" button is clicked
+document.querySelectorAll('.show-track-map-btn').forEach(button => {
+  button.addEventListener('click', function () {
+    const startStation = this.getAttribute('data-start-station');
+    const endStation = this.getAttribute('data-end-station');
+
+    document.getElementById('track-map-modal').style.display = 'flex';
+
+    setTimeout(() => {
+      if (!trackMap) {
+        trackMap = L.map('track-map').setView([36.8065, 10.1815], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '© OpenStreetMap contributors'
+        }).addTo(trackMap);
+        displayWeatherOnMap();
+      } else {
+        trackMap.invalidateSize();
+      }
+
+      fetch(`get_stations.php?start=${encodeURIComponent(startStation)}&end=${encodeURIComponent(endStation)}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            if (startMarker) trackMap.removeLayer(startMarker);
+            if (endMarker) trackMap.removeLayer(endMarker);
+            if (routingControl) trackMap.removeControl(routingControl);
+
+            startMarker = L.marker([data.start.lat, data.start.lng])
+              .addTo(trackMap)
+              .bindPopup(`🚏 Départ : ${startStation}`)
+              .openPopup();
+
+            endMarker = L.marker([data.end.lat, data.end.lng])
+              .addTo(trackMap)
+              .bindPopup(`🏁 Arrivée : ${endStation}`);
+
+            routingControl = L.Routing.control({
+              waypoints: [
+                L.latLng(data.start.lat, data.start.lng),
+                L.latLng(data.end.lat, data.end.lng)
+              ],
+              routeWhileDragging: false,
+              show: false,
+              addWaypoints: false,
+              draggableWaypoints: false,
+              fitSelectedRoutes: true,
+              createMarker: () => null
+            }).addTo(trackMap);
+
+            routingControl.on('routesfound', function (e) {
+              const route = e.routes[0];
+              const distanceInMeters = route.summary.totalDistance;
+              const timeInSeconds = route.summary.totalTime;
+
+              const distanceInKm = (distanceInMeters / 1000).toFixed(2);
+              const distance = (distanceInMeters / 1000).toFixed(2); // calculate in km
+              document.querySelector('.distance-input').value = distance;
+
+
+
+              const timeInMinutes = Math.round(timeInSeconds / 60);
+
+              // Remove the default blue line
+              trackMap.eachLayer(function (layer) {
+                if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+                  trackMap.removeLayer(layer);
+                }
+              });
+
+              // Draw custom colored segments
+              const coordinates = route.coordinates;
+              for (let i = 0; i < coordinates.length - 1; i++) {
+                const pointA = coordinates[i];
+                const pointB = coordinates[i + 1];
+
+                // Simulate traffic condition (you can replace this later with real traffic data)
+                const randomTraffic = Math.random();
+                let color = 'green'; // Default = low traffic
+                if (randomTraffic < 0.6) {
+                  color = 'green'; // 60% clear
+                } else if (randomTraffic < 0.85) {
+                  color = 'orange'; // 25% medium traffic
+                } else {
+                  color = 'red'; // 15% heavy traffic
+                }
+
+                L.polyline([ [pointA.lat, pointA.lng], [pointB.lat, pointB.lng] ], {
+                  color: color,
+                  weight: 6,
+                  opacity: 0.8
+                }).addTo(trackMap);
+              }
+
+              // Fetch weather based on start location
+              fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${data.start.lat}&lon=${data.start.lng}&units=metric&appid=8f3194baf68b70b1535f1d0818f3d3bf`)
+                .then(response => response.json())
+                .then(weatherData => {
+                  const windSpeed = weatherData.wind.speed;
+                  let adjustedTime = timeInMinutes;
+                  if (windSpeed > 5) {
+                    adjustedTime = Math.round(timeInMinutes * 1.1);
+                  }
+
+                  document.getElementById('route-info').innerHTML = `
+                    🚴 Distance : ${distanceInKm} km <br>
+                    ⏱️ Temps estimé : ${adjustedTime} minutes <br>
+                    🌬️ Vent : ${windSpeed} m/s
+                  `;
+                })
+                .catch(error => {
+                  console.error('Erreur météo :', error);
+                  document.getElementById('route-info').innerHTML = `
+                    🚴 Distance : ${distanceInKm} km <br>
+                    ⏱️ Temps estimé : ${timeInMinutes} minutes
+                  `;
+                });
+            });
+
+            const group = new L.featureGroup([startMarker, endMarker]);
+            trackMap.fitBounds(group.getBounds().pad(0.2));
+
+          } else {
+            alert('Erreur : Impossible de trouver les stations.');
+          }
+        })
+        .catch(error => {
+          console.error('Erreur de récupération des stations :', error);
+          alert('Erreur de communication avec le serveur.');
+        });
+    }, 200);
+  });
+});
+
+// Close the map modal
+document.getElementById('close-map-btn').addEventListener('click', function () {
+  document.getElementById('track-map-modal').style.display = 'none';
+});
+
+
+
+</script>
 
 
 

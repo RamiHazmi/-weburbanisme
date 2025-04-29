@@ -137,9 +137,25 @@ try {
 
     <!-- Stations Start -->
    
-    <div class="container d-flex flex-wrap justify-content-center mt-5">
+<!-- Search and Sort Controls -->
+<div class="w-100 d-flex justify-content-center mb-4">
+    <div class="d-flex align-items-center">
+        <label for="bike-search" class="me-2 mb-0 small">Search Bike:</label>
+        <input type="text" id="bike-search" class="form-control form-control-sm me-3" placeholder="Search by ID" onkeyup="filterBikes()" style="width: 200px;">
+        
+        <label for="sort-status" class="me-2 mb-0 small">Sort by Status:</label>
+        <select id="sort-status" class="form-select form-select-sm" onchange="sortBikes()" style="width: 150px;">
+            <option value="all">All</option>
+            <option value="active">Active First</option>
+            <option value="inactive">Inactive First</option>
+        </select>
+    </div>
+</div>
+
+<!-- Bike Cards -->
+<div class="container d-flex flex-wrap justify-content-center mt-3" id="bike-container">
     <?php foreach ($bikes as $bike): ?>
-        <div class="flip-card">
+        <div class="flip-card bike-card" data-bike-id="<?= strtolower($bike['id_bike']) ?>" data-status="<?= strtolower($bike['status']) ?>">
             <div class="flip-card-inner">
                 <div class="flip-card-front"></div>
                 <div class="flip-card-back">
@@ -150,22 +166,17 @@ try {
                     </span>
 
                     <?php if ($bike['status'] === 'Inactive'): ?>
-                        <!-- Rent button if the bike is inactive -->
                         <a href="#" 
                             class="btn-details rent-btn" 
                             data-bike-id="<?= $bike['id_bike'] ?>" 
                             data-station-id="<?= $bike['station_id'] ?>" 
                             data-user-id="1">
                             Rent
-                            </a>
-
+                        </a>
                     <?php else: ?>
-                        <p>
-
-                        </p>
+                        <p></p>
                         <span class="error-message" style="color: red; font-weight: bold;">This bike is already rented.</span>
                     <?php endif; ?>
-
                 </div>
             </div>
         </div>
@@ -347,7 +358,10 @@ try {
     animation: pulse 2s infinite;
     box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
 }
-
+.status-rent {
+    background-color: #e53935; /* Red for active */
+    color: white;
+}
 .status-active {
     background-color: #e53935; /* Red for active */
     color: white;
@@ -414,8 +428,8 @@ try {
   width: 100vw;
   background-color: rgba(0,0,0,0.4);
   display: flex;
-  align-items: center;      /* Centrage vertical */
-  justify-content: center;  /* Centrage horizontal */
+  align-items: center;   
+  justify-content: center;  
 }
 
 .modal-content {
@@ -596,6 +610,45 @@ select {
   }
 </script>
 
+<script>
+function filterBikes() {
+    var input = document.getElementById('bike-search').value.toLowerCase();
+    var cards = document.querySelectorAll('.bike-card');
+    
+    cards.forEach(function(card) {
+        var bikeId = card.getAttribute('data-bike-id');
+        if (bikeId.includes(input)) {
+            card.style.display = '';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function sortBikes() {
+    var sortType = document.getElementById('sort-status').value;
+    var container = document.getElementById('bike-container');
+    var cards = Array.from(document.querySelectorAll('.bike-card'));
+
+    cards.sort(function(a, b) {
+        var statusA = a.getAttribute('data-status');
+        var statusB = b.getAttribute('data-status');
+
+        if (sortType === 'active') {
+            return (statusA === 'active' ? -1 : 1) - (statusB === 'active' ? -1 : 1);
+        } else if (sortType === 'inactive') {
+            return (statusA === 'inactive' ? -1 : 1) - (statusB === 'inactive' ? -1 : 1);
+        } else {
+            return 0; // No sorting
+        }
+    });
+
+    // Re-append cards in new order
+    cards.forEach(function(card) {
+        container.appendChild(card);
+    });
+}
+</script>
 
 
 
