@@ -220,9 +220,7 @@ public function updateReservation($reservation_id, $statut) {
 
                 $smsMessage = "Bonjour " . $username . ",\nVotre réservation a été acceptée !\nDépart: " . $depart . "\nDestination: " . $destination . "\nDate et Heure: " . $dateHeure;
 
-                $account_sid = 'ACe3c62fb07475c24351ee240e25e6b065';
-                $auth_token = 'd6aca1b2350063c8c9f509f05fbfb948';
-                $twilio_number = '+19787339329';
+               
 
                 $client = new Client($account_sid, $auth_token);
 
