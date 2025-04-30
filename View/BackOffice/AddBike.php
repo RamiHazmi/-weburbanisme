@@ -3,10 +3,6 @@
 require_once  '/xampp/htdocs/urbanisme/database.php';
 
 
-// Affichage de la variable $_POST pour vérifier les données envoyées
-echo '<pre>';
-print_r($_POST);
-echo '</pre>';
 
 // Vérifier si le formulaire a été soumis
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -62,33 +58,46 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
                             // Redirection après succès
-                            header('Location: Bikes.php');
-                            exit(); // Stopper l'exécution après la redirection
+                            echo "<script>
+    alert('Vélo ajouté avec succès !');
+    window.location.href = 'Bikes.php';
+</script>";
+exit(); // Facultatif ici, mais utile pour stopper l'exécution PHP
+
                         } catch (Exception $e) {
                             // Si une erreur survient lors de l'insertion dans la base
                             $error_message = "Erreur lors de l'insertion dans la base de données : " . $e->getMessage();
+                           
                         }
                     }
                 } else {
                     // Si le statut ou le kilométrage sont vides
                     $error_message = "Veuillez remplir tous les champs obligatoires.";
+                    
                 }
             } else {
                 // Si la station n'existe pas dans la base de données
                 $error_message = "L'ID de station sélectionné n'existe pas.";
+              
             }
         } else {
             // Si l'ID de station est vide
             $error_message = "Veuillez sélectionner une station.";
+          
         }
 
         // Affichage des erreurs, s'il y en a
         if ($error_message != "") {
-            echo "<div class='error-message' style='color: red; padding: 10px; border: 1px solid red; margin: 10px 0;'>$error_message</div>";
+            echo "<script>
+                alert(" . json_encode($error_message) . ");
+                window.location.href = 'Bikes.php';
+            </script>";
         }
+        
     } else {
         // Si les champs nécessaires ne sont pas dans le POST
         echo "Le formulaire n'a pas été soumis correctement.";
+       
     }
 }
 ?>

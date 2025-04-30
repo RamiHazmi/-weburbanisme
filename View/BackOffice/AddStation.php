@@ -36,8 +36,11 @@ if (isset($_POST['name'], $_POST['location'], $_POST['status'])) {
                 ]);
 
                 // Confirmation de l'ajout de la station
-                header('Location: Bike.php');  // Adjust the path accordingly
-                exit();
+                echo "<script>
+                alert('Station ajouté avec succès !');
+                window.location.href = 'Bike.php';
+            </script>";
+            exit();
                 
             } catch (Exception $e) {
                 $error_message = "Erreur lors de l'insertion dans la base de données : " . $e->getMessage();
