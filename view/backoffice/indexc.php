@@ -749,81 +749,67 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 					<!-- start: page -->
 					<div class="row">
     <div class="col-md-6">
-	<form class="form-horizontal" action="../../controller/controllercovoiturage.php" method="POST" enctype="multipart/form-data" id="covoiturageForm">
+        <form class="form-horizontal" action="../../controller/controllercovoiturage.php" method="POST" enctype="multipart/form-data" id="covoiturageForm">
 
-	<section class="panel">
+            <section class="panel">
                 <header class="panel-heading">
-                   
                     <h2 class="panel-title">Covoiturage Form</h2>
                     <p class="panel-subtitle">Remplissez les informations sur votre trajet de covoiturage.</p>
                 </header>
-				<input type="hidden" name="action" value="addCovoiturage"> <!-- This identifies the add action -->
+                <input type="hidden" name="action" value="addCovoiturage">
 
                 <div class="panel-body">
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Conducteur ID <span class="icon"><i class="fa fa-id-card" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="number" name="conducteur_id" class="form-control" placeholder="ID du conducteur" id="conducteur_id" />
-                            <span class="error" id="conducteur_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Lieu de départ <span class="icon"><i class="fa fa-map-marker-alt " style="margin-left: 5px;"></i></span></label>
+                        <label class="col-sm-3 control-label">Lieu de départ <span class="icon"><i class="fa fa-map-marker-alt" style="margin-left: 5px;"></i></span></label>
                         <div class="col-sm-9">
                             <input type="text" name="depart" class="form-control" placeholder="Ex : Tunis" id="depart" />
                             <span class="error" id="depart_error"></span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Lieu d'arrivée <span class="icon"><i class="fa fa-map-marker-alt " style="margin-left: 5px;"></i></span></label>
+                        <label class="col-sm-3 control-label">Lieu d'arrivée <span class="icon"><i class="fa fa-map-marker-alt" style="margin-left: 5px;"></i></span></label>
                         <div class="col-sm-9">
                             <input type="text" name="destination" class="form-control" placeholder="Ex : Esprit" id="destination" />
                             <span class="error" id="destination_error"></span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Date et Heure du départ <span class="icon"><i class="fa fa-calendar " style="margin-left: 5px;"></i></span></label>
+                        <label class="col-sm-3 control-label">Date et Heure du départ <span class="icon"><i class="fa fa-calendar" style="margin-left: 5px;"></i></span></label>
                         <div class="col-sm-9">
                             <input type="datetime-local" name="date_heure" class="form-control" id="date_heure" />
                             <span class="error" id="date_heure_error"></span>
                         </div>
                     </div>
-					    <!-- Tarif -->
-						<div class="form-group">
+                    <div class="form-group">
                         <label class="col-sm-3 control-label">Tarif<i class="fas fa-money-bill-alt" style="margin-left: 5px;"></i></label>
                         <div class="col-sm-9">
-						<input type="number" name="tarif" class="form-control" placeholder="Ex : 15.50" id="tarif" step="0.01" />
-        <span class="error" id="tarif_error"></span>
-
-						</div>
+                            <input type="number" name="tarif" class="form-control" placeholder="Ex : 15.50" id="tarif" step="0.01" />
+                            <span class="error" id="tarif_error"></span>
+                        </div>
                     </div>
-
-                    <!-- Places disponibles -->
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Places disponibles<span class="icon"><i class="fa fa-users " style="margin-left: 5px;"></i></span></label>
+                        <label class="col-sm-3 control-label">Places disponibles<span class="icon"><i class="fa fa-users" style="margin-left: 5px;"></i></span></label>
                         <div class="col-sm-9">
-						<input type="number" name="places_dispo" class="form-control" placeholder="Ex : 3" id="places_dispo" />
-        <span class="error" id="places_dispo_error"></span>
-
-						</div>
+                            <input type="number" name="places_dispo" class="form-control" placeholder="Ex : 3" id="places_dispo" />
+                            <span class="error" id="places_dispo_error"></span>
+                        </div>
                     </div>
-
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Matricule du véhicule <span class="icon"><i class="fa fa-car " style="margin-left: 5px;"></i></span></label>
+                        <label class="col-sm-3 control-label">Matricule du véhicule <span class="icon"><i class="fa fa-car" style="margin-left: 5px;"></i></span></label>
                         <div class="col-sm-9">
                             <input type="text" name="matricule_voiture" class="form-control" placeholder="Entrez la matricule du véhicule" id="matricule_voiture" />
                             <span class="error" id="matricule_voiture_error"></span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Marque du véhicule <span class="icon"><i class="fa fa-tag " style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">	
+                        <label class="col-sm-3 control-label">Marque du véhicule <span class="icon"><i class="fa fa-tag" style="margin-left: 5px;"></i></span></label>
+                        <div class="col-sm-9">
                             <input type="text" name="marque" class="form-control" placeholder="Entrez la marque du véhicule" id="marque" />
                             <span class="error" id="marque_error"></span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Couleur du véhicule <span class="icon"><i class="fa fa-palette " style="margin-left: 5px;"></i></span></label>
+                        <label class="col-sm-3 control-label">Couleur du véhicule <span class="icon"><i class="fa fa-palette" style="margin-left: 5px;"></i></span></label>
                         <div class="col-sm-9">
                             <input type="text" name="couleur" class="form-control" placeholder="Entrez la couleur du véhicule" id="couleur" />
                             <span class="error" id="couleur_error"></span>
@@ -850,6 +836,7 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
         <div id="message"></div>
     </div>
 </div>
+
 
 
 <script src="ajoutcovoiturage.js"></script>

@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("date_heure").value = this.dataset.date_heure;
             document.getElementById("tarif").value = this.dataset.tarif;
             document.getElementById("places_dispo").value = this.dataset.places_dispo;
-            document.getElementById("conducteur_id").value = this.dataset.conducteur_id;
             document.getElementById("matricule_voiture").value = this.dataset.matricule_voiture;
             document.getElementById("marque").value = this.dataset.marque;
             document.getElementById("couleur").value = this.dataset.couleur;

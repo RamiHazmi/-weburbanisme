@@ -110,11 +110,18 @@ class ReservationCovoiturage {
             $db = config::getConnexion();
             
             // SQL query to fetch the required data by joining the tables
-            $sql = "SELECT  r.id_reservationc , 
-             c.depart, c.destination, r.nbr_place, r.date_reservation
-                    FROM reservationcovoiturage r
-                    JOIN covoiturage c ON r.id_trajet = c.id_trajet
-                    WHERE r.id_utilisateur = :id_utilisateur";
+            $sql = "SELECT 
+            r.id_reservationc, 
+            c.depart, 
+            c.destination, 
+            r.nbr_place, 
+            r.date_reservation, 
+            r.statut, 
+            r.commentaire
+        FROM reservationcovoiturage r
+        JOIN covoiturage c ON r.id_trajet = c.id_trajet
+        WHERE r.id_utilisateur = :id_utilisateur;
+        ";
                     
             // Prepare and execute the query
             $stmt = $db->prepare($sql);
@@ -255,6 +262,25 @@ class ReservationCovoiturage {
             return false;
         }
     }
+    public static function getPhoneByReservationId($reservationId) {
+        $db = config::getConnexion();
+    
+        $query = "SELECT u.phone 
+                  FROM user u
+                  JOIN reservationcovoiturage r ON u.id = r.id_utilisateur
+                  WHERE r.id_reservationc = :reservationId";
+    
+        $stmt = $db->prepare($query);
+        $stmt->bindParam(':reservationId', $reservationId, PDO::PARAM_INT);
+        $stmt->execute();
+    
+        // Fetch the result
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        return $result ? $result['phone'] : null;
+    }
+    
+    
     
     
     

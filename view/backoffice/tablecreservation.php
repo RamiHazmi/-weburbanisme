@@ -814,12 +814,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </form>
                                 </td>
                                 <td>
-                                <form>
-        <input type="hidden" name="reservation_id" value="<?= htmlspecialchars($res['id_reservationc']) ?>">
-        <input type="hidden" name="statut" value="confirmée"> 
-		<button type="button" class="btn btn-success btn-sm update-btn" data-id="<?= $res['id_reservationc'] ?>">Confirmer</button>
-    </form>
-</td>
+            <form>
+                <input type="hidden" name="reservation_id" value="<?= htmlspecialchars($res['id_reservationc']) ?>">
+                <input type="hidden" name="statut" value="confirmée">
+                <?php if ($res['statut'] !== 'confirmée'): ?>
+                    <button type="button" class="btn btn-success btn-sm update-btn" data-id="<?= $res['id_reservationc'] ?>">Confirmer</button>
+                <?php else: ?>
+                    <button type="button" class="btn btn-success btn-sm update-btn" disabled>Confirmée</button>
+                <?php endif; ?>
+            </form>
+        </td>
 
                             </tr>
                         <?php endforeach; ?>

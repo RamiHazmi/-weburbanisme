@@ -27,7 +27,7 @@ class ControllerCovoiturage {
     public function addCovoiturage() {
         error_log("addCovoiturage function is called.");
         error_log('POST data: ' . print_r($_POST, true));
-
+    
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             error_log("Request method: " . $_SERVER["REQUEST_METHOD"]);
     
@@ -40,48 +40,37 @@ class ControllerCovoiturage {
             $date_heure = isset($_POST['date_heure']) ? trim($_POST['date_heure']) : null;
             $tarif = isset($_POST['tarif']) ? filter_var($_POST['tarif'], FILTER_VALIDATE_FLOAT) : null;
             $places_dispo = isset($_POST['places_dispo']) ? filter_var($_POST['places_dispo'], FILTER_VALIDATE_INT) : null;
-            $conducteur_id = isset($_POST['conducteur_id']) ? filter_var($_POST['conducteur_id'], FILTER_VALIDATE_INT) : null;
             $matricule = isset($_POST['matricule_voiture']) ? htmlspecialchars(trim($_POST['matricule_voiture'])) : null;
             $marque = isset($_POST['marque']) ? htmlspecialchars(trim($_POST['marque'])) : null;
             $couleur = isset($_POST['couleur']) ? htmlspecialchars(trim($_POST['couleur'])) : null;
     
-            error_log("POST Data: Depart: $depart, Destination: $destination, Date_heure: $date_heure, Tarif: $tarif, Places Dispo: $places_dispo, Conducteur_id: $conducteur_id, Matricule: $matricule, Marque: $marque, Couleur: $couleur");
+            error_log("POST Data: Depart: $depart, Destination: $destination, Date_heure: $date_heure, Tarif: $tarif, Places Dispo: $places_dispo, Matricule: $matricule, Marque: $marque, Couleur: $couleur");
     
             if (!$depart) $errors[] = "Le lieu de départ est obligatoire.";
             if (!$destination) $errors[] = "Le lieu de destination est obligatoire.";
             if (!$date_heure || strtotime($date_heure) < strtotime(date("Y-m-d H:i:s"))) $errors[] = "La date et l'heure du départ doivent être un moment valide et supérieur ou égal à aujourd'hui."; 
             if (!$tarif || $tarif <= 0) $errors[] = "Le tarif doit être un nombre valide et supérieur à 0.";
             if (!$places_dispo || $places_dispo <= 0) $errors[] = "Le nombre de places disponibles doit être valide.";
-if (!$matricule) {
-    $errors[] = "Le matricule du véhicule est obligatoire.";
-} else {
-    if (!preg_match('/^[a-zA-Z0-9]{2,3}Tunis\d{4}$/', $matricule)) {
-        $errors[] = "Le matricule doit être sous la forme xxTunis1234 ou xxxTunis1234.";
-    } else {
-        $stmt = $conn->prepare("SELECT COUNT(*) FROM covoiturage WHERE matricule_voiture = ?");
-        $stmt->execute([$matricule]);
-        $count = $stmt->fetchColumn();
-
-        if ($count > 0) {
-            $errors[] = "Ce matricule existe déjà. Veuillez en choisir un autre.";
-        }
-    }
-}
+    
+            if (!$matricule) {
+                $errors[] = "Le matricule du véhicule est obligatoire.";
+            } else {
+                if (!preg_match('/^[a-zA-Z0-9]{2,3}Tunis\d{4}$/', $matricule)) {
+                    $errors[] = "Le matricule doit être sous la forme xxTunis1234 ou xxxTunis1234.";
+                } else {
+                    $stmt = $conn->prepare("SELECT COUNT(*) FROM covoiturage WHERE matricule_voiture = ?");
+                    $stmt->execute([$matricule]);
+                    $count = $stmt->fetchColumn();
+    
+                    if ($count > 0) {
+                        $errors[] = "Ce matricule existe déjà. Veuillez en choisir un autre.";
+                    }
+                }
+            }
+    
             if (!$marque) $errors[] = "La marque du véhicule est obligatoire.";
             if (!$couleur) $errors[] = "La couleur du véhicule est obligatoire.";
     
-            if (!$conducteur_id) {
-                $errors[] = "L'ID du conducteur est obligatoire.";
-            } else {
-                $checkUser = $conn->prepare("SELECT COUNT(id) FROM user WHERE id = ?");
-                $checkUser->execute([$conducteur_id]);
-                $userExists = $checkUser->fetchColumn();
-                error_log("Conducteur ID Check: " . ($userExists ? "Found" : "Not Found"));
-                if ($userExists == 0) {
-                    $errors[] = "L'ID du conducteur n'existe pas.";
-                }
-            }
-
             $imageUrl = "";
             if (!empty($_FILES["image"]["name"])) {
                 $targetDir = "view/images/";
@@ -102,16 +91,16 @@ if (!$matricule) {
                     $errors[] = "Erreur lors du téléchargement de l'image.";
                 } elseif (!move_uploaded_file($_FILES["image"]["tmp_name"], $targetFilePath)) {
                     error_log("Failed to move uploaded file to: " . $targetFilePath);
-                    $errors[] = "Failed to move uploaded file.";
+                    $errors[] = "Erreur lors du déplacement du fichier téléchargé.";
                 } else {
                     $imageUrl = $targetFilePath;
                 }
             }
     
             if (empty($errors)) {
-                error_log("Final data to insert: Depart: $depart, Destination: $destination, Date_heure: $date_heure, Tarif: $tarif, Places_dispo: $places_dispo, Conducteur_id: $conducteur_id, Matricule: $matricule, Marque: $marque, Couleur: $couleur, Image URL: $imageUrl");
+                error_log("Final data to insert: Depart: $depart, Destination: $destination, Date_heure: $date_heure, Tarif: $tarif, Places_dispo: $places_dispo, Matricule: $matricule, Marque: $marque, Couleur: $couleur, Image URL: $imageUrl");
     
-                $covoiturage = new Covoiturage($depart, $destination, $date_heure, $tarif, $places_dispo, $conducteur_id, $matricule, $marque, $couleur, $imageUrl);
+                $covoiturage = new Covoiturage($depart, $destination, $date_heure, $tarif, $places_dispo, $matricule, $marque, $couleur, $imageUrl);
                 if ($covoiturage->register()) {
                     return "<p style='color:green;'>Covoiturage ajouté avec succès !</p>";
                 } else {
@@ -124,8 +113,8 @@ if (!$matricule) {
         } else {
             error_log("Request is not POST.");
         }
-    }    
-
+    }
+    
     public function listCovoiturages() {
         return Covoiturage::getAllCovoiturages();
     }
@@ -178,13 +167,12 @@ if (!$matricule) {
             $date_heure = isset($_POST['date_heure']) ? trim($_POST['date_heure']) : null;
             $tarif = isset($_POST['tarif']) ? filter_var($_POST['tarif'], FILTER_VALIDATE_FLOAT) : null;
             $places_dispo = isset($_POST['places_dispo']) ? filter_var($_POST['places_dispo'], FILTER_VALIDATE_INT) : null;
-            $conducteur_id = isset($_POST['conducteur_id']) ? filter_var($_POST['conducteur_id'], FILTER_VALIDATE_INT) : null;
             $matricule = isset($_POST['matricule_voiture']) ? htmlspecialchars(trim($_POST['matricule_voiture'])) : null;
             $marque = isset($_POST['marque']) ? htmlspecialchars(trim($_POST['marque'])) : null;
             $couleur = isset($_POST['couleur']) ? htmlspecialchars(trim($_POST['couleur'])) : null;
             $existingImage = isset($_POST['existing_image']) ? $_POST['existing_image'] : null;
     
-            error_log("POST Data: ID_trajet: $id_trajet, Depart: $depart, Destination: $destination, Date_heure: $date_heure, Tarif: $tarif, Places Dispo: $places_dispo, Conducteur_id: $conducteur_id, Matricule: $matricule, Marque: $marque, Couleur: $couleur");
+            error_log("POST Data: ID_trajet: $id_trajet, Depart: $depart, Destination: $destination, Date_heure: $date_heure, Tarif: $tarif, Places Dispo: $places_dispo, Matricule: $matricule, Marque: $marque, Couleur: $couleur");
     
             // Validate Inputs
             if (!$id_trajet) {
@@ -214,17 +202,7 @@ if (!$matricule) {
             }            if (!$marque) $errors[] = "La marque du véhicule est obligatoire.";
             if (!$couleur) $errors[] = "La couleur du véhicule est obligatoire.";
     
-            if (!$conducteur_id) {
-                $errors[] = "L'ID du conducteur est obligatoire.";
-            } else {
-                $checkUser = $conn->prepare("SELECT COUNT(id) FROM user WHERE id = ?");
-                $checkUser->execute([$conducteur_id]);
-                $userExists = $checkUser->fetchColumn();
-                error_log("Conducteur ID Check: " . ($userExists ? "Found" : "Not Found"));
-                if ($userExists == 0) {
-                    $errors[] = "L'ID du conducteur n'existe pas.";
-                }
-            }
+         
             $uploadDir = "../view/backoffice/view/images/"; // Actual directory for saving
 
             if (isset($_FILES['imageUpload']) && $_FILES['imageUpload']['error'] === UPLOAD_ERR_OK) {
@@ -248,8 +226,8 @@ if (!$matricule) {
             
                
             if (empty($errors)) {
-                $updateStmt = $conn->prepare("UPDATE covoiturage SET depart = ?, destination = ?, date_heure = ?, tarif = ?, places_dispo = ?, conducteur_id = ?, matricule_voiture = ?, marque = ?, couleur = ?, image = ? WHERE id_trajet = ?");
-                $updateResult = $updateStmt->execute([$depart, $destination, $date_heure, $tarif, $places_dispo, $conducteur_id, $matricule, $marque, $couleur, $imagePath, $id_trajet]);
+                $updateStmt = $conn->prepare("UPDATE covoiturage SET depart = ?, destination = ?, date_heure = ?, tarif = ?, places_dispo = ?, matricule_voiture = ?, marque = ?, couleur = ?, image = ? WHERE id_trajet = ?");
+                $updateResult = $updateStmt->execute([$depart, $destination, $date_heure, $tarif, $places_dispo, $matricule, $marque, $couleur, $imagePath, $id_trajet]);
                 
     
                 if ($updateResult) {

@@ -72,7 +72,7 @@ $covoiturages = $covoiturageController->listCovoituragesFrontoffice();
             <div class="nav-item dropdown">
                <a href="#" class="nav-item nav-link active" data-bs-toggle="dropdown">Services</a>
                 <div class="dropdown-menu fade-up m-0">
-                    <a href="price.html" class="dropdown-item">Covoiturage</a>
+                    <a href="covoituragefront.php" class="dropdown-item">Covoiturage</a>
                     <a href="feature.html" class="dropdown-item">Parking</a>
                     <a href="quote.html" class="dropdown-item">Transport Public</a>
                     <a href="team.html" class="dropdown-item">Recharge Electrique</a>
@@ -96,8 +96,8 @@ $covoiturages = $covoiturageController->listCovoituragesFrontoffice();
             <nav aria-label="breadcrumb animated slideInDown">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a class="text-white" href="#">Home</a></li>
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Pages</a></li>
-                    <li class="breadcrumb-item text-white active" aria-current="page">Services</li>
+                    <li class="breadcrumb-item"><a class="text-white" href="#">Services</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">Covoiturages</li>
                 </ol>
             </nav>
         </div>
@@ -169,34 +169,29 @@ $covoiturages = $covoiturageController->listCovoituragesFrontoffice();
                 <p><strong>Marque:</strong> <span id="modal-marque"><?= htmlspecialchars($covoiturage['marque']) ?></span></p>
                 <p><strong>Couleur:</strong> <span id="modal-couleur"><?= htmlspecialchars($covoiturage['couleur']) ?></span></p>
 
-                <!-- Conducteur Info -->
-                <h5>Conducteur Info:</h5>
-                <p><strong>Username:</strong> <?= htmlspecialchars($covoiturage['conducteur_username']) ?></p>
-                <p><strong>Phone:</strong> <?= htmlspecialchars($covoiturage['conducteur_phone']) ?></p>
-                <p><strong>Role:</strong> <?= htmlspecialchars($covoiturage['conducteur_role']) ?></p>
+                <!-- Reservation Info -->
                 <?php if ($covoiturage['places_dispo'] > 0): ?>
-    <button id="reserver-form" data-id="<?= $covoiturage['id_trajet'] ?>">Reserver</button>
-<?php else: ?>
-    <p style="color: red; font-weight: bold;">Complet</p>
-<?php endif; ?>
+                    <button id="reserver-form" data-id="<?= $covoiturage['id_trajet'] ?>">Reserver</button>
+                <?php else: ?>
+                    <p style="color: red; font-weight: bold;">Complet</p>
+                <?php endif; ?>
 
                 <div class="reservation-form" style="display: none; margin-top: 20px;">
-    <form>
-        <h5>Réservation</h5>
-        <label for="nbr_place">Nombre de places :</label>
-        <input type="number" id="nbr_place_<?= $covoiturage['id_trajet'] ?>" name="nbr_place" min="1"><br><br> 
+                    <form>
+                        <h5>Réservation</h5>
+                        <label for="nbr_place">Nombre de places :</label>
+                        <input type="number" id="nbr_place_<?= $covoiturage['id_trajet'] ?>" name="nbr_place" min="1"><br><br> 
 
-        <label for="commentaire">Commentaire :</label><br>
-        <textarea id="commentaire_<?= $covoiturage['id_trajet'] ?>" name="commentaire" rows="3"></textarea><br><br>
+                        <label for="commentaire">Commentaire :</label><br>
+                        <textarea id="commentaire_<?= $covoiturage['id_trajet'] ?>" name="commentaire" rows="3" placeholder="Pas Obligatoire"></textarea><br><br>
 
-        <input type="hidden" id="id_utilisateur_<?= $covoiturage['id_trajet'] ?>" value="2"> 
+                        <!-- Integration -->
+                        <input type="hidden" id="id_utilisateur_<?= $covoiturage['id_trajet'] ?>" value="2"> 
 
-        <button type="submit" class="btn btn-success">Confirmer</button>
-        <button type="button" class="btn btn-danger cancel-reservation">Annuler</button>
-    </form>
-</div>
-
-
+                        <button type="submit" class="btn btn-success">Confirmer</button>
+                        <button type="button" class="btn btn-danger cancel-reservation">Annuler</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -219,14 +214,13 @@ $covoiturages = $covoiturageController->listCovoituragesFrontoffice();
     <div class="container py-5">
         <div class="text-center mb-5">
             <h6 class="text-secondary text-uppercase"></h6>
-            <h1 class="mb-0">VOTRE RÉSERVATION</h1>
+            <h1 class="mb-0">VOTRE RÉSERVATION DE COVOITURAGE</h1>
         </div>
 
         <div class="row">
     <?php 
-    //Intergration
-    // Get the user ID from the URL parameter (default to 2 if not set)
-    $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : 2 ; // Default to 2 if not set
+    //Integration
+    $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : 2; 
     
     // Instantiate the controller
     $covoiturageControllerreservation = new ReservationController();
@@ -246,6 +240,9 @@ $covoiturages = $covoiturageController->listCovoituragesFrontoffice();
                     <p><strong>Destination :</strong> <?= htmlspecialchars($res['destination']) ?></p>
                     <p><strong>Places réservées :</strong> <?= $res['nbr_place'] ?></p>
                     <p><strong>Date réservation :</strong> <?= date('d-m-Y H:i', strtotime($res['date_reservation'])) ?></p>
+                    <?php if (isset($res['statut']) && $res['statut'] == 'confirmée') : ?>
+                        <span style="color: green;">Confirmée</span>
+<?php endif; ?>
 
                     <!-- Delete + Edit Buttons -->
                     <form method="POST" onsubmit="return confirmDelete(event);">
@@ -459,10 +456,20 @@ document.querySelectorAll('.editReservationForm').forEach(form => {
                         Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
                     </div>
                 </div>
-            </div>
+            </div>+-
         </div>
     </div>
-    <!-- Footer End -->
+    <!-- Footer End -->-
+    <div id="chatbot-button" onclick="toggleChat()">💬</div>
+
+<div class="chat-container" id="chatContainer" style="display: none;">
+    <div class="chat-header">🤖 chatbot</div>
+    <div id="chat-messages" class="chat-messages"></div>
+    <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Pose votre question..." onkeydown="handleKeyDown(event)">
+        <button onclick="sendMessage()">➤</button>-
+    </div>
+</div>
 
 
     <!-- Back to Top -->
@@ -477,6 +484,7 @@ document.querySelectorAll('.editReservationForm').forEach(form => {
     <script src="lib/waypoints/waypoints.min.js"></script>
     <script src="lib/counterup/counterup.min.js"></script>
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="chatbot.js"></script>
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>

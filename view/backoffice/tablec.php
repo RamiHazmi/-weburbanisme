@@ -788,35 +788,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     echo "<table class='covoiturage-table'>";
                     echo "<thead>
                             <tr>
-							<th>id</th>
+                                <th>id</th>
                                 <th>Depart</th>
                                 <th>Destination</th>
                                 <th>Date</th>
                                 <th>Tarif</th>
                                 <th>Places Dispo</th>
-                                <th>Conducteur ID</th>
                                 <th>Matricule Voiture</th>
                                 <th>Marque</th>
                                 <th>Couleur</th>
                                 <th>Image</th>
                                 <th>Action</th>
-								<th>       </th>
+                                <th>       </th>
                             </tr>
                         </thead>";
                     echo "<tbody>";
                     foreach ($covoiturages as $covoiturage) {
-						echo "<tr id='row-" . htmlspecialchars($covoiturage['id_trajet']) . "' data-id='" . htmlspecialchars($covoiturage['id_trajet']) . "'>";
-						echo "<td>" . htmlspecialchars($covoiturage['id_trajet']) . "</td>";
+                        echo "<tr id='row-" . htmlspecialchars($covoiturage['id_trajet']) . "' data-id='" . htmlspecialchars($covoiturage['id_trajet']) . "'>";
+                        echo "<td>" . htmlspecialchars($covoiturage['id_trajet']) . "</td>";
                         echo "<td>" . htmlspecialchars($covoiturage['depart']) . "</td>";
                         echo "<td>" . htmlspecialchars($covoiturage['destination']) . "</td>";
                         echo "<td>" . htmlspecialchars($covoiturage['date_heure']) . "</td>";
                         echo "<td>" . htmlspecialchars($covoiturage['tarif']) . "</td>";
                         echo "<td>" . htmlspecialchars($covoiturage['places_dispo']) . "</td>";
-                        echo "<td>" . htmlspecialchars($covoiturage['conducteur_id']) . "</td>";
                         echo "<td>" . htmlspecialchars($covoiturage['matricule_voiture']) . "</td>";
                         echo "<td>" . htmlspecialchars($covoiturage['marque']) . "</td>";
                         echo "<td>" . htmlspecialchars($covoiturage['couleur']) . "</td>";
-						echo "<td><img src='/urbanisme/view/backoffice/" . htmlspecialchars($covoiturage['image']) . "' alt='Covoiturage Image' width='100'></td>";
+                        echo "<td><img src='/urbanisme/view/backoffice/" . htmlspecialchars($covoiturage['image']) . "' alt='Covoiturage Image' width='100'></td>";
                         
                         echo "<td> 
                                 <button class='modifier-btn'
@@ -826,17 +824,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     data-date_heure='" . htmlspecialchars($covoiturage['date_heure']) . "'
                                     data-tarif='" . htmlspecialchars($covoiturage['tarif']) . "'
                                     data-places_dispo='" . htmlspecialchars($covoiturage['places_dispo']) . "'
-                                    data-conducteur_id='" . htmlspecialchars($covoiturage['conducteur_id']) . "'
                                     data-matricule_voiture='" . htmlspecialchars($covoiturage['matricule_voiture']) . "'
                                     data-marque='" . htmlspecialchars($covoiturage['marque']) . "'
                                     data-couleur='" . htmlspecialchars($covoiturage['couleur']) . "'
-                                    data-image='" . htmlspecialchars($covoiturage['image']) . "'>
+                                    data-image='" . htmlspecialchars($covoiturage['image']) . "'
+                                    style='background-color: #2ecc71; color: white;'>
                                     Modifier
                                 </button>
                               </td>";
 
                         echo "<td>
-                                <button class='delete-btn' data-id='" . htmlspecialchars($covoiturage['id_trajet']) . "'>Supprimer</button>
+                                <button class='delete-btn' data-id='" . htmlspecialchars($covoiturage['id_trajet']) . "' style='background-color: #e74c3c; color: white;'>Supprimer</button>
                               </td>"; 
                         echo "</tr>";
                     }
@@ -909,8 +907,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="number" id="tarif" name="tarif"><br>
         <label>Places disponibles:</label>
         <input type="number" id="places_dispo" name="places_dispo"><br>
-        <label>ID Conducteur:</label>
-        <input type="number" id="conducteur_id" name="conducteur_id"><br>
+        
         <label>Matricule Voiture:</label>
         <input type="text" id="matricule_voiture" name="matricule_voiture"><br>
         <label>Marque:</label>

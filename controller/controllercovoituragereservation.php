@@ -2,6 +2,9 @@
 // Include the necessary files
 include_once __DIR__ . '/../database.php';
 require_once __DIR__ . '/../model/modelcovoituragereservation.php';
+require_once   'C:/xampp/htdocs/Urbanisme/twilio-php/src/Twilio/autoload.php';  
+
+use Twilio\Rest\Client;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_GET['action']) && $_GET['action'] === 'ajouterReservation') {
@@ -184,16 +187,85 @@ public function afficherReservationsAvecDetails() {
 public function updateReservation($reservation_id, $statut) {
     header('Content-Type: application/json');
 
-    $success = ReservationCovoiturage::updateStatus($reservation_id, $statut); 
+    try {
+        $success = ReservationCovoiturage::updateStatus($reservation_id, $statut); 
 
-    if ($success) {
-        echo json_encode(['success' => true]);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Échec de la mise à jour.']);
+        if ($success) {
+            $db = config::getConnexion();
+            $query = "SELECT u.phone, u.username, c.depart, c.destination, c.date_heure
+                      FROM user u
+                      JOIN reservationcovoiturage r ON u.id = r.id_utilisateur
+                      JOIN covoiturage c ON c.id_trajet = r.id_trajet
+                      WHERE r.id_reservationc = :reservationId";
+
+            $stmt = $db->prepare($query);
+            $stmt->bindParam(':reservationId', $reservation_id, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($result) {
+                $userPhone = $result['phone'];
+                $username = $result['username'];
+                $depart = $result['depart'];
+                $destination = $result['destination'];
+                $dateHeure = $result['date_heure'];
+
+                if (substr($userPhone, 0, 1) !== '+') {
+                    $userPhone = "+216" . $userPhone; 
+                }
+
+                error_log("User phone number: " . $userPhone);
+                error_log("Reservation details - User: " . $username . ", Depart: " . $depart . ", Destination: " . $destination . ", Date: " . $dateHeure);
+
+                $smsMessage = "Bonjour " . $username . ",\nVotre réservation a été acceptée !\nDépart: " . $depart . "\nDestination: " . $destination . "\nDate et Heure: " . $dateHeure;
+
+                $account_sid = 'ACe3c62fb07475c24351ee240e25e6b065';
+                $auth_token = 'd6aca1b2350063c8c9f509f05fbfb948';
+                $twilio_number = '+19787339329';
+
+                $client = new Client($account_sid, $auth_token);
+
+                try {
+                    $message = $client->messages->create(
+                        $userPhone,
+                        [
+                            'from' => $twilio_number,
+                            'body' => $smsMessage
+                        ]
+                    );
+
+                    error_log("Twilio response: " . json_encode($message));
+
+                    echo json_encode([
+                        'success' => true,
+                        'userPhone' => $userPhone,
+                        'messageSid' => $message->sid  
+                    ]);
+                } catch (Exception $e) {
+                    error_log("Error sending SMS: " . $e->getMessage());
+
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Erreur lors de l\'envoi du SMS: ' . $e->getMessage()
+                    ]);
+                }
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Numéro de téléphone ou informations de réservation non trouvés.'
+                ]);
+            }
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Échec de la mise à jour.']);
+        }
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'message' => 'Une erreur est survenue: ' . $e->getMessage()]);
     }
 
     exit;
 }
+
 public function updateReservationDetails($id, $new_nbr_place, $commentaire) {
     $result = ReservationCovoiturage::updateReservationDetails($id, $new_nbr_place, $commentaire);
 
@@ -205,10 +277,10 @@ public function updateReservationDetails($id, $new_nbr_place, $commentaire) {
         return false; // Some other error
     }
 }
+
+
+
 }
-
-
-
 
 
 
