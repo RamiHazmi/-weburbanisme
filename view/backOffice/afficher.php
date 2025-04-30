@@ -9,17 +9,28 @@
 		$username = $_POST['username'];
 		$email = $_POST['email'];
 		$userActuel = $userC->getUserById($id);
-        
-        if (!empty($_POST['password'])) {
-            $password = password_hash($_POST['password'], PASSWORD_DEFAULT);  
-        } else {
-            $password = $userActuel['password'];  
-        }
+
+		if (!empty($_POST['password'])) {
+			// Si le mot de passe entré est différent du hash déjà en base, on le rehash
+			if (password_verify($_POST['password'], $userActuel['password'])) {
+				// Le mot de passe entré est déjà le bon hash → ne rien faire
+				$password = $userActuel['password'];
+			} else {
+				// Nouveau mot de passe clair → on hash
+				$password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+			}
+		} else {
+			// Rien saisi dans le champ → on garde l'ancien mot de passe
+			$password = $userActuel['password'];
+		}
+
+
 		$address = $_POST['address'];
 		$phone = $_POST['phone'];
 		$role = $_POST['role'];
+		$status = $_POST['status'];
 
-		$user = new user($username, $email, $password, $address, $phone, $role);
+		$user = new user($username, $email, $password, $address, $phone, $role, $status);
 		$userC->modifier($user, $id);
 
 		header("Location: afficher.php");
@@ -30,6 +41,7 @@
 $liste = $userC->afficher();
 
 ?>
+
 
 <!doctype html>
 <html class="fixed">
@@ -878,6 +890,7 @@ $liste = $userC->afficher();
                                             <th>Address</th>
                                             <th>Phone</th>
                                             <th>Role</th>
+											<th>status</th>
                                             <th>Actions</th>
 										</tr>
 									</thead>
@@ -886,13 +899,14 @@ $liste = $userC->afficher();
 			foreach ($liste as $user) {
 			?>
 			<tr>
-			<td><?php echo $user['id']; ?></td> <!-- Utilisation directe des indices du tableau associatif -->
+			<td><?php echo $user['id']; ?></td> 
             <td><?php echo $user['username']; ?></td>
             <td><?php echo $user['email']; ?></td>
 			<td><?php echo substr($user['password'], 0, 10) . '...'; ?></td>
             <td><?php echo $user['address']; ?></td>
             <td><?php echo $user['phone']; ?></td>
             <td><?php echo $user['role']; ?></td>
+			<td><?php echo $user['status']; ?></td>
             <td class="actions">
 			<a href="#" class="on-default edit-row" onclick='openModal(<?= json_encode($user) ?>)'>
     		<i class="fa fa-pencil"></i>
@@ -1069,11 +1083,86 @@ $liste = $userC->afficher();
 						<option value="client">client</option>
 					</select><br><br>
 
+					<label>status:</label>
+					<select id="status" name="status">
+    					<option value="active">Active</option>
+    					<option value="blocked">Blocked</option>
+					</select>
+
+
 					<button type="submit" name="modifier" class="submit-button">Modifier</button>
 					<button type="button" onclick="closeModal()" class="cancel-button">Annuler</button>
 				</form>
     </div>
 </div>
+<script>
+	document.getElementById("form").addEventListener("submit", function (event) {
+    let isValid = true;
+
+    let username = document.getElementById("username").value.trim();
+    let email = document.getElementById("email").value.trim();
+    let password = document.getElementById("password").value.trim();
+    let address = document.getElementById("address").value.trim();
+    let phone = document.getElementById("phone").value.trim();
+
+    function displayMessage(id, message, isError) {
+        var element = document.getElementById(id + "_error");
+        element.style.color = isError ? "red" : "green";
+        element.innerText = message;
+    }
+
+    if (!username || !email || !address || !phone) {
+        alert("Tous les champs obligatoires doivent être remplis");
+        isValid = false;
+    }
+
+    let usernameRegex = /^[a-zA-Z_.-]{3,}$/;
+    if (!usernameRegex.test(username)) {
+        displayMessage("username", "Le nom d'utilisateur doit contenir au moins 3 caractères sans espace.", true);
+        isValid = false;
+    } else {
+        displayMessage("username", "Correct", false);
+    }
+
+    let emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (!emailPattern.test(email)) {
+        displayMessage("email", "L'email est invalide.", true);
+        isValid = false;
+    } else {
+        displayMessage("email", "Correct", false);
+    }
+
+    // ✅ Validation modifiée du mot de passe : seulement s'il est saisi
+    if (password.length > 0 && password.length < 6) {
+        displayMessage("password", "Le mot de passe doit contenir au moins 6 caractères.", true);
+        isValid = false;
+    } else if (password.length >= 6) {
+        displayMessage("password", "Correct", false);
+    } else {
+        displayMessage("password", "", false); // Pas d'erreur ni de message si vide
+    }
+
+    let addressPattern = /^[A-Za-z\s]{3,}$/;
+    if (!addressPattern.test(address)) {
+        displayMessage("address", "L'adresse doit contenir uniquement des lettres et des espaces, avec au moins 3 caractères.", true);
+        isValid = false;
+    } else {
+        displayMessage("address", "Correct", false);
+    }
+
+    let phonePattern = /^[0-9]{8}$/;
+    if (!phonePattern.test(phone)) {
+        displayMessage("phone", "Le téléphone doit contenir exactement 8 chiffres.", true);
+        isValid = false;
+    } else {
+        displayMessage("phone", "Correct", false);
+    }
+
+    if (!isValid)
+        event.preventDefault();
+});
+</script>
+
 <script>
 function openModal(user) {
     document.getElementById("editModal").style.display = "flex";
@@ -1081,16 +1170,16 @@ function openModal(user) {
 	document.getElementById("id").value = user.id; 
     document.getElementById("username").value = user.username;
     document.getElementById("email").value = user.email;
-    document.getElementById("password").value = user.password;
+      document.getElementById("password").value = ""; 
     document.getElementById("address").value = user.address;
     document.getElementById("phone").value = user.phone;
     document.getElementById("role").value = user.role;
+	document.getElementById("status").value = user.status;
 }
 
 function closeModal() {
     document.getElementById("editModal").style.display = "none";
 }
 </script>
-<script src="Js/validation.js"></script>
 	</body>
 </html>

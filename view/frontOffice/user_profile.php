@@ -123,7 +123,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 
                 </div>
-                <a href="connexion.php" class="nav-item nav-link">connexion</a>
                 <a href="user_profile.php" class="nav-item nav-link active">
                 <i class="fa fa-user text-primary me-3"></i>
                 <?php
@@ -145,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             </div>
             </div>
-            <h4 class="m-0 pe-lg-5 d-none d-lg-block"><i class="fa fa-headphones text-primary me-3"></i>+216 95 023 331</h4>
+            <h4 class="m-0 pe-lg-5 d-none d-lg-block"><i class="fa fa-headphones text-primary me-3"></i>+216 26 253 807</h4>
         </div>
     </nav>
     <!-- Navbar End -->
@@ -182,6 +181,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="delete_user.php" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.');">
                     <i class="fas fa-trash-alt me-2"></i>Supprimer mon compte
                 </a>
+                <a href="logout.php" class="btn btn-secondary" onclick="return confirmerDeconnexion();">
+    <i class="fas fa-sign-out-alt me-2"></i>Se déconnecter
+</a>
+
 </div>
 
         </div>
@@ -216,7 +219,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-light mb-4">Quick Links</h4>
                     <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">connexion</a>
                     <a class="btn btn-link" href="">Our Services</a>
                     <a class="btn btn-link" href="">Terms & Condition</a>
                     <a class="btn btn-link" href="">Support</a>
@@ -378,6 +380,11 @@ function displayMessage(field, message) {
     document.getElementById(field).style.borderColor = "red"; // Ajouter une bordure rouge pour le champ incorrect
 }
 
+</script>
+<script>
+function confirmerDeconnexion() {
+    return confirm("Êtes-vous sûr de vouloir vous déconnecter ?");
+}
 </script>
 
 </body>

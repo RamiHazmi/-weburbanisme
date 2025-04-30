@@ -7,9 +7,10 @@ class user
     private $address;
     private $phone;
     private $role;
+    private $status;
     
     
-    public function __construct($username,$email,$password,$address,$phone,$role)
+    public function __construct($username,$email,$password,$address,$phone,$role,$status)
     {
        $this->username=$username;
        $this->email=$email;
@@ -17,6 +18,8 @@ class user
        $this->address=$address;
        $this->phone=$phone;
        $this->role=$role;
+       $this->status = $status;
+       
     }
     
 
@@ -43,6 +46,9 @@ class user
     public function getrole() {
         return $this->role;
     }
+    public function getStatus() {
+        return $this->status;
+    }
 
     public function setusername($username)
     {
@@ -66,6 +72,9 @@ class user
     }
     public function setrole($role) {
         $this->role = $role;
+    }
+    public function setStatus($status) {
+        $this->status = $status;
     }
 
 }

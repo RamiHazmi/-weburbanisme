@@ -25,7 +25,8 @@ if (
             $hashedPassword,
             $_POST['address'],
             $_POST['phone'],
-            $_POST['role']
+            $_POST['role'],
+			"active"
         );
         $userC->ajouter($user);
         header("Location: afficher.php");
@@ -808,6 +809,7 @@ if (
 								<span class="icon"><i class="fa fa-key"></i></span>
 							</span>
                             <input class="form-control" type="password" placeholder="Password" name="password" id="password">
+
                             <span id="password_error"></span><br>
                         </div>
 

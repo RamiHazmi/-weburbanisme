@@ -5,8 +5,8 @@ class userC
 {
     public function ajouter($user)
 {
-    $sql = "INSERT INTO user (username, email, password, address, phone, role) 
-            VALUES (:username, :email, :password, :address, :phone, :role)";
+    $sql = "INSERT INTO user (username, email, password, address, phone, role, status) 
+            VALUES (:username, :email, :password, :address, :phone, :role,:status)";
 
     $db = config::getConnexion();
 
@@ -20,7 +20,8 @@ class userC
             'password' => $user->getpassword(),
             'address' => $user->getaddress(),
             'phone' => $user->getphone(),
-            'role' => $user->getrole()
+            'role' => $user->getrole(),
+            ':status' => $user->getStatus() 
         ]);
 
         return true; 
@@ -64,8 +65,9 @@ class userC
 
 
     function modifier($user, $id) {
-        $sql = "UPDATE user SET username = :username, email = :email, password = :password, address = :address, phone = :phone, role = :role WHERE id = :id";
+        $sql = "UPDATE user SET username = :username, email = :email, password = :password, address = :address, phone = :phone, role = :role, status = :status WHERE id = :id";
         $db = config::getConnexion();
+        
         try {
             $query = $db->prepare($sql);
             $query->execute([
@@ -75,6 +77,7 @@ class userC
                 'address' => $user->getaddress(),
                 'phone' => $user->getphone(),
                 'role' => $user->getrole(),
+                'status' => $user->getStatus(),
                 'id' => $id
             ]);
         } catch (Exception $e) {
@@ -82,33 +85,37 @@ class userC
         }
     }
 
-
-    public function connexionUser($email, $password)
-    {
+    function rechercher($id){
+        $sql = "SELECT * from user where id = :id"; 
         $db = config::getConnexion();
-        
         try {
-            $query = $db->prepare("SELECT * FROM user WHERE email = :email");
-            $query->bindParam(':email', $email);
-            $query->execute();
-        
-            $user = $query->fetch(PDO::FETCH_ASSOC);
-
-            if ($user) {
-                if (password_verify($password, $user['password'])) {
-                    return "Connexion réussie";
-                } else {
-                    return "mot de passe incorrect";
-                }
-            } else {
-                return "Utilisateur non trouvé";
-            }
+            $query = $db->prepare($sql);
+            $query->execute(['id' => $id]);
+    
+            $user = $query->fetch();
+            return $user;
         } catch (Exception $e) {
-            return "Erreur : " . $e->getMessage();
+            die('Erreur: ' . $e->getMessage());
         }
-}
+    }
+    
+    
+    public function modifierPassword($id, $hashedPassword) {
+            $sql = "UPDATE user SET password = :password WHERE id = :id";
+            $db = config::getConnexion();
+            try {
+                $query = $db->prepare($sql);
+                $query->execute([
+                    'password' => $hashedPassword,  
+                    'id' => $id
+                ]);
+            } catch (Exception $e) {
+                echo "Erreur: " . $e->getMessage();
+            }
+        }
 
-
+    
+       
     public function getUserByEmail($email) 
     {
         $db = config::getConnexion();

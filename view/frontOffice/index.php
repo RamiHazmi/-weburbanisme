@@ -85,7 +85,6 @@ include '../../controller/userC.php';
                     </div>
                 
                 </div>
-                <a href="connexion.php" class="nav-item nav-link">connexion</a>
                 <a href="user_profile.php" class="nav-item nav-link ">
                 <i class="fa fa-user text-primary me-3"></i>
               <?php
@@ -561,7 +560,6 @@ include '../../controller/userC.php';
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-light mb-4">Quick Links</h4>
                     <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">connexion</a>
                     <a class="btn btn-link" href="">Our Services</a>
                     <a class="btn btn-link" href="">Terms & Condition</a>
                     <a class="btn btn-link" href="">Support</a>
