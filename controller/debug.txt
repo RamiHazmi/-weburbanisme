@@ -1,3 +1,0 @@
-Message reçu: donnez vos trajets
-Message reçu: les places disponibles ?
-Message reçu: réserver 1 pour 5 places

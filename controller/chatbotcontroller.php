@@ -10,7 +10,6 @@ header('Content-Type: application/json');
 $pdo = config::getConnexion();
 $question = strtolower(trim($_POST['message'] ?? ''));
 
-file_put_contents('debug.txt', "Message reçu: " . $question . "\n", FILE_APPEND);
 $id_utilisateur = $_POST['id_utilisateur'] ?? 2;
 
 // Récupérer tous les trajets
