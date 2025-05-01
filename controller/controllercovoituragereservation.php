@@ -220,7 +220,7 @@ public function updateReservation($reservation_id, $statut) {
 
                 $smsMessage = "Bonjour " . $username . ",\nVotre réservation a été acceptée !\nDépart: " . $depart . "\nDestination: " . $destination . "\nDate et Heure: " . $dateHeure;
 
-              
+                
 
                 $client = new Client($account_sid, $auth_token);
 
@@ -270,7 +270,7 @@ public function updateReservationDetails($id, $new_nbr_place, $commentaire) {
     if ($result === true) {
         return true;
     } elseif ($result === 'error_places') {
-        return 'error_places';
+        return 'error_places'; // Not enough places
     } else {
         return false; // Some other error
     }
