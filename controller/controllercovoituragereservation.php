@@ -270,7 +270,7 @@ public function updateReservationDetails($id, $new_nbr_place, $commentaire) {
     if ($result === true) {
         return true;
     } elseif ($result === 'error_places') {
-        return 'error_places'; // Not enough places
+        return 'error_places'; 
     } else {
         return false; // Some other error
     }
