@@ -1,10 +1,33 @@
 <?php
+session_start(); // IMPORTANT : Pour utiliser $_SESSION
+
 include('../../controller/controllercovoiturage.php');
 include __DIR__ . '/../../controller/controllercovoituragereservation.php';
-
+include '../../model/user.php';
+include '../../controller/userC.php';
 $covoiturageController = new controllercovoiturage();
 $covoiturages = $covoiturageController->listCovoituragesFrontoffice();
 
+if (isset($_SESSION['user_id']) && isset($_SESSION['user_email'])) {
+    $user_id = $_SESSION['user_id'];
+    $user_email = $_SESSION['user_email'];
+
+
+    $userC = new userC();
+    $user = $userC->getUserByEmail($user_email);
+    
+
+    if (!$user) {
+        echo "Utilisateur non trouvé.";
+        exit;
+    }
+} else {
+    echo "<script>
+    alert('Vous devez être connecté pour accéder à cette page.');
+    window.location.href = 'connexion.php';
+    </script>";
+    exit;
+}
 
 ?>
 
@@ -80,7 +103,24 @@ $covoiturages = $covoiturageController->listCovoituragesFrontoffice();
                 </div>
             
             </div>
-            <a href="contact.html" class="nav-item nav-link">Contact</a>
+            <a href="user_profile.php" class="nav-item nav-link">
+                <i class="fa fa-user text-primary me-3"></i>
+                <?php
+
+                if (isset($_SESSION['user_email'])){
+                    $user_email = $_SESSION['user_email']; 
+                $userC = new userC();
+                $user = $userC->getUserByEmail($user_email);
+                if ($user && isset($user['username'])) {
+                    echo htmlspecialchars($user['username']);
+                } else {
+                 echo "Profile"; 
+    }
+} else {
+    echo "Profile"; 
+}
+?>
+</a>
         </div>
         <h4 class="m-0 pe-lg-5 d-none d-lg-block"><i class="fa fa-headphones text-primary me-3"></i>+216 20 265 186</h4>
     </div>
@@ -148,7 +188,11 @@ $covoiturages = $covoiturageController->listCovoituragesFrontoffice();
 </div>
 
 <!-- Hidden details div, initially hidden, will show when "Show More" is clicked -->
-<?php foreach ($covoiturages as $covoiturage): ?>
+<?php foreach ($covoiturages as $covoiturage): 
+//integration
+        $user_id = isset($_GET['user_id']) ? $_GET['user_id'] :$_SESSION['user_id'] ; 
+        ?>
+
     <div class="covoiturage-details" id="details-<?= $covoiturage['id_trajet'] ?>" style="display:none;">
         <div class="details-content">
             <button id="annuler" class="annuler-btn">&times;</button>
@@ -185,8 +229,7 @@ $covoiturages = $covoiturageController->listCovoituragesFrontoffice();
                         <label for="commentaire">Commentaire :</label><br>
                         <textarea id="commentaire_<?= $covoiturage['id_trajet'] ?>" name="commentaire" rows="3" placeholder="Pas Obligatoire"></textarea><br><br>
 
-                        <!-- Integration -->
-                        <input type="hidden" id="id_utilisateur_<?= $covoiturage['id_trajet'] ?>" value="2"> 
+                        <input type="hidden" id="id_utilisateur_<?= $covoiturage['id_trajet'] ?>" value="<?= $user_id ?>">
 
                         <button type="submit" class="btn btn-success">Confirmer</button>
                         <button type="button" class="btn btn-danger cancel-reservation">Annuler</button>
@@ -219,8 +262,6 @@ $covoiturages = $covoiturageController->listCovoituragesFrontoffice();
 
         <div class="row">
     <?php 
-    //Integration
-    $user_id = isset($_GET['user_id']) ? $_GET['user_id'] : 2; 
     
     // Instantiate the controller
     $covoiturageControllerreservation = new ReservationController();

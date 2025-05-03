@@ -498,49 +498,39 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent">
 										<a>
 											<i class="fa fa-list-alt" aria-hidden="true"></i>
-											<span>Forms</span>
+											<span>User</span>
 										</a>
 										<ul class="nav nav-children">
 											<li>
-												<a href="forms-basic.html">
-													 User
+												<a href="ajouter.php">
+													form User
 												</a>
 											</li>
 											<li>
-												<a href="forms-advanced.html">
-													 Recharge Electrique
-												</a>
-											</li>
-											<li class="nav-active">
-												<a href="indexc.php">
-													 Covoiturage
-												</a>
-											</li>
-											<li>
-												<a href="forms-layouts.html">
-													 Bikes
-												</a>
-											</li>
-											<li>
-												<a href="forms-wizard.html">
-													 Parking
+												<a href="afficher.php">
+													table User
 												</a>
 											</li>
 											
 										</ul>
 									</li>
-									<li class="nav-parent">
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-table" aria-hidden="true"></i>
-											<span>Tables</span>
+											<span>Covoiturage</span>
 										</a>
 										<ul class="nav nav-children">
+										<li class="nav-active">
+												<a href="indexc.php">
+													form Covoiturage
+												</a>
+											</li>
 											<li>
 											<a href="tablec.php">
-													 covoiturage
+													 table covoiturage
 												</a>
 											</li>
 											<li>
@@ -548,26 +538,7 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 													 reservation covoiturage
 												</a>
 											</li>
-											<li>
-												<a href="tables-responsive.html">
-													 Responsive
-												</a>
-											</li>
-											<li>
-												<a href="tables-editable.html">
-													 Editable
-												</a>
-											</li>
-											<li>
-												<a href="tables-ajax.html">
-													 Ajax
-												</a>
-											</li>
-											<li>
-												<a href="tables-pricing.html">
-													 Pricing
-												</a>
-											</li>
+											
 										</ul>
 									</li>
 									<li class="nav-parent">
@@ -655,7 +626,7 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 										</ul>
 									</li>
 									<li>
-										<a href="../frontoffice/covoituragefront.php" target="_blank">
+										<a href="../frontoffice/index.php" target="_blank">
 											<i class="fa fa-external-link" aria-hidden="true"></i>
 											<span>Front-End <em class="not-included">(Not Included)</em></span>
 										</a>

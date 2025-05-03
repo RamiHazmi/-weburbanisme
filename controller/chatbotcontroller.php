@@ -4,13 +4,18 @@ session_start(); // IMPORTANT : Pour utiliser $_SESSION
 include_once __DIR__ . '/../database.php';
 include(__DIR__ . '/../model/modelcovoituragereservation.php');
 include_once __DIR__ . '/controllercovoituragereservation.php';
-
+include(__DIR__ . '/../model/user.php');
+include_once (__DIR__ . '/userC.php');
 header('Content-Type: application/json');
 
 $pdo = config::getConnexion();
 $question = strtolower(trim($_POST['message'] ?? ''));
+if (isset($_SESSION['user_id']) && isset($_SESSION['user_email'])) {
+    $user_id = $_SESSION['user_id'];
+    $user_email = $_SESSION['user_email'];
 
-$id_utilisateur = $_POST['id_utilisateur'] ?? 2;
+}
+  $id_utilisateur = $_POST['id_utilisateur'] ?? $_SESSION['user_id'];
 
 // Récupérer tous les trajets
 $sql = "SELECT * FROM covoiturage";
