@@ -79,7 +79,7 @@ include '../../controller/userC.php';
                     <div class="dropdown-menu fade-up m-0">
                         <a href="covoituragefront.php" class="dropdown-item">Covoiturage</a>
                         <a href="feature.html" class="dropdown-item">Parking</a>
-                        <a href="quote.html" class="dropdown-item">Transport Public</a>
+                        <a href="quote.html" class="dropdown-item">Velos et Stations</a>
                         <a href="team.html" class="dropdown-item">Recharge Electrique</a>
                         
                     </div>
@@ -109,7 +109,7 @@ include '../../controller/userC.php';
 </a>
             </div>
 
-            <h4 class="m-0 pe-lg-5 d-none d-lg-block"><i class="fa fa-headphones text-primary me-3"></i>+216 95 023 331</h4>
+            <h4 class="m-0 pe-lg-5 d-none d-lg-block"><i class="fa fa-headphones text-primary me-3"></i>+216 27 118 673</h4>
         </div>
     </nav>
     <!-- Navbar End -->
@@ -149,7 +149,7 @@ include '../../controller/userC.php';
                                 </h5>
                                 <h1 class="display-3 text-white animated slideInDown mb-4">
                                     Votre Partenaire Fiable pour le 
-                                    <span class="text-primary">Transport Public</span> et la     
+                                    <span class="text-primary">Velos et Stations</span> et la     
                                     <span class="text-primary">Recharge Electrique</span>
                                 </h1> 
                                 <p class="fs-5 fw-medium text-white mb-4 pb-2">Chez Ride4All, nous facilitons vos déplacements quotidiens en offrant des solutions de transport partagées, écologiques et économiques, adaptées à vos besoins.</p>
@@ -262,7 +262,7 @@ include '../../controller/userC.php';
                         </div>
                         <h4 class="mb-3">Covoiturage</h4>
                         <p> Organisation et supervision des trajets partagés entre conducteurs et passagers pour optimiser les déplacements.</p>
-                        <a class="btn-slide mt-2" href=""><i class="fa fa-arrow-right"></i><span>Lire Plus</span></a>
+                        <a class="btn-slide mt-2" href="covoituragefront.php"><i class="fa fa-arrow-right"></i><span>Lire Plus</span></a>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.5s">
@@ -281,7 +281,7 @@ include '../../controller/userC.php';
                         <div class="overflow-hidden mb-4">
                             <img class="img-fluid" src="img/service-1.jpg" alt="">
                         </div>
-                        <h4 class="mb-3">Transport Public</h4>
+                        <h4 class="mb-3">Velos et Stations</h4>
                         <p>Suivi des lignes, horaires, états du trafic et services associés aux transports en commun.</p>
                         <a class="btn-slide mt-2" href=""><i class="fa fa-arrow-right"></i><span>Lire Plus</span></a>
                     </div>
@@ -358,11 +358,8 @@ include '../../controller/userC.php';
                 <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.3s">
                     <div class="price-item">
                         <div class="border-bottom p-4 mb-4">
-                            <h5 class="text-primary mb-1">Covoiturage</h5>
-                            <h1 class="display-5 mb-0">
-                                <small class="align-top" style="font-size: 22px; line-height: 45px;">$</small>49.00<small
-                                    class="align-bottom" style="font-size: 16px; line-height: 40px;">/ Month</small>
-                            </h1>
+                            <h5 class="text-primary mb-1">Covoiturages</h5>
+                           
                         </div>
                         <div class="p-4 pt-0">
                             <p><i class="fa fa-check text-success me-3"></i>Trajets partagés sécurisés 🚗</p>
@@ -370,7 +367,7 @@ include '../../controller/userC.php';
                             <p><i class="fa fa-check text-success me-3"></i>Réduction des frais de transport 💸</p>
                             <p><i class="fa fa-check text-success me-3"></i>Respect de l’environnement 🌱</p>
                             <p><i class="fa fa-check text-success me-3"></i>Assistance et support 24/7 📞</p>
-                            <a class="btn-slide mt-2" href=""><i class="fa fa-arrow-right"></i><span >👉 Réservez maintenant !</span></a>
+                            <a class="btn-slide mt-2" href="covoituragefront.php"><i class="fa fa-arrow-right"></i><span >👉 Réservez maintenant !</span></a>
                         </div>
                     </div>
                 </div>

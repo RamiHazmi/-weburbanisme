@@ -221,7 +221,7 @@ public function updateReservation($reservation_id, $statut) {
                 $smsMessage = "Bonjour " . $username . ",\nVotre réservation a été acceptée !\nDépart: " . $depart . "\nDestination: " . $destination . "\nDate et Heure: " . $dateHeure;
 
                 
-
+             
                 $client = new Client($account_sid, $auth_token);
 
                 try {
@@ -276,7 +276,28 @@ public function updateReservationDetails($id, $new_nbr_place, $commentaire) {
     }
 }
 
+public function getReservationStats() {
+    $db = config::getConnexion();
 
+    // Get status data
+    $statusQuery = $db->query("SELECT statut, COUNT(*) as total FROM reservationcovoiturage GROUP BY statut");
+    $statusData = [];
+    while ($row = $statusQuery->fetch()) {
+        $statusData[$row['statut']] = $row['total'];
+    }
+
+    // Get date data
+    $dateQuery = $db->query("SELECT DATE(date_reservation) as jour, COUNT(*) as total FROM reservationcovoiturage GROUP BY jour ORDER BY jour");
+    $dateData = [];
+    while ($row = $dateQuery->fetch()) {
+        $dateData[] = ['date' => $row['jour'], 'count' => $row['total']];
+    }
+
+    return [
+        'statusData' => $statusData,
+        'dateData' => $dateData
+    ];
+}
 
 }
 

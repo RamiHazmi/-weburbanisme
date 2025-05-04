@@ -89,13 +89,13 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_email'])) {
     </button>
     <div class="collapse navbar-collapse" id="navbarCollapse">
         <div class="navbar-nav ms-auto p-4 p-lg-0">
-            <a href="index.html" class="nav-item nav-link">Acceuil</a>
+            <a href="index.php" class="nav-item nav-link">Acceuil</a>
             <a href="about.html" class="nav-item nav-link">À Propos</a>
            <!---- <a href="service.html" class="nav-item nav-link">Services</a> -->
             <div class="nav-item dropdown">
                <a href="#" class="nav-item nav-link active" data-bs-toggle="dropdown">Services</a>
                 <div class="dropdown-menu fade-up m-0">
-                    <a href="covoituragefront.php" class="dropdown-item">Covoiturage</a>
+                    <a href="covoituragefront.php" class="dropdown-item active">Covoiturage</a>
                     <a href="feature.html" class="dropdown-item">Parking</a>
                     <a href="quote.html" class="dropdown-item">Transport Public</a>
                     <a href="team.html" class="dropdown-item">Recharge Electrique</a>

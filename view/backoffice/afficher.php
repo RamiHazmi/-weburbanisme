@@ -409,7 +409,7 @@ $liste = $userC->afficher();
 							<nav id="menu" class="nav-main" role="navigation">
 								<ul class="nav nav-main">
 									<li>
-										<a href="index.html">
+										<a href="dashboard.php">
 											<i class="fa fa-home" aria-hidden="true"></i>
 											<span>Dashboard</span>
 										</a>
