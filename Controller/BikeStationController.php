@@ -29,6 +29,35 @@ class BikeStationController
         die('Error: ' . $e->getMessage());
     }
 }
+public function getStationIdByName($name)
+{
+    $sql = 'SELECT id_station, name FROM bikestation WHERE LOWER(name) = LOWER(:name)';
+    $db = config::getConnexion();
+    try {
+        $query = $db->prepare($sql);
+        $query->execute(['name' => $name]);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+        
+        // Check if a station is found and return the id_station
+        if ($result) {
+            return $result['id_station'];
+        } else {
+            // Try partial match if exact match fails
+            $sql = 'SELECT id_station, name FROM bikestation WHERE LOWER(name) LIKE LOWER(:name)';
+            $query = $db->prepare($sql);
+            $query->execute(['name' => '%' . $name . '%']);
+            $results = $query->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (!empty($results)) {
+                // Return the first match
+                return $results[0]['id_station'];
+            }
+            return null;
+        }
+    } catch (Exception $e) {
+        die('Error: ' . $e->getMessage());
+    }
+}
 
 
 

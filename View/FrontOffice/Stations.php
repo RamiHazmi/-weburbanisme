@@ -19,6 +19,10 @@ function getStationByName($station_name)
 }
 
 ?>
+<script>
+        speechSynthesis.speak(new SpeechSynthesisUtterance("Hello, this is a test"));
+
+</script>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -132,8 +136,13 @@ function getStationByName($station_name)
     </div>
  
     <!-- Station Cards -->
-    <?php foreach ($stations as $station): ?>
-        <div class="flip-card station-card" data-station-name="<?= strtolower($station['name']) ?>">
+    <?php 
+    // Debug station data
+    error_log('Stations data: ' . print_r($stations, true));
+    foreach ($stations as $station): 
+        error_log('Processing station: ' . $station['name'] . ' (ID: ' . $station['id_station'] . ')');
+    ?>
+        <div class="flip-card station-card" data-station-name="<?= htmlspecialchars(strtolower($station['name'])) ?>">
             <div class="flip-card-inner">
                 <div class="flip-card-front">
                     <h4><i class="fa fa-bicycle me-2"></i><?= htmlspecialchars($station['name']) ?></h4>
@@ -151,6 +160,7 @@ function getStationByName($station_name)
         </div>
     <?php endforeach; ?>
 </div>
+
 
 
     
@@ -207,7 +217,7 @@ function getStationByName($station_name)
                         &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
                     </div>
                     <div class="col-md-6 text-center text-md-end">
-                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                        <!--/*** This template is free as long as you keep the footer author's credit link/attribution link/backlink. If you'd like to use the template without the footer author's credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
                         Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
                     </div>
                 </div>
@@ -247,71 +257,184 @@ function getStationByName($station_name)
 <!-- Voice assistant -->
 
     
-  <script>
-// Check if the browser supports the Web Speech API
+<script>
+
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition;
+let recognition, listeningForCommand = false;
+let isRecognitionRunning = false;
+
+
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
-    recognition.lang = 'en-US'; // Set language to English
-    recognition.interimResults = false; // No interim results
-    recognition.maxAlternatives = 1; // Only return the best match
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
 }
 
-// Function to start voice recognition
+function speak(text) {
+    const synth = window.speechSynthesis;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    synth.speak(utterance);
+}
+
 function startVoiceRecognition() {
-    console.log("Voice recognition started...");
-    recognition.start();  // Start the voice recognition process
-}
-
-// Event listener to handle the result of speech recognition
-recognition.onresult = function(event) {
-    const command = event.results[0][0].transcript.toLowerCase(); // Get the speech command and convert to lowercase
-    console.log('Speech recognized:', command);  // Log the recognized speech
-
-    // Check if the command includes "find station"
-    if (command.includes('find station')) {
-        const stationName = command.replace('find station', '').trim(); // Extract station name from command
-        console.log('Searching for station:', stationName);  // Log the station name extracted
-        filterStations(stationName);  // Filter stations based on the spoken name
-    } else {
-        console.log('No valid command detected.');  // Log if no valid command is detected
+    if (!isRecognitionRunning) {
+        recognition.start();
+        isRecognitionRunning = true;
+        console.log('Voice recognition started...');
     }
-};
-
-// Handle any errors in speech recognition
-recognition.onerror = function(event) {
-    console.error('Error occurred in speech recognition: ', event.error);  // Log any errors
-};
-// Function to get station by name
-
-
-
-// Function to filter stations based on voice command or search input
-function filterStations(stationName = '') {
-    var input = document.getElementById('station-search');
-    var filter = stationName || input.value.toLowerCase(); // Use voice command or manual input
-    var cards = document.querySelectorAll('.station-card');
-
-    cards.forEach(function(card) {
-        var stationCardName = card.getAttribute('data-station-name');
-        if (stationCardName.indexOf(filter) > -1) {
-            card.style.display = ''; // Show matching cards
-            console.log(`Showing station card: ${stationCardName}`); // Log when a card is shown
-        } else {
-            card.style.display = 'none'; // Hide non-matching cards
-            console.log(`Hiding station card: ${stationCardName}`); // Log when a card is hidden
-        }
-    });
 }
 
-// Event listener for the start voice button
-document.getElementById('start-voice-button').addEventListener('click', function() {
-    startVoiceRecognition();  // Start voice recognition when the button is clicked
+
+
+let awaitingWakeWord = true;
+
+
+recognition.onresult = async function(event) {
+    const command = event.results[0][0].transcript.toLowerCase().trim();
+    console.log('Speech recognized:', command);
+
+    if (awaitingWakeWord) {
+        if (command.includes('hi alexa')) {
+            speak('Hi Master');
+            awaitingWakeWord = false;
+
+            // Restart recognition to capture the next command after wake word
+            setTimeout(() => {
+                if (!isRecognitionRunning) {
+                    recognition.start();
+                    isRecognitionRunning = true;
+                    console.log('Voice recognition restarted after wake word...');
+                }
+            }, 1000);
+        } else {
+            console.log('Waiting for wake word...');
+        }
+        return;
+    }
+
+    // If wake word was already detected, now handle the real commands
+    awaitingWakeWord = true; // Reset for next time
+
+    try {
+        // Send the command to Dialogflow
+        const response = await fetch('dialogflowHandler.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `message=${encodeURIComponent(command)}`
+        });
+
+        const data = await response.json();
+        
+        if (data.error) {
+            console.error('Dialogflow error:', data.message);
+            speak('Sorry, I encountered an error: ' + data.message);
+            return;
+        }
+        
+        // Speak the response from Dialogflow
+        speak(data.reply);
+
+        // Handle any specific actions based on Dialogflow's response
+        if (data.action) {
+            switch(data.action) {
+                case 'find_station':
+                    // Get the station name from the command
+                    const searchName = data.parameters.station_name.toLowerCase().trim();
+                    console.log('User requested station:', searchName);
+
+                    try {
+                        // Call the database search endpoint
+                        const response = await fetch('findStation.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: `station_name=${encodeURIComponent(searchName)}`
+                        });
+
+                        const result = await response.json();
+                        console.log('Database search result:', result);
+
+                        if (result.success && result.station) {
+                            const stationId = result.station.id_station;
+                            const stationName = result.station.name;
+                            console.log('Found station:', stationName, 'ID:', stationId);
+                            speak(`Navigating to station ${stationName}`);
+                            window.location.href = `Bikesfront.php?station_id=${stationId}`;
+                        } else {
+                            console.log('No matching station found');
+                            speak(`Sorry, I couldn't find station ${searchName}`);
+                        }
+                    } catch (error) {
+                        console.error('Error searching for station:', error);
+                        speak('Sorry, there was an error finding the station');
+                    }
+                    break;
+
+                case 'show_stations':
+                    if (data.parameters && data.parameters.station_name) {
+                        const searchInput = document.getElementById('station-search');
+                        if (searchInput) {
+                            searchInput.value = data.parameters.station_name;
+                            filterStations();
+                            speak(`Showing station ${data.parameters.station_name}`);
+                        }
+                    }
+                    break;
+
+                case 'show_all_stations':
+                    const searchInput = document.getElementById('station-search');
+                    if (searchInput) {
+                        searchInput.value = '';
+                        filterStations();
+                        speak('Showing all stations');
+                    }
+                    break;
+            }
+        }
+    } catch (error) {
+        console.error('Error communicating with Dialogflow:', error);
+        speak('Sorry, I encountered an error processing your request.');
+    }
+
+    isRecognitionRunning = false;
+};
+
+
+   
+
+
+recognition.onerror = function(event) {
+    console.error('Speech recognition error:', event.error);
+
+};
+recognition.onend = () => {
+    isRecognitionRunning = false;
+    console.log('Recognition ended. Restarting...');
+    setTimeout(() => {
+        startVoiceRecognition(); // This checks the flag before starting
+    }, 500); // short delay helps avoid rapid restart
+};
+
+
+document.getElementById('start-voice-button').addEventListener('click', () => {
+    listeningForCommand = false;
+    startVoiceRecognition();
+});
+document.getElementById('start-voice-button').addEventListener('click', () => {
+    listeningForCommand = false;
+    startVoiceRecognition();
 });
 
 
-  </script>
+</script>
+
+
+
   
 
 </body>
@@ -441,7 +564,7 @@ function filterStations() {
     var cards = document.querySelectorAll('.station-card');
     
     cards.forEach(function(card) {
-        var stationName = card.getAttribute('data-station-name');
+        var stationName = card.getAttribute('data-station-name').toLowerCase();
         if (stationName.indexOf(filter) > -1) {
             card.style.display = ''; // Show matching cards
         } else {
