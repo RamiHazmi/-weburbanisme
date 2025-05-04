@@ -52,8 +52,7 @@ $_SESSION['verification_code'] = $code;
 $siteName = "Ride4All";
 
 if ($method === 'sms') {
-    $sid = "ACf65efe5ed2d41295fa195155c59823f4"; 
-    $token = "cd807b443982161d79e4022482878969";
+   
     $twilio = new Client($sid, $token);
 
     try {
