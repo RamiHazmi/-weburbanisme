@@ -4,6 +4,25 @@ function handleDialogflowResponse(response) {
         return;
     }
 
+    // Log the response for debugging
+    console.log('Dialogflow Response:', response);
+
+    // Display debug information if available
+    if (response.debug) {
+        console.log('Debug Information:', response.debug);
+        const debugPanel = document.getElementById('debug-panel') || createDebugPanel();
+        debugPanel.innerHTML = `
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                <h4 style="color: #333; margin-bottom: 10px;">Debug Information</h4>
+                <p style="margin: 5px 0;"><strong>Start Station:</strong> ${response.debug.start_station_name} (ID: ${response.debug.start_station_id})</p>
+                <p style="margin: 5px 0;"><strong>End Station:</strong> ${response.debug.end_station_name} (ID: ${response.debug.end_station_id})</p>
+                <p style="margin: 5px 0;"><strong>Available Stations:</strong> ${response.debug.all_stations.join(', ')}</p>
+                <p style="margin: 5px 0;"><strong>Input Text:</strong> ${response.debug.input_text}</p>
+            </div>
+        `;
+        debugPanel.style.display = 'block';
+    }
+
     // Handle the action if one is specified
     if (response.action) {
         switch (response.action) {
@@ -29,6 +48,27 @@ function handleDialogflowResponse(response) {
 
     // Speak the response
     speak(response.reply);
+}
+
+function createDebugPanel() {
+    const panel = document.createElement('div');
+    panel.id = 'debug-panel';
+    panel.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        max-width: 300px;
+        z-index: 1000;
+        font-size: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        display: none;
+    `;
+    document.body.appendChild(panel);
+    return panel;
 }
 
 function findStation(stationName) {

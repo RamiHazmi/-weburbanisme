@@ -53,8 +53,227 @@ function getStationByName($station_name)
     <!-- Customized Bootstrap Stylesheet -->
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
 
+    <style>
+        .siri-button {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #007AFF, #5856D6);
+            border: none;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
 
-  
+        .siri-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #FF2D55, #FF9500);
+            opacity: 0;
+            animation: colorChange1 8s infinite;
+        }
+
+        .siri-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #5856D6, #007AFF);
+            opacity: 0;
+            animation: colorChange2 8s infinite;
+        }
+
+        @keyframes colorChange1 {
+            0% {
+                opacity: 0;
+            }
+            25% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
+            75% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes colorChange2 {
+            0% {
+                opacity: 0;
+            }
+            25% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            75% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .siri-button .color-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #FF9500, #FF2D55);
+            opacity: 0;
+            animation: colorChange3 8s infinite;
+        }
+
+        @keyframes colorChange3 {
+            0% {
+                opacity: 0;
+            }
+            25% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 0;
+            }
+            75% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .siri-button .pulse-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(255,255,255,0.2) 0%, transparent 70%);
+            animation: pulse 2s infinite;
+        }
+
+        .siri-button .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            animation: glow 2s infinite;
+        }
+
+        @keyframes glow {
+            0% {
+                box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(255,255,255,0.8);
+            }
+            100% {
+                box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            }
+        }
+
+        .siri-button .wave {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transform: scale(0);
+            animation: wave 2s infinite;
+        }
+
+        .siri-button .wave:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .siri-button .wave:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .siri-button .wave:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes wave {
+            0% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 0.2;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        .siri-button:hover {
+            transform: scale(1.1);
+        }
+
+        .siri-button:hover::before,
+        .siri-button:hover::after,
+        .siri-button:hover .color-overlay {
+            animation-play-state: paused;
+        }
+
+        .siri-button:active {
+            transform: scale(0.95);
+        }
+
+        .voice-command-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 20px;
+        }
+
+        .voice-command-text {
+            color: #007AFF;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .siri-button:hover + .voice-command-text {
+            opacity: 1;
+        }
+    </style>
 
     <!-- Template Stylesheet -->
     <link href="assets/css/style.css" rel="stylesheet">
@@ -132,7 +351,17 @@ function getStationByName($station_name)
     <!-- Search bar for filtering stations by name -->
     <div class="mb-3 w-100 d-flex justify-content-center">
         <input type="text" id="station-search" class="form-control w-50" placeholder="Search Stations by Name" onkeyup="filterStations()">
-        <button id="start-voice-button" class="btn btn-primary">Start Voice Command</button>
+        <div class="voice-command-container">
+            <button id="start-voice-button" class="siri-button">
+                <div class="color-overlay"></div>
+                <div class="pulse-overlay"></div>
+                <div class="center-dot"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+                <div class="wave"></div>
+            </button>
+            <span class="voice-command-text">Start Voice Command</span>
+        </div>
     </div>
  
     <!-- Station Cards -->
@@ -230,6 +459,28 @@ function getStationByName($station_name)
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-0 back-to-top"><i class="bi bi-arrow-up"></i></a>
 
+    <!-- Conversation Modal -->
+    <div class="modal fade" id="conversationModal" tabindex="-1" aria-labelledby="conversationModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="conversationModalLabel">Voice Assistant Conversation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="conversation-log" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Conversation will appear here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Button to open the modal -->
+    <button id="show-conversation-btn" class="btn btn-info" style="position: fixed; bottom: 30px; right: 30px; z-index: 1050;">
+        <i class="fas fa-comments"></i> Show Conversation
+    </button>
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -243,199 +494,182 @@ function getStationByName($station_name)
     <!-- Template Javascript -->
     <script src="assets/js/main.js"></script>
 
+    <!-- Voice assistant -->
+    <script>
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition, listeningForCommand = false;
+        let isRecognitionRunning = false;
+        let conversationLog = [];
+        let awaitingWakeWord = true;
 
-
-
-
-
-
-
-
-
-
-
-<!-- Voice assistant -->
-
-    
-<script>
-
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition, listeningForCommand = false;
-let isRecognitionRunning = false;
-
-
-if (SpeechRecognition) {
-    recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-}
-
-function speak(text) {
-    const synth = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    synth.speak(utterance);
-}
-
-function startVoiceRecognition() {
-    if (!isRecognitionRunning) {
-        recognition.start();
-        isRecognitionRunning = true;
-        console.log('Voice recognition started...');
-    }
-}
-
-
-
-let awaitingWakeWord = true;
-
-
-recognition.onresult = async function(event) {
-    const command = event.results[0][0].transcript.toLowerCase().trim();
-    console.log('Speech recognized:', command);
-
-    if (awaitingWakeWord) {
-        if (command.includes('hi alexa')) {
-            speak('Hi Master');
-            awaitingWakeWord = false;
-
-            // Restart recognition to capture the next command after wake word
-            setTimeout(() => {
-                if (!isRecognitionRunning) {
-                    recognition.start();
-                    isRecognitionRunning = true;
-                    console.log('Voice recognition restarted after wake word...');
-                }
-            }, 1000);
-        } else {
-            console.log('Waiting for wake word...');
-        }
-        return;
-    }
-
-    // If wake word was already detected, now handle the real commands
-    awaitingWakeWord = true; // Reset for next time
-
-    try {
-        // Send the command to Dialogflow
-        const response = await fetch('dialogflowHandler.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `message=${encodeURIComponent(command)}`
-        });
-
-        const data = await response.json();
-        
-        if (data.error) {
-            console.error('Dialogflow error:', data.message);
-            speak('Sorry, I encountered an error: ' + data.message);
-            return;
-        }
-        
-        // Speak the response from Dialogflow
-        speak(data.reply);
-
-        // Handle any specific actions based on Dialogflow's response
-        if (data.action) {
-            switch(data.action) {
-                case 'find_station':
-                    // Get the station name from the command
-                    const searchName = data.parameters.station_name.toLowerCase().trim();
-                    console.log('User requested station:', searchName);
-
-                    try {
-                        // Call the database search endpoint
-                        const response = await fetch('findStation.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded',
-                            },
-                            body: `station_name=${encodeURIComponent(searchName)}`
-                        });
-
-                        const result = await response.json();
-                        console.log('Database search result:', result);
-
-                        if (result.success && result.station) {
-                            const stationId = result.station.id_station;
-                            const stationName = result.station.name;
-                            console.log('Found station:', stationName, 'ID:', stationId);
-                            speak(`Navigating to station ${stationName}`);
-                            window.location.href = `Bikesfront.php?station_id=${stationId}`;
-                        } else {
-                            console.log('No matching station found');
-                            speak(`Sorry, I couldn't find station ${searchName}`);
-                        }
-                    } catch (error) {
-                        console.error('Error searching for station:', error);
-                        speak('Sorry, there was an error finding the station');
-                    }
-                    break;
-
-                case 'show_stations':
-                    if (data.parameters && data.parameters.station_name) {
-                        const searchInput = document.getElementById('station-search');
-                        if (searchInput) {
-                            searchInput.value = data.parameters.station_name;
-                            filterStations();
-                            speak(`Showing station ${data.parameters.station_name}`);
-                        }
-                    }
-                    break;
-
-                case 'show_all_stations':
-                    const searchInput = document.getElementById('station-search');
-                    if (searchInput) {
-                        searchInput.value = '';
-                        filterStations();
-                        speak('Showing all stations');
-                    }
-                    break;
+        // Function to update the conversation log
+        function updateConversationLog(speaker, text) {
+            conversationLog.push({ speaker, text });
+            const logDiv = document.getElementById('conversation-log');
+            if (logDiv) {
+                logDiv.innerHTML = conversationLog.map(entry => `
+                    <div style="margin-bottom: 10px;">
+                        <strong style="color:${entry.speaker === 'You' ? '#007bff' : '#28a745'}">${entry.speaker}:</strong>
+                        <span>${entry.text}</span>
+                    </div>
+                `).join('');
+                logDiv.scrollTop = logDiv.scrollHeight;
             }
         }
-    } catch (error) {
-        console.error('Error communicating with Dialogflow:', error);
-        speak('Sorry, I encountered an error processing your request.');
-    }
 
-    isRecognitionRunning = false;
-};
+        // Show modal when button is clicked
+        document.getElementById('show-conversation-btn').addEventListener('click', function() {
+            var modal = new bootstrap.Modal(document.getElementById('conversationModal'));
+            updateConversationLog('System', 'Conversation log opened');
+            modal.show();
+        });
 
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+        }
 
-   
+        function speak(text) {
+            const synth = window.speechSynthesis;
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            synth.speak(utterance);
+            updateConversationLog('AI', text);
+        }
 
+        function startVoiceRecognition() {
+            if (!isRecognitionRunning) {
+                recognition.start();
+                isRecognitionRunning = true;
+                console.log('Voice recognition started...');
+            }
+        }
 
-recognition.onerror = function(event) {
-    console.error('Speech recognition error:', event.error);
+        recognition.onresult = async function(event) {
+            const command = event.results[0][0].transcript.toLowerCase().trim();
+            console.log('Speech recognized:', command);
+            updateConversationLog('You', command);
 
-};
-recognition.onend = () => {
-    isRecognitionRunning = false;
-    console.log('Recognition ended. Restarting...');
-    setTimeout(() => {
-        startVoiceRecognition(); // This checks the flag before starting
-    }, 500); // short delay helps avoid rapid restart
-};
+            if (awaitingWakeWord) {
+                if (command.includes('hi alexa')) {
+                    speak('Hi Master');
+                    awaitingWakeWord = false;
+                    setTimeout(() => {
+                        if (!isRecognitionRunning) {
+                            recognition.start();
+                            isRecognitionRunning = true;
+                            console.log('Voice recognition restarted after wake word...');
+                        }
+                    }, 1000);
+                } else {
+                    console.log('Waiting for wake word...');
+                }
+                return;
+            }
 
+            awaitingWakeWord = true;
 
-document.getElementById('start-voice-button').addEventListener('click', () => {
-    listeningForCommand = false;
-    startVoiceRecognition();
-});
-document.getElementById('start-voice-button').addEventListener('click', () => {
-    listeningForCommand = false;
-    startVoiceRecognition();
-});
+            try {
+                const response = await fetch('dialogflowHandler.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `message=${encodeURIComponent(command)}`
+                });
 
+                const data = await response.json();
+                
+                if (data.error) {
+                    console.error('Dialogflow error:', data.message);
+                    speak('Sorry, I encountered an error: ' + data.message);
+                    return;
+                }
+                
+                speak(data.reply);
 
-</script>
+                if (data.action) {
+                    switch(data.action) {
+                        case 'find_station':
+                            const searchName = data.parameters.station_name.toLowerCase().trim();
+                            console.log('User requested station:', searchName);
 
+                            try {
+                                const response = await fetch('findStation.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                    },
+                                    body: `station_name=${encodeURIComponent(searchName)}`
+                                });
 
+                                const result = await response.json();
+                                console.log('Database search result:', result);
 
-  
+                                if (result.success && result.station) {
+                                    const stationId = result.station.id_station;
+                                    const stationName = result.station.name;
+                                    console.log('Found station:', stationName, 'ID:', stationId);
+                                    speak(`Navigating to station ${stationName}`);
+                                    window.location.href = `Bikesfront.php?station_id=${stationId}`;
+                                } else {
+                                    console.log('No matching station found');
+                                    speak(`Sorry, I couldn't find station ${searchName}`);
+                                }
+                            } catch (error) {
+                                console.error('Error searching for station:', error);
+                                speak('Sorry, there was an error finding the station');
+                            }
+                            break;
+
+                        case 'show_stations':
+                            if (data.parameters && data.parameters.station_name) {
+                                const searchInput = document.getElementById('station-search');
+                                if (searchInput) {
+                                    searchInput.value = data.parameters.station_name;
+                                    filterStations();
+                                    speak(`Showing station ${data.parameters.station_name}`);
+                                }
+                            }
+                            break;
+
+                        case 'show_all_stations':
+                            const searchInput = document.getElementById('station-search');
+                            if (searchInput) {
+                                searchInput.value = '';
+                                filterStations();
+                                speak('Showing all stations');
+                            }
+                            break;
+                    }
+                }
+            } catch (error) {
+                console.error('Error communicating with Dialogflow:', error);
+                speak('Sorry, I encountered an error processing your request.');
+            }
+
+            isRecognitionRunning = false;
+        };
+
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+        };
+
+        recognition.onend = () => {
+            isRecognitionRunning = false;
+            console.log('Recognition ended. Restarting...');
+            setTimeout(() => {
+                startVoiceRecognition();
+            }, 500);
+        };
+
+        document.getElementById('start-voice-button').addEventListener('click', () => {
+            listeningForCommand = false;
+            startVoiceRecognition();
+        });
+    </script>
 
 </body>
 <style>

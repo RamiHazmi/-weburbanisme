@@ -59,7 +59,149 @@ public function getStationIdByName($name)
     }
 }
 
+public function getStationIdByNameExact($stationName) {
+    $db = config::getConnexion();
+    try {
+        error_log('getStationIdByNameExact called with station name: "' . $stationName . '"');
+        
+        // First try exact match (case-insensitive)
+        $sql = "SELECT id_station, name FROM bikestation WHERE LOWER(name) = LOWER(:name)";
+        $query = $db->prepare($sql);
+        $query->execute(['name' => $stationName]);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+        
+        if ($result) {
+            error_log('Found exact match: ' . $result['name'] . ' (ID: ' . $result['id_station'] . ')');
+            return $result['id_station'];
+        }
+        
+        error_log('No exact match found, trying partial match');
+        
+        // If no exact match, try partial match at the start of the name
+        $sql = "SELECT id_station, name FROM bikestation WHERE LOWER(name) LIKE LOWER(:name)";
+        $query = $db->prepare($sql);
+        $query->execute(['name' => $stationName . '%']);
+        $results = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        error_log('Found ' . count($results) . ' partial matches');
+        foreach ($results as $station) {
+            error_log('Partial match: ' . $station['name'] . ' (ID: ' . $station['id_station'] . ')');
+        }
+        
+        if (count($results) === 1) {
+            // Only return if there's exactly one match
+            error_log('Returning single partial match: ' . $results[0]['name'] . ' (ID: ' . $results[0]['id_station'] . ')');
+            return $results[0]['id_station'];
+        } else if (count($results) > 1) {
+            // If multiple matches, try to find the best match
+            $bestMatch = null;
+            $bestScore = 0;
+            
+            error_log('Multiple matches found, calculating similarity scores');
+            foreach ($results as $station) {
+                $stationNameLower = strtolower($station['name']);
+                $searchNameLower = strtolower($stationName);
+                
+                // Calculate similarity score
+                $score = 0;
+                if (strpos($stationNameLower, $searchNameLower) === 0) {
+                    $score += 2; // Bonus for prefix match
+                    error_log('Prefix match bonus for: ' . $station['name']);
+                }
+                similar_text($stationNameLower, $searchNameLower, $similarity);
+                $score += $similarity;
+                
+                error_log('Similarity score for ' . $station['name'] . ': ' . $score);
+                
+                if ($score > $bestScore) {
+                    $bestScore = $score;
+                    $bestMatch = $station['id_station'];
+                }
+            }
+            
+            if ($bestScore > 0.7) { // Only return if we have a good match
+                error_log('Best match found with score ' . $bestScore . ': ID ' . $bestMatch);
+                return $bestMatch;
+            } else {
+                error_log('No good match found (best score: ' . $bestScore . ')');
+            }
+        }
+        
+        error_log('No suitable match found for: "' . $stationName . '"');
+        return null; // Return null if no good match found
+    } catch (Exception $e) {
+        error_log('Error in getStationIdByNameExact: ' . $e->getMessage());
+        return null;
+    }
+}
 
+public function getAvailableBikesCount($stationId) {
+    $sql = "SELECT available_bikes FROM bikestation WHERE id_station = :id";
+    $db = config::getConnexion();
+    try {
+        $query = $db->prepare($sql);
+        $query->execute(['id' => $stationId]);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['available_bikes'] : 0;
+    } catch (Exception $e) {
+        die('Error: ' . $e->getMessage());
+    }
+}
+
+public function getFirstAvailableBike($stationId) {
+    $sql = "SELECT id_bike FROM bike WHERE station_id = :station_id AND status = 'Inactive' LIMIT 1";
+    $db = config::getConnexion();
+    try {
+        $query = $db->prepare($sql);
+        $query->execute(['station_id' => $stationId]);
+        $result = $query->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['id_bike'] : null;
+    } catch (Exception $e) {
+        die('Error: ' . $e->getMessage());
+    }
+}
+
+public function processRental($bikeId, $startStationId, $endStationId, $userId = 1) {
+    $db = config::getConnexion();
+    try {
+        // Start transaction
+        $db->beginTransaction();
+
+        // 1. Update bike status
+        $updateBike = $db->prepare("UPDATE bike SET status = 'Rented' WHERE id_bike = :bike_id");
+        $updateBike->execute(['bike_id' => $bikeId]);
+
+        // 2. Decrease available bikes at start station
+        $decreaseBikes = $db->prepare("
+            UPDATE bikestation 
+            SET available_bikes = available_bikes - 1 
+            WHERE id_station = :station_id
+        ");
+        $decreaseBikes->execute(['station_id' => $startStationId]);
+
+        // 3. Create rental record
+        $startTime = date('Y-m-d H:i:s');
+        $insertRental = $db->prepare("
+            INSERT INTO bikerental (id_bike, id_user, end_station, start_time, start_station) 
+            VALUES (:bike_id, :user_id, :end_station, :start_time, :start_station)
+        ");
+        $insertRental->execute([
+            'bike_id' => $bikeId,
+            'user_id' => $userId,
+            'end_station' => $endStationId,
+            'start_time' => $startTime,
+            'start_station' => $startStationId
+        ]);
+
+        // Commit transaction
+        $db->commit();
+        return true;
+    } catch (Exception $e) {
+        // Rollback on error
+        $db->rollBack();
+        die('Error: ' . $e->getMessage());
+    }
+}
 
     public function addStation(BikeStation $station)
     {
@@ -142,5 +284,45 @@ public function getStationIdByName($name)
     } catch (Exception $e) {
         die('Error: ' . $e->getMessage());
     }
+    }
+
+    public function updateBikeStatus($bikeId, $status) {
+        $sql = "UPDATE bike SET status = :status WHERE id_bike = :bike_id";
+        $db = config::getConnexion();
+        try {
+            $query = $db->prepare($sql);
+            $query->execute([
+                'status' => $status,
+                'bike_id' => $bikeId
+            ]);
+            return true;
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+
+    public function decreaseAvailableBikes($stationId) {
+        $sql = "UPDATE bikestation SET available_bikes = available_bikes - 1 WHERE id_station = :station_id";
+        $db = config::getConnexion();
+        try {
+            $query = $db->prepare($sql);
+            $query->execute(['station_id' => $stationId]);
+            return true;
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
+    }
+
+    public function getTotalBikesCount($stationId) {
+        $sql = "SELECT total_bikes FROM bikestation WHERE id_station = :id";
+        $db = config::getConnexion();
+        try {
+            $query = $db->prepare($sql);
+            $query->execute(['id' => $stationId]);
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            return $result ? $result['total_bikes'] : 0;
+        } catch (Exception $e) {
+            die('Error: ' . $e->getMessage());
+        }
     }
 }
