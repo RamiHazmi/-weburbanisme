@@ -1,5 +1,5 @@
 <?php
-session_start(); // IMPORTANT : Pour utiliser $_SESSION
+session_start();
 
 include_once __DIR__ . '/../database.php';
 include(__DIR__ . '/../model/modelcovoituragereservation.php');
@@ -24,7 +24,6 @@ $offers = $stmt->fetchAll();
 
 $response = "";
 $matched = false; 
-
 if (strpos($question, 'salut') !== false || strpos($question, 'bonjour') !== false) {
     try {
         $stmt = $pdo->prepare("SELECT username FROM user WHERE id = ?");
@@ -40,18 +39,82 @@ if (strpos($question, 'salut') !== false || strpos($question, 'bonjour') !== fal
     $matched = true;
 }
 
+if (strpos($question, 'définition') !== false) {
+    // Clean the input question to identify what the user is asking about
+    preg_match('/définition\s+de\s+([a-zA-Z ]+)/i', $question, $matches);
+    $term_demande = trim(strtolower($matches[1] ?? ''));
 
+    // Provide a definition based on the term the user asks about
+    if ($term_demande) {
+        // For example, you can check for specific terms like "covoiturage", "destination", etc.
+        switch ($term_demande) {
+            case 'covoiturage':
+                $response .= "Le *covoiturage* est une pratique qui consiste à partager un véhicule entre plusieurs personnes pour effectuer un trajet commun, généralement en réduisant les coûts de transport et l'impact environnemental.";
+                break;
+            case 'destination':
+                $response .= "Une *destination* est un lieu où une personne souhaite se rendre en voyage ou en transport. Dans le contexte de notre service, cela fait référence à l'endroit où un trajet se termine.";
+                break;
+            case 'trajet':
+                $response .= "Un *trajet* est un parcours effectué entre un point de départ et une destination, souvent utilisé pour se déplacer d'une ville à une autre.";
+                break;
+            default:
+                $response .= "Désolé, je ne connais pas la définition de *$term_demande*. Peut-être que vous pouvez essayer un autre terme.";
+        }
+    } else {
+        $response .= "Désolé, je n'ai pas pu identifier le terme pour lequel vous souhaitez obtenir la définition.";
+    }
+
+    // Mark that a response for definition has been handled
+    $matched = true; // Ensure this marks the definition as answered
+}
 if (strpos($question, 'depart') !== false) {
     $departs = array_unique(array_column($offers, 'depart'));
     $response .= "🚏 Départs disponibles : " . implode(", ", $departs) . "<br>";
     $matched = true;
 }
 
-if (strpos($question, 'destination') !== false) {
-    $destinations = array_unique(array_column($offers, 'destination'));
-    $response .= "📍 Destinations disponibles : " . implode(", ", $destinations) . "<br>";
+if (strpos($question, 'destination') !== false && strpos($question, 'définition') === false) {
+    // Remove unnecessary words like "pour"
+    $question_cleaned = str_ireplace('pour', '', $question);
+
+    // Match the destination using a regex
+    preg_match('/destinations\s+([a-zA-Z ]+)/i', $question_cleaned, $matches);
+    $destination_demande = trim(strtolower($matches[1] ?? ''));
+
+    // Fetch available destinations dynamically from the database
+    $sql = "SELECT DISTINCT destination FROM covoiturage";
+    $stmt = $pdo->query($sql);
+    $destinations = $stmt->fetchAll(PDO::FETCH_COLUMN); // Get an array of distinct destinations
+
+    if ($destination_demande) {
+        // Match destinations based on the cleaned input
+        $trajets_filtered = array_filter($offers, function($offer) use ($destination_demande) {
+            return stripos(strtolower($offer['destination']), $destination_demande) !== false;
+        });
+
+        if ($trajets_filtered) {
+            $response .= "Voici les trajets disponibles pour la destination *$destination_demande* :<br>";
+            foreach ($trajets_filtered as $trajet) {
+                $response .= "🚗 *Destination :* " . $trajet['destination'] . "<br>";
+                $response .= "🗓️ *Date et Heure :* " . $trajet['date_heure'] . "<br>";
+                $response .= "💰 *Tarif :* " . $trajet['tarif'] . "€<br>";
+                $response .= "🛣️ *Départ :* " . $trajet['depart'] . "<br>";
+                $response .= "🛺 *Places disponibles :* " . $trajet['places_dispo'] . "<br>";
+                $response .= "🚘 *Marque et Voiture :* " . $trajet['marque'] . " - " . $trajet['matricule_voiture'] . "<br>";
+                $response .= "🎨 *Couleur :* " . $trajet['couleur'] . "<br>";
+                $response .= "📸 *Image :* " . $trajet['image'] . "<br><br>";
+            }
+        } else {
+            $response .= "Désolé, il n'y a pas de trajets pour la destination *$destination_demande* pour le moment. 🙁<br>";
+        }
+    } else {
+        // If no specific destination is mentioned, list all available destinations
+        $response .= "📍 Destinations disponibles : " . implode(", ", $destinations) . "<br>";
+    }
     $matched = true;
 }
+
+
 
 if ((strpos($question, 'place') !== false || strpos($question, 'dispo') !== false) && strpos($question, 'modifier') === false && !preg_match('/réserver\s*\d+\s*pour\s*\d+\s*places*/i', $question)) {
     $response .= "👥 Places disponibles :<br>";
@@ -89,7 +152,7 @@ if (strpos($question, 'matricule') !== false || strpos($question, 'voiture') !==
     $matched = true;
 }
 
-if (strpos($question, 'covoiturage') !== false || strpos($question, 'trajet') !== false) {
+if (strpos($question, 'covoiturage') !== false && strpos($question, 'définition') === false || strpos($question, 'trajet') !== false  && strpos($question, 'définition') === false) {
     $response .= "🚗 Nos trajets disponibles :<br>";
 
     $i = 1;
@@ -317,7 +380,7 @@ if (preg_match('/modifier\s+réservation\s*(\d+)\s+avec\s+(\d+)\s*places?(?:\s+e
 
 // Si aucun mot-clé n'a été reconnu
 if (!$matched) {
-    $response = "🤖 Désolé ! Je ne comprends pas. Tu peux me poser une question sur les **covoiturages**, le **départ**, la **destination**, les **places**, le **tarif** ou la **voiture**.";
+    $response = "🤖 Désolé ! Je ne comprends pas. Tu peux me poser une question sur les *covoiturages*, le *départ*, la *destination*, les *places*, le *tarif* ou la *voiture*.";
 }
 
 echo $response;

@@ -22,7 +22,7 @@ if (isset($_POST['email']) && isset($_POST['password']) && isset($_POST['action'
 
 
         echo "<script>alert('Connexion réussie. Bienvenue !');</script>";
-        echo "<script>window.location.href='user_profile.php';</script>";
+        echo "<script>window.location.href='index.php';</script>";
         exit;
     } 
 	elseif ($user && $user['status'] === 'blocked') {

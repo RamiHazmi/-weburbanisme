@@ -189,6 +189,21 @@ class userC
             die('Erreur: ' . $e->getMessage());
         }
     }
+    public function getUserRegistrationsPerDay() {
+        $sql = "SELECT DATE(created_at) AS date, COUNT(*) AS count
+                FROM user
+                GROUP BY DATE(created_at)
+                ORDER BY DATE(created_at)";
+        $db = config::getConnexion();
+        try {
+            $query = $db->query($sql);
+            return $query->fetchAll();
+        } catch (Exception $e) {
+            die('Erreur: ' . $e->getMessage());
+        }
+    }
+    
+    
 
 }
 

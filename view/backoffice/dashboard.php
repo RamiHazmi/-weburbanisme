@@ -15,6 +15,10 @@ include_once __DIR__.'/../../database.php';
 
 $userC = new userC();
 $userStats = $userC->getUserStats();
+$userRegistrations = $userC->getUserRegistrationsPerDay();
+$registrationDates = array_column($userRegistrations, 'date');
+$registrationCounts = array_column($userRegistrations, 'count');
+
 
 // Traduire les clés anglais → français
 $statusLabelsUser = ['Actif', 'Bloqué'];
@@ -22,6 +26,7 @@ $statusCountsUser = [
     $userStats['active'],
     $userStats['blocked']
 ];
+
 ?>
 <!doctype html>
 <html class="fixed">
@@ -739,20 +744,34 @@ $statusCountsUser = [
     </h2>
 </div>
 
-
-		<div class="row">
-        <div class="col-md-6">
-            <section class="panel" style="min-height: 360px;">
-                <header class="panel-heading">
-                    <h2 class="panel-title">Statut des Utilisateurs</h2>
-                    <p class="panel-subtitle">Répartition des utilisateurs actifs et bloqués</p>
-                </header>
-                <div class="panel-body d-flex justify-content-center align-items-center">
-                    <canvas id="userStatusChart" width="200" height="200" style="display: block; margin: 0 auto;"></canvas>
-                </div>
-            </section>
-        </div>
+<div class="row">
+    <!-- Statut des Utilisateurs -->
+    <div class="col-md-6">
+        <section class="panel" style="min-height: 360px;">
+            <header class="panel-heading">
+                <h2 class="panel-title">Statut des Utilisateurs</h2>
+                <p class="panel-subtitle">Répartition des utilisateurs actifs et bloqués</p>
+            </header>
+            <div class="panel-body d-flex justify-content-center align-items-center">
+                <canvas id="userStatusChart" width="200" height="200" style="display: block; margin: 0 auto;"></canvas>
+            </div>
+        </section>
     </div>
+
+    <!-- Inscriptions des Utilisateurs (Par Jour) -->
+    <div class="col-md-6">
+        <section class="panel">
+            <header class="panel-heading">
+                <h2 class="panel-title">Inscriptions des Utilisateurs (Par Jour)</h2>
+                <p class="panel-subtitle">Évolution quotidienne des nouvelles inscriptions</p>
+            </header>
+            <div class="panel-body">
+                <canvas id="userRegistrationsChart" width="800" height="300"></canvas>
+            </div>
+        </section>
+    </div>
+</div>
+
 
     <script>
 const donutData = {
@@ -781,6 +800,33 @@ const donutData = {
         });
     </script>
 
+<script>
+const userRegistrationData = {
+    labels: <?= json_encode($registrationDates) ?>,
+    datasets: [{
+        label: 'Inscriptions par jour',
+        data: <?= json_encode($registrationCounts) ?>,
+        borderColor: '#8e44ad',
+        backgroundColor: 'rgba(142, 68, 173, 0.2)',
+        fill: true,
+        tension: 0.4
+    }]
+};
+
+new Chart(document.getElementById('userRegistrationsChart'), {
+    type: 'line',
+    data: userRegistrationData,
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        }
+    }
+});
+</script>
 		<!-- malek -->
 
 				<div style="margin-bottom: 30px;">
@@ -833,36 +879,97 @@ const donutData = {
             label: 'Réservations par jour',
             data: <?= json_encode($dateCounts) ?>,
             borderColor: '#3498db',
-            tension: 0.3,
-            fill: false
+            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#3498db'
         }]
     };
 
+    // PIE Chart with top-to-left clockwise animation
     new Chart(document.getElementById('reservationStatusChart'), {
         type: 'pie',
         data: pieData,
         options: {
-            responsive: false,
+            responsive: true,
             maintainAspectRatio: false,
+            animation: {
+                animateRotate: true,
+                animateScale: true,
+                duration: 1500,
+                easing: 'easeInOutCirc'
+            },
             plugins: {
-                legend: {
-                    position: 'bottom'
+                legend: { position: 'bottom' },
+                title: {
+                    display: true,
+                    text: 'Répartition des Réservations'
                 }
             }
         }
     });
 
-    new Chart(document.getElementById('lineReservationsOverTime'), {
-        type: 'line',
-        data: lineData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
+    // LINE Chart with point-by-point grow animation from left to right
+	new Chart(document.getElementById('lineReservationsOverTime'), {
+    type: 'line',
+    data: lineData,
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+            duration: 0 // disable global animation
+        },
+        animations: {
+            borderDashOffset: {
+                from: 1000,
+                to: 0,
+                duration: 2000,
+                easing: 'linear'
+            }
+        },
+        elements: {
+            line: {
+                borderWidth: 3,
+                tension: 0.3,
+                fill: true,
+                backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                borderDash: [1000], // "invisible" line
+                borderDashOffset: 1000 // start hidden
+            },
+            point: {
+                radius: 3,
+                backgroundColor: '#3498db',
+                borderColor: '#fff',
+                borderWidth: 2
+            }
+        },
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        },
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Date de Réservation'
+                }
+            },
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Nombre de Réservations'
+                }
+            }
         }
-    });
-	
-</script>
+    }
+});
 
+
+
+</script>
 
 		
 
