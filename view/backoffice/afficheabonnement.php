@@ -1,6 +1,7 @@
 <?php
 require_once 'C:/xampp/htdocs/Urbanisme/db_connect.php';
 require_once 'C:/xampp/htdocs/Urbanisme/Model/abonnement.php';
+<<<<<<< HEAD
 require_once 'C:/xampp/htdocs/Urbanisme/Controller/notificationController.php';
 
  
@@ -8,6 +9,12 @@ require_once 'C:/xampp/htdocs/Urbanisme/Controller/notificationController.php';
 $conn = config::getConnexion();
 
 $sql = "SELECT a.*, p.nom_parking, u.username, u.phone
+=======
+
+$conn = config::getConnexion();
+
+$sql = "SELECT a.*, p.nom_parking, u.username 
+>>>>>>> origin/parking
         FROM abonnement a
         JOIN parking p ON a.id_parking = p.id_parking
         JOIN user u ON a.id_user = u.id";
@@ -20,7 +27,11 @@ $abonnements = $stmt->fetchAll();
  
 ?>
 
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> origin/parking
 
 <!doctype html>
 <html class="fixed">
@@ -58,9 +69,12 @@ $abonnements = $stmt->fetchAll();
 		<!-- Head Libs -->
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
 
+<<<<<<< HEAD
 	 
 
 
+=======
+>>>>>>> origin/parking
 	</head>
 	<body>
 		<section class="body">
@@ -69,7 +83,11 @@ $abonnements = $stmt->fetchAll();
 			<header class="header">
 				<div class="logo-container">
 					<a href="../" class="logo">
+<<<<<<< HEAD
 						<img src="assets/images/logosansnom555.png" height="35" alt="Porto Admin" />
+=======
+						<img src="assets/images/logo.png" height="35" alt="Porto Admin" />
+>>>>>>> origin/parking
 					</a>
 					<div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
 						<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
@@ -539,7 +557,11 @@ $abonnements = $stmt->fetchAll();
 												</a>
 											</li>
 											<li>
+<<<<<<< HEAD
 												<a href="http://localhost/Urbanisme/view/backoffice/indexparking.php">
+=======
+												<a href="http://localhost/Urbanisme/view/backoffice/index.php">
+>>>>>>> origin/parking
 													 Parking
 												</a>
 											</li>
@@ -567,7 +589,11 @@ $abonnements = $stmt->fetchAll();
 												</a>
 											</li>
 											<li>
+<<<<<<< HEAD
                                                 <a href="http://localhost/Urbanisme/view/backoffice/afficheparking.php">
+=======
+                                                <a href="http://localhost/Urbanisme/view/backoffice/affiche.php">
+>>>>>>> origin/parking
 													 affiche parking
 												</a>
 											</li>
@@ -764,19 +790,28 @@ $abonnements = $stmt->fetchAll();
 
 					<!-- start: page -->
                     <h2 style="font-family: Arial, sans-serif;">Liste des Abonnements</h2>
+<<<<<<< HEAD
 					 
 
 						
+=======
+>>>>>>> origin/parking
                         <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden;">
                             <thead>
                                 <tr style="background-color: #2c3e50; color: white;">
                                     <th style="padding: 12px; border: 1px solid #ddd;">Nom Client</th>
+<<<<<<< HEAD
 									<th style="padding: 12px; border: 1px solid #ddd;">Num Client</th>
+=======
+>>>>>>> origin/parking
                                     <th style="padding: 12px; border: 1px solid #ddd;">Parking</th>
                                     <th style="padding: 12px; border: 1px solid #ddd;">Date Début</th>
                                     <th style="padding: 12px; border: 1px solid #ddd;">Date Fin</th>
                                     <th style="padding: 12px; border: 1px solid #ddd;">Places Réservées</th>
+<<<<<<< HEAD
 									<th style="padding: 12px; border: 1px solid #ddd;">statut</th>
+=======
+>>>>>>> origin/parking
                                     <th style="padding: 12px; border: 1px solid #ddd;">Actions</th>
                                 </tr>
                             </thead>
@@ -784,12 +819,18 @@ $abonnements = $stmt->fetchAll();
                                 <?php foreach ($abonnements as $abonnement): ?>
                                     <tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#d6eaf8';" onmouseout="this.style.backgroundColor='#f9f9f9';">
                                         <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['username']) ?></td>
+<<<<<<< HEAD
 										<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['phone']) ?></td>
+=======
+>>>>>>> origin/parking
                                         <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['nom_parking']) ?></td>
                                         <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['date_debut']) ?></td>
                                         <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['date_fin']) ?></td>
                                         <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['places_reservees']) ?></td>
+<<<<<<< HEAD
 										<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['status']) ?></td>
+=======
+>>>>>>> origin/parking
                                         <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
                                             <!-- Exemple de bouton de suppression ou modification -->
                                             <form class="form_supp_abonnement" method="POST" onsubmit="return false;" style="display: inline;">
@@ -802,11 +843,14 @@ $abonnements = $stmt->fetchAll();
 											<button class="btn-edit-abonnement" data-id="<?= $abonnement['id_abonnement'] ?>" data-username="<?= htmlspecialchars($abonnement['username']) ?>" data-parking="<?= htmlspecialchars($abonnement['nom_parking']) ?>" data-debut="<?= $abonnement['date_debut'] ?>" data-fin="<?= $abonnement['date_fin'] ?>" data-places="<?= $abonnement['places_reservees'] ?>" style="padding: 6px 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
 												Modifier
 											</button>
+<<<<<<< HEAD
 											
 											 
 
 
 
+=======
+>>>>>>> origin/parking
 
 
                                             <!-- Tu peux ajouter ici un bouton Modifier avec une modale si besoin -->
@@ -843,11 +887,19 @@ $abonnements = $stmt->fetchAll();
 											<input type="text" name="nom_parking" id="edit-parking" style="width: 100%; padding: 8px; margin-bottom: 10px;" readonly>
 
 											<label>Date Début :</label>
+<<<<<<< HEAD
 											<input type="datetime-local" name="date_debut" id="edit-date-debut" style="width: 100%; padding: 8px; margin-bottom: 10px;">
 											<span id="erreur_nom" class="erreur-message"></span>
 
 											<label>Date Fin :</label>
 											<input type="datetime-local"name="date_fin" id="edit-date-fin" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+=======
+											<input type="date" name="date_debut" id="edit-date-debut" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+											<span id="erreur_nom" class="erreur-message"></span>
+
+											<label>Date Fin :</label>
+											<input type="date" name="date_fin" id="edit-date-fin" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+>>>>>>> origin/parking
 
 											<label>Places Réservées :</label>
 											<input type="number" name="places_reservees" id="edit-places" style="width: 100%; padding: 8px; margin-bottom: 10px;">
@@ -863,6 +915,7 @@ $abonnements = $stmt->fetchAll();
 									</div>
 								</div>
 
+<<<<<<< HEAD
 								 
 
 
@@ -956,6 +1009,10 @@ $abonnements = $stmt->fetchAll();
 							}
 							?>
 						
+=======
+                            </tbody>
+                        </table>
+>>>>>>> origin/parking
 						
 						<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -1084,6 +1141,7 @@ $abonnements = $stmt->fetchAll();
 
 
 
+<<<<<<< HEAD
 					<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 					<!-- Graphique Taux d'occupation par parking -->
 					<h2 style="text-align: center; font-family: 'Segoe UI', sans-serif; color: #333; margin-top: 40px; font-size: 24px; border-bottom: 2px solid #4CAF50; padding-bottom: 10px;">
@@ -1161,6 +1219,9 @@ $abonnements = $stmt->fetchAll();
 
 
 				 
+=======
+
+>>>>>>> origin/parking
 
 
 					<!-- end: page -->

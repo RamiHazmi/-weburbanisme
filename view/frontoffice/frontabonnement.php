@@ -1,23 +1,33 @@
 <?php
 require_once 'C:/xampp/htdocs/Urbanisme/db_connect.php';
 require_once 'C:/xampp/htdocs/Urbanisme/Model/abonnement.php';
+<<<<<<< HEAD
 require_once 'C:/xampp/htdocs/Urbanisme/Model/notification.php';
 require_once 'C:/xampp/htdocs/Urbanisme/Controller/stripeController.php';
+=======
+>>>>>>> origin/parking
 
 $conn = config::getConnexion();
 
 $sql = "SELECT a.*, p.nom_parking, u.username 
         FROM abonnement a
         JOIN parking p ON a.id_parking = p.id_parking
+<<<<<<< HEAD
         JOIN user u ON a.id_user = u.id
         WHERE a.id_user = :user_id";
 
 $stmt = $conn->prepare($sql);
 $stmt->execute(['user_id' => 1]);
+=======
+        JOIN user u ON a.id_user = u.id";
+
+$stmt = $conn->prepare($sql);
+>>>>>>> origin/parking
 $stmt->execute();
 $abonnements = $stmt->fetchAll();
 ?>
 
+<<<<<<< HEAD
  
 
  
@@ -48,6 +58,9 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
 
 
     
+=======
+
+>>>>>>> origin/parking
 
 
 <!DOCTYPE html>
@@ -60,9 +73,12 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
     <meta content="" name="keywords">
     <meta content="" name="description">
 
+<<<<<<< HEAD
    <script src="https://js.stripe.com/v3/"></script>
 
 
+=======
+>>>>>>> origin/parking
     <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon">
 
@@ -145,7 +161,11 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
     <!-- About Start -->
     <h2 style="font-family: Arial, sans-serif; text-align: center; color: #34495e;">Liste des Abonnements</h2>
 
+<<<<<<< HEAD
     <div class="abonnement-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-evenly; padding: 20px;">
+=======
+<div class="abonnement-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-evenly; padding: 20px;">
+>>>>>>> origin/parking
     <?php foreach ($abonnements as $abonnement): ?>
         <div class="abonnement-card" style="
             background-color: #fff; 
@@ -175,27 +195,41 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
             <div style="font-size: 14px; color: #7f8c8d; margin-bottom: 20px;">
                 <strong>Places Réservées :</strong> <?= htmlspecialchars($abonnement['places_reservees']) ?>
             </div>
+<<<<<<< HEAD
             <div style="font-size: 14px; color: #7f8c8d; margin-bottom: 20px;">
                 <strong>statut :</strong> <?= htmlspecialchars($abonnement['status']) ?>
             </div>
 
             <div style="display: flex; gap: 10px; width: 100%; margin-bottom: 10px;">
                 <form class="form_supp_abonnement" method="POST" onsubmit="return false;" style="flex: 1;">
+=======
+
+            <div style="display: flex; justify-content: space-between; width: 100%;">
+                <form class="form_supp_abonnement" method="POST" onsubmit="return false;" style="display: inline;">
+>>>>>>> origin/parking
                     <input type="hidden" name="id_abonnement" value="<?= $abonnement['id_abonnement'] ?>">
                     <button type="button" class="btn-delete-abonnement" data-id="<?= $abonnement['id_abonnement'] ?>" style="
                         background-color: #e74c3c; 
                         color: white; 
                         border: none; 
+<<<<<<< HEAD
                         padding: 10px 0; 
                         border-radius: 5px; 
                         cursor: pointer;
                         font-size: 14px;
                         width: 100%;
+=======
+                        padding: 8px 16px; 
+                        border-radius: 5px; 
+                        cursor: pointer;
+                        font-size: 14px;
+>>>>>>> origin/parking
                         transition: background-color 0.3s ease;
                     ">
                         Supprimer
                     </button>
                 </form>
+<<<<<<< HEAD
 
                 <button class="btn-edit-abonnement" 
                     data-id="<?= $abonnement['id_abonnement'] ?>" 
@@ -247,6 +281,21 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
 
 
              
+=======
+                <button class="btn-edit-abonnement" data-id="<?= $abonnement['id_abonnement'] ?>" data-username="<?= htmlspecialchars($abonnement['username']) ?>" data-parking="<?= htmlspecialchars($abonnement['nom_parking']) ?>" data-debut="<?= $abonnement['date_debut'] ?>" data-fin="<?= $abonnement['date_fin'] ?>" data-places="<?= $abonnement['places_reservees'] ?>" style="
+                    background-color: #27ae60; 
+                    color: white; 
+                    border: none; 
+                    padding: 8px 16px; 
+                    border-radius: 5px; 
+                    cursor: pointer;
+                    font-size: 14px;
+                    transition: background-color 0.3s ease;
+                ">
+                    Modifier
+                </button>
+            </div>
+>>>>>>> origin/parking
         </div>
     <?php endforeach; ?>
 </div>
@@ -276,10 +325,17 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
             <input type="text" name="nom_parking" id="edit-parking" style="width: 100%; padding: 8px; margin-bottom: 10px;" readonly>
 
             <label>Date Début :</label>
+<<<<<<< HEAD
             <input type="datetime-local" name="date_debut" id="edit-date-debut" style="width: 100%; padding: 8px; margin-bottom: 10px;">
 
             <label>Date Fin :</label>
             <input type="datetime-local" name="date_fin" id="edit-date-fin" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+=======
+            <input type="date" name="date_debut" id="edit-date-debut" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+            <label>Date Fin :</label>
+            <input type="date" name="date_fin" id="edit-date-fin" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+>>>>>>> origin/parking
 
             <label>Places Réservées :</label>
             <input type="number" name="places_reservees" id="edit-places" style="width: 100%; padding: 8px; margin-bottom: 10px;">
@@ -293,6 +349,7 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
         </form>
     </div>
 </div>
+<<<<<<< HEAD
 <!-- Modale Paiement -->
 <div id="paymentModal" style="
     display: none; 
@@ -352,6 +409,8 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
 
 
 
+=======
+>>>>>>> origin/parking
 
 
                         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -416,6 +475,7 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
 
 							// Afficher le formulaire de modification rempli avec les données
 							$(".btn-edit-abonnement").click(function () {
+<<<<<<< HEAD
                                 var status = $(this).data('status');
 
 			// Ne pas ouvrir la modale si l'abonnement est déjà payé
@@ -423,6 +483,8 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
                                     alert("Cet abonnement a déjà été payé et ne peut plus être modifié.");
                                     return;
                                 }
+=======
+>>>>>>> origin/parking
 								var id = $(this).data('id');
 								var username = $(this).data('username');
 								var parking = $(this).data('parking');
@@ -460,7 +522,12 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
 											var data = JSON.parse(response);
 
 											if (data.status === "success") {
+<<<<<<< HEAD
 												 
+=======
+												// Remplacer l'alerte par un message dans une modale ou un autre feedback
+												// alert(data.message); // Supprimer ou commenter cette ligne
+>>>>>>> origin/parking
 												$("#notification").text(data.message).fadeIn().delay(2000).fadeOut(); // Afficher un message discret
 												location.reload();
 											} else {
@@ -484,6 +551,7 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
 
 						});
 					</script>
+<<<<<<< HEAD
                      
                      <script>
                         document.addEventListener('DOMContentLoaded', function() {
@@ -566,6 +634,8 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
 
 
 
+=======
+>>>>>>> origin/parking
 
 
     <!-- Team End -->

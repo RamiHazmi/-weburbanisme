@@ -90,6 +90,7 @@ class Abonnement {
             return "Erreur : " . $e->getMessage();
         }
     }
+<<<<<<< HEAD
     public function getAbonnementsExpires()
     {
         $pdo = config::getConnexion();
@@ -117,6 +118,8 @@ class Abonnement {
     
     
 
+=======
+>>>>>>> origin/parking
     
 }
 ?>

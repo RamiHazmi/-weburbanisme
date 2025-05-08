@@ -109,7 +109,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Fact Start -->
     <div class="container py-5">
         <h2 class="mb-4">Rechercher un parking par ville</h2>
+<<<<<<< HEAD
  
+=======
+
+       <!-- Formulaire de recherche par ville -->
+        <form id="recherche-ville" class="d-flex mb-3">
+            <input type="text" class="form-control me-2" name="ville_recherche" placeholder="Entrez la ville"  >
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+        </form>
+>>>>>>> origin/parking
 
         <!-- Formulaire de filtre par sécurité -->
         <form id="form-filtre" class="d-flex mb-5">
@@ -119,6 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <option value="securise">Sécurisé</option>
                 <option value="non_securise">Non Sécurisé</option>
             </select>
+<<<<<<< HEAD
            <!-- Bouton de recherche -->
             <button type="submit" class="btn btn-primary" style="font-size: 16px; padding: 12px 25px; border: none; 
                     background-color: #007bff; color: white; cursor: pointer; border-radius: 8px; transition: background-color 0.3s;">
@@ -137,6 +147,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 location.reload(); // Recharge la page
             }
         </script>
+=======
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+        </form>
+
+>>>>>>> origin/parking
 
          
             <!-- MODAL DE RÉSERVATION -->
