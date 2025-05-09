@@ -1,40 +1,13 @@
 <?php
-session_start();
-include('../../controller/controllercovoituragereservation.php');
-
-
-$reservationController = new ReservationController();
-$reservations = $reservationController->afficherReservationsAvecDetails();
-include_once __DIR__.'/../../database.php';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get the raw POST data
-    $data = json_decode(file_get_contents('php://input'), true);
-
-    // Log the received data for debugging
-    error_log(print_r($data, true));
-
-    if (isset($data['action']) && $data['action'] === 'deleteCovoiturage') {
-        $id_trajet = intval($data['id_trajet']); // Ensure it's an integer
-
-        if ($id_trajet > 0) {
-            // Call the delete function from the controller
-            $response = $covoiturageController->deleteCovoiturage($id_trajet);
-        } else {
-            $response = ['status' => 'error', 'message' => 'Invalid ID'];
-        }
-
-        header('Content-Type: application/json');
-        echo json_encode($response);
-        exit;
-    }
-}
-
+require_once 'C:/xampp/htdocs/urbanisme/Model/parking.php';
+ 
+$parkings = Parking::getAllParkings();
 ?>
+
 <!doctype html>
 <html class="fixed">
 	<head>
-
+	<script src="validation.js" defer></script>
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
@@ -45,10 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 		<!-- Mobile Metas -->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
-		<!-- COVOITURAGE  -->
-		<link rel="stylesheet" href="covoiturage.css">
-
 
 		<!-- Web Fonts  -->
 		<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
@@ -71,6 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		<!-- Head Libs -->
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
 
+		 
+
+
 	</head>
 	<body>
 		<section class="body">
@@ -79,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			<header class="header">
 				<div class="logo-container">
 					<a href="../" class="logo">
-						<img src="assets/images/logo.png" height="35" alt="Porto Admin" />
+						<img src="assets/images/logosansnom.png" height="35" alt="Porto Admin" />
 					</a>
 					<div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
 						<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
@@ -264,17 +236,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 					<span class="separator"></span>
 			
 					<div id="userbox" class="userbox">
-					<a href="#" data-toggle="dropdown">
-							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@JSOFT.com">
-								
-							<?php if (isset($_SESSION['user_username'])): ?>
-								<span class="name"><?= htmlspecialchars($_SESSION['user_username']) ?></span>
-							<?php endif; ?>
+						<a href="#" data-toggle="dropdown">
+							<figure class="profile-picture">
+								<img src="assets/images/!logged-user.jpg" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/!logged-user.jpg" />
+							</figure>
+							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
+								<span class="name">John Doe Junior</span>
 								<span class="role">administrator</span>
 							</div>
-							
 			
+							<i class="fa custom-caret"></i>
 						</a>
+			
 						<div class="dropdown-menu">
 							<ul class="list-unstyled">
 								<li class="divider"></li>
@@ -521,13 +494,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent">
+									 <li class="nav-parent">
 										<a>
 											<i class="fa fa-list-alt" aria-hidden="true"></i>
 											<span>User</span>
 										</a>
 										<ul class="nav nav-children">
-										<li>
+											<li>
 												<a href="ajouter.php">
 													form User
 												</a>
@@ -540,42 +513,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 											
 										</ul>
 									</li>
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent  ">
 										<a>
 											<i class="fa fa-table" aria-hidden="true"></i>
 											<span>Covoiturage</span>
 										</a>
 										<ul class="nav nav-children">
-										<li>
+										<li >
 												<a href="indexc.php">
-													 form covoiturage
+													form Covoiturage
 												</a>
 											</li>
 											<li>
-												<a href="tablec.php">
+											<a href="tablec.php">
 													 table covoiturage
 												</a>
 											</li>
-											<li class="nav-active">
-												<a href="tablerceservation.php">
+											<li>
+												<a href="tablecreservation.php">
 													 reservation covoiturage
 												</a>
 											</li>
 											
 										</ul>
 									</li>
-									<li class="nav-parent"  >
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-map-marker" aria-hidden="true"></i>
 											<span>Parking</span>
 										</a>
 										<ul class="nav nav-children">
-											<li  >
+											<li >
 												<a href="indexparking.php">
 													 form parking
 												</a>
 											</li>
-											<li >
+											<li class="nav-active">
 												<a href="afficheparking.php">
 													 table parking
 												</a>
@@ -594,8 +567,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 										</a>
 										<ul class="nav nav-children">
 											<li>
-												<a href="layouts-default.html">
-													 Default
+												<a href="http://localhost/Urbanisme/view/backoffice/afficheabonnement.php">
+													 affiche reservation 
 												</a>
 											</li>
 											<li>
@@ -649,7 +622,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 										</ul>
 									</li>
 									<li>
-									<a href="../frontoffice/index.php" target="_blank">
+										<a href="http://localhost/urbanisme/view/frontoffice/index.php" target="_blank">
 											<i class="fa fa-external-link" aria-hidden="true"></i>
 											<span>Front-End <em class="not-included">(Not Included)</em></span>
 										</a>
@@ -721,7 +694,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Table de Reservation</h2>
+						<h2>Basic Tables</h2>
 					
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -738,77 +711,306 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 						</div>
 					</header>
 
-			
+					<!-- start: page -->
+					<h2 style="font-family: Arial, sans-serif;">Liste des Parkings</h2>
+					<table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden;">
+						<thead>
+							<tr style="background-color: #2c3e50; color: white;">
+								<th style="padding: 12px; border: 1px solid #ddd;">Nom</th>
+								<th style="padding: 12px; border: 1px solid #ddd;">Localisation</th>
+								<th style="padding: 12px; border: 1px solid #ddd;">Ville</th>
+								<th style="padding: 12px; border: 1px solid #ddd;">Capacité Totale</th>
+								<th style="padding: 12px; border: 1px solid #ddd;">Places Disponibles</th>
+								<th style="padding: 12px; border: 1px solid #ddd;">Tarif Horaire (€)</th>
+								<th style="padding: 12px; border: 1px solid #ddd;">Sécurisé</th>
+								<th style="padding: 12px; border: 1px solid #ddd;">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach ($parkings as $parking): ?>
+								<tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#d6eaf8';" onmouseout="this.style.backgroundColor='#f9f9f9';">
+									<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($parking['nom_parking']) ?></td>
+									<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($parking['localisation']) ?></td>
+									<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($parking['ville']) ?></td>
+									<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($parking['capacite_totale']) ?></td>
+									<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($parking['places_dispo']) ?></td>
+									<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($parking['tarif_horaire']) ?></td>
+									<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= $parking['securise'] ? 'Oui' : 'Non' ?></td>
+									<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+										<form class="form_suppression" method="POST" onsubmit="return validerFormulaire();">
+											<input type="hidden" name="id_parking" value="<?= $parking['id_parking'] ?>">
+											<button type="submit" class="delete-btn" style="padding: 6px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+												Supprimer
+											</button>
+										</form>
+										<button class="modify-btn" style="padding: 6px 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;" data-id="<?= $parking['id_parking'] ?>" data-nom="<?= $parking['nom_parking'] ?>" data-localisation="<?= $parking['localisation'] ?>" data-ville="<?= $parking['ville'] ?>" data-capacite="<?= $parking['capacite_totale'] ?>" data-places="<?= $parking['places_dispo'] ?>" data-tarif="<?= $parking['tarif_horaire'] ?>" data-securise="<?= $parking['securise'] ? '1' : '0' ?>">
+                        				Modifier
+                    					</button>
+									</td>
+								</tr>
+								
 
-                    <div class="col-md-12">  
-    <section class="panel">
-        <header class="panel-heading">
-            <h2 class="panel-title">Liste des Réservations</h2>
-        </header>
-        <div class="panel-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped mb-none">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nom Client</th> 
-                            <th>Phone</th> 
-                            <th>Départ</th>
-                            <th>Destination</th>
-							<th>date covoiturage</th>
-                            <th>Places Réservées</th>
-                            <th>Commentaire</th>
-                            <th>Status</th>
-                            <th>Date Réservation</th>
-                            <th>Actions</th>
-							<th>       </th>
+							<?php endforeach; ?>
+							<div id="modal-suppression" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+									<div style="background: white; padding: 20px; border-radius: 5px; width: 350px;">
+										<h4>Confirmation</h4>
+										<p>Voulez-vous vraiment supprimer ce parking ?</p>
+										<form id="form-confirm-supp" method="post">
+										<input type="hidden" name="id_parking" id="id-parking-supp">
+										<button type="submit" style="background-color: red; color: white; padding: 10px 20px; border: none; border-radius: 5px;">Supprimer</button>
+										<button type="button" onclick="$('#modal-suppression').hide();" style="margin-left: 10px; padding: 10px 20px;">Annuler</button>
+										</form>
+									</div>
+								</div>
+						</tbody>
+					</table>
+					<!-- Fenêtre modale de modification -->
+					<div id="modal-modifier" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center;">
+						<div style="background: white; padding: 20px; border-radius: 5px; width: 400px; max-height: 90vh; overflow-y: auto;" >
+							<h3>Modifier Parking</h3>
+							<form id="form-modifier">
+								<input type="hidden" id="parking-id" name="id_parking">
+								<div style="margin-bottom: 10px;">
+									<label for="nom_parking">Nom:</label>
+									<input type="text" id="nom_parking" name="nom_parking"  style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+								</div>
+								<div style="margin-bottom: 10px;">
+									<label for="localisation">Localisation:</label>
+									<input type="text" id="localisation" name="localisation"  style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+								</div>
+								<div style="margin-bottom: 10px;">
+									<label for="ville">Ville:</label>
+									<input type="text" id="ville" name="ville"  style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+								</div>
+								<div style="margin-bottom: 10px;">
+									<label for="capacite_totale">Capacité Totale:</label>
+									<input type="number" id="capacite_totale" name="capacite_totale"  style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+								</div>
+								<div style="margin-bottom: 10px;">
+									<label for="places_dispo">Places Disponibles:</label>
+									<input type="number" id="places_dispo" name="places_dispo"  style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+								</div>
+								<div style="margin-bottom: 10px;">
+									<label for="tarif_horaire">Tarif Horaire (€):</label>
+									<input type="number" step="0.01" id="tarif_horaire" name="tarif_horaire"  style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+								</div>
+								<div style="margin-bottom: 10px;">
+									<label for="securise">Sécurisé:</label>
+									<select id="securise" name="securise"  style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;">
+										<option value="1">Oui</option>
+										<option value="0">Non</option>
+									</select>
+								</div>
+								<button type="submit" style="background-color: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px;">Modifier</button>
+								<button type="button" onclick="closeModal()" style="background-color: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 5px;">Annuler</button>
+							</form>
 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($reservations as $res): ?>
-                            <tr id="row-<?= htmlspecialchars($res['id_reservationc']) ?>">
-                                <td><?= htmlspecialchars($res['id_reservationc']) ?></td>
-                                <td><?= htmlspecialchars($res['username']) ?></td> 
-                                <td><?= htmlspecialchars($res['phone']) ?></td>  
-                                <td><?= htmlspecialchars($res['depart']) ?></td>
-                                <td><?= htmlspecialchars($res['destination']) ?></td>
-								<td><?= htmlspecialchars($res['date_heure']) ?></td>
-                                <td><?= htmlspecialchars($res['nbr_place']) ?></td>
-                                <td><?= htmlspecialchars($res['commentaire']) ?></td>
-                                <td class="statut-cell"><?= htmlspecialchars($res['statut']) ?></td>
-                                <td><?= htmlspecialchars($res['date_reservation']) ?></td>
-                                <td>
-                                    <form onsubmit="return confirmDelete(event);">
-                                        <input type="hidden" name="reservation_id" value="<?= htmlspecialchars($res['id_reservationc']) ?>">
-                                        <button type="submit" class="btn btn-danger">Supprimer</button>
-                                    </form>
-                                </td>
-                                <td>
-            <form>
-                <input type="hidden" name="reservation_id" value="<?= htmlspecialchars($res['id_reservationc']) ?>">
-                <input type="hidden" name="statut" value="confirmée">
-                <?php if ($res['statut'] !== 'confirmée'): ?>
-                    <button type="button" class="btn btn-success btn-sm update-btn" data-id="<?= $res['id_reservationc'] ?>">Confirmer</button>
-                <?php else: ?>
-                    <button type="button" class="btn btn-success btn-sm update-btn" disabled>Confirmée</button>
-                <?php endif; ?>
-            </form>
-        </td>
+						</div>
+					</div>
 
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-</div>
+				 
+
+					 
+					<button onclick="exporterPDF()"style="margin: 20px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+						Exporter PDF
+					</button>
+					 
+
+					<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+					<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+					<script>
+						async function exporterPDF() {
+							const container = document.createElement("div");
+							container.innerHTML = `
+								<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; background-color: #e0e3e7;">
+									<div style="text-align: center;">
+										<img src="assets/images/logosansnom555.png" alt="Logo" style="width: 250px; margin-bottom: 30px;">
+									</div>
+									<h2 style="text-align: center; color: #1a1a1a; margin-bottom: 30px;">Liste des parkings</h2>
+									<table style="width: 100%; border-collapse: separate; border-spacing: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden;">
+										<thead>
+											<tr style="background-color: #34495e; color: #ffffff;">
+												<th style="padding: 14px; border-bottom: 3px solid #2c3e50;">Nom</th>
+												<th style="padding: 14px; border-bottom: 3px solid #2c3e50;">Localisation</th>
+												<th style="padding: 14px; border-bottom: 3px solid #2c3e50;">Ville</th>
+												<th style="padding: 14px; border-bottom: 3px solid #2c3e50;">Capacité Totale</th>
+												<th style="padding: 14px; border-bottom: 3px solid #2c3e50;">Places Disponibles</th>
+												<th style="padding: 14px; border-bottom: 3px solid #2c3e50;">Tarif Horaire (€)</th>
+												<th style="padding: 14px; border-bottom: 3px solid #2c3e50;">Sécurisé</th>
+											</tr>
+										</thead>
+										<tbody>
+											<?php foreach ($parkings as $index => $parking): ?>
+											<tr style="background-color: <?= $index % 2 === 0 ? '#f8f9fa' : '#ecf0f1' ?>; transition: background-color 0.3s;">
+												<td style="padding: 12px; text-align: center; border-bottom: 1px solid #ccc;"><?= htmlspecialchars($parking['nom_parking']) ?></td>
+												<td style="padding: 12px; text-align: center; border-bottom: 1px solid #ccc;"><?= htmlspecialchars($parking['localisation']) ?></td>
+												<td style="padding: 12px; text-align: center; border-bottom: 1px solid #ccc;"><?= htmlspecialchars($parking['ville']) ?></td>
+												<td style="padding: 12px; text-align: center; border-bottom: 1px solid #ccc;"><?= htmlspecialchars($parking['capacite_totale']) ?></td>
+												<td style="padding: 12px; text-align: center; border-bottom: 1px solid #ccc;"><?= htmlspecialchars($parking['places_dispo']) ?></td>
+												<td style="padding: 12px; text-align: center; border-bottom: 1px solid #ccc;"><?= htmlspecialchars($parking['tarif_horaire']) ?></td>
+												<td style="padding: 12px; text-align: center; border-bottom: 1px solid #ccc;"><?= $parking['securise'] ? 'Oui' : 'Non' ?></td>
+											</tr>
+											<?php endforeach; ?>
+										</tbody>
+									</table>
+								</div>
+							`;
+
+							document.body.appendChild(container);
+
+							setTimeout(() => {
+								html2canvas(container).then(canvas => {
+									const imgData = canvas.toDataURL("image/png");
+									const pdf = new jspdf.jsPDF("p", "mm", "a4");
+									const pageWidth = pdf.internal.pageSize.getWidth();
+									const imgWidth = pageWidth - 20;
+									const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+									pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+									pdf.save("liste_parkings.pdf");
+
+									document.body.removeChild(container);
+								});
+							}, 300);
+						}
+						</script>
 
 
-<script src="../frontoffice/supprimerreservation.js"></script>
 
-    <!-- end: page -->
+
+					
+
+
+					<!-- jQuery -->
+					<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+					
+					<script>
+						function closeModal() {
+							$("#modal-modifier").css("display", "none");
+						}
+					$(document).ready(function() {
+						// Ouvrir la fenêtre modale
+						$(".modify-btn").click(function() {
+							var parkingId = $(this).data('id');
+							var nom = $(this).data('nom');
+							var localisation = $(this).data('localisation');
+							var ville = $(this).data('ville');
+							var capacite = $(this).data('capacite');
+							var places = $(this).data('places');
+							var tarif = $(this).data('tarif');
+							var securise = $(this).data('securise');
+
+							// Remplir les champs avec les données actuelles
+							$("#parking-id").val(parkingId);
+							$("#nom_parking").val(nom);
+							$("#localisation").val(localisation);
+							$("#ville").val(ville);
+							$("#capacite_totale").val(capacite);
+							$("#places_dispo").val(places);
+							$("#tarif_horaire").val(tarif);
+							$("#securise").val(securise);
+
+							// Afficher la fenêtre modale
+							$("#modal-modifier").css("display", "flex");
+						});
+
+						 
+						
+
+						// Soumettre le formulaire de modification
+						$("#form-modifier").submit(function(event) {
+							event.preventDefault();
+							if (!validerFormulaire()) {
+								return;
+							}
+
+							var formData = $(this).serialize();
+
+							$.ajax({
+								type: "POST",
+								url: "../../controller/modparking.php",  
+								data: formData,
+								success: function(response) {
+									 
+									closeModal();
+									 
+									$("#message").html(response);
+									setTimeout(function() {
+										location.reload();
+									}, 1500);
+								},
+								error: function() {
+									$("#message").html("<span style='color:red;'>Erreur lors de la modification.</span>");
+								}
+							});
+						});
+					});
+					</script> 
+
+					 
+
+
+					<!-- Zone d'affichage du message -->
+					<div id="message" style="margin-top: 10px; color: green; font-weight: bold;"></div>
+
+					<!-- jQuery -->
+					<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+					<script>
+					$(".form_suppression").submit(function(e) {
+					e.preventDefault();  
+					var id = $(this).find('input[name="id_parking"]').val();
+					$("#id-parking-supp").val(id);
+					$("#modal-suppression").show();
+					});
+
+					$("#modal-suppression").on("click", function(e) {
+						if (e.target === this) {
+							$(this).hide();
+						}
+					});
+
+
+
+					$(".form_suppression").submit(function(event) {
+						event.preventDefault();
+						var id = $(this).find("input[name='id_parking']").val();
+						$("#id-parking-supp").val(id);  
+						$("#modal-suppression").css("display", "flex");  
+					});
+
+					 
+					$("#form-confirm-supp").submit(function(e) {
+						e.preventDefault();
+						var formData = $(this).serialize();
+
+						$.ajax({
+							type: "POST",
+							url: "../../controller/suppparking.php",
+							data: formData,
+							success: function(response) {
+								$("#modal-suppression").hide();
+								$("#message").html(response);
+								 
+								$("tr[data-id='" + $("#id-parking-supp").val() + "']").fadeOut();
+
+								 
+								setTimeout(function() {
+									location.reload();
+								}, 1000);
+							},
+							error: function() {
+								$("#message").html("<span style='color:red;'>Erreur lors de la suppression.</span>");
+							}
+						});
+					});
+
+					</script>
+
+					<!-- end: page -->
+				</section>
+			</div>
 
 			<aside id="sidebar-right" class="sidebar-right">
 				<div class="nano">
@@ -898,8 +1100,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		<script src="assets/javascripts/theme.init.js"></script>
 
 	</body>
-        
-
-
-
 </html>

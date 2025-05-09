@@ -276,7 +276,14 @@ $statusCountsUser = [
 							
 			
 						</a>
-			
+						<div class="dropdown-menu">
+							<ul class="list-unstyled">
+								<li class="divider"></li>
+								<li>
+									<a role="menuitem" tabindex="-1" href="../frontoffice/logout.php"><i class="fa fa-power-off"></i> Logout</a>
+								</li>
+							</ul>
+						</div>
 						<div class="dropdown-menu">
 							<ul class="list-unstyled">
 								<li class="divider"></li>
@@ -565,25 +572,25 @@ $statusCountsUser = [
 											
 										</ul>
 									</li>
-									<li class="nav-parent">
+									<li class="nav-parent"  >
 										<a>
 											<i class="fa fa-map-marker" aria-hidden="true"></i>
-											<span>Maps</span>
+											<span>Parking</span>
 										</a>
 										<ul class="nav nav-children">
-											<li>
-												<a href="maps-google-maps.html">
-													 Basic
+											<li  >
+												<a href="indexparking.php">
+													 form parking
 												</a>
 											</li>
-											<li>
-												<a href="maps-google-maps-builder.html">
-													 Map Builder
+											<li >
+												<a href="afficheparking.php">
+													 table parking
 												</a>
 											</li>
-											<li>
-												<a href="maps-vector.html">
-													 Vector
+											<li >
+												<a href="afficheabonnement.php">
+													 table abonnements
 												</a>
 											</li>
 										</ul>
@@ -967,10 +974,96 @@ new Chart(document.getElementById('userRegistrationsChart'), {
     }
 });
 
+<?php require_once 'C:/xampp/htdocs/urbanisme/controller/dashboardControlleromar.php'; ?>
 
+						 
+
+						<?php
+							// Générer les données pour le diagramme circulaire
+							$donneesCamembert = [];
+							foreach ($taux as $row) {
+								$donneesCamembert[] = [
+									'nom' => $row['nom_parking'],
+        							'nb' => (int)$row['total_places_reservees']
+								];
+							}
+							?>
 
 </script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+					<!-- Graphique Taux d'occupation par parking -->
+					<div style="margin-bottom: 30px;">
+						<h2 style="font-family: 'Jost', sans-serif; font-weight: bold; text-align: center; color: #2c3e50;">
+							Statistiques Parking
+						</h2>
+					</div>
+					<div id="chart_taux_graph" style="width: 800px; height: 500px; margin: 40px auto; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); padding: 20px;"></div>
 
+ 
+
+					<script type="text/javascript">
+						google.charts.load('current', { packages: ['corechart', 'bar'] });
+						google.charts.setOnLoadCallback(drawTauxOccupationChart);
+
+						function drawTauxOccupationChart() {
+							var data = google.visualization.arrayToDataTable([
+								['Parking', 'Taux d\'occupation (%)'],
+								<?php foreach ($taux as $row): ?>
+									['<?= addslashes($row["nom_parking"]) ?>', <?= (float)$row["taux"] ?>],
+								<?php endforeach; ?>
+							]);
+
+							var options = {
+								title: 'Taux d\'occupation des parkings',
+								hAxis: { title:'Taux d\'occupation (%)', minValue: 0 },
+								vAxis: { title: 'Nom du parking'  },
+								legend: 'none',
+								bars: 'vertical', // Changer la direction en vertical
+								colors: ['#4CAF50']
+							};
+
+							var chart = new google.visualization.BarChart(document.getElementById('chart_taux_graph'));
+							chart.draw(data, options);
+						}
+					</script>
+
+					 
+
+
+
+					 
+
+					
+					<script type="text/javascript">
+						google.charts.load('current', {packages: ['corechart']});
+						google.charts.setOnLoadCallback(drawChart);
+
+						function drawChart() {
+							const data = google.visualization.arrayToDataTable([
+								['Parking', 'Nombre d\'abonnements'],
+								<?php foreach ($donneesCamembert as $row): ?>
+									['<?= addslashes($row['nom']) ?>', <?= $row['nb'] ?>],
+								<?php endforeach; ?>
+							]);
+
+							const options = {
+								title: 'Répartition des abonnements par parking',
+								is3D: true,
+								legend: { position: 'right', textStyle: { fontSize: 14, bold: true } },
+								chartArea: {width: '100%', height: '80%'},
+								colors: ['#8e44ad', '#9b59b6', '#af7ac5', '#bb8fce', '#d2b4de', '#e8daef'],
+								backgroundColor: 'transparent',
+								titleTextStyle: { fontSize: 20, bold: true, color: '#2c3e50' }
+							};
+
+							const chart = new google.visualization.PieChart(document.getElementById('piechart'));
+							chart.draw(data, options);
+						}
+					</script>
+
+					<div id="piechart" style="width: 600px; height: 400px; margin: 40px auto; border: 2px solid #ccc; border-radius: 15px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); background-color: #fdfdfd;"></div>
+
+					 
 		
 
 			  <aside id="sidebar-right" class="sidebar-right">

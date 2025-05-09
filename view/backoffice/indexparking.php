@@ -1,54 +1,28 @@
 <?php
-session_start();
-include('../../controller/controllercovoituragereservation.php');
+// Include the controllercovoiturage file
+include __DIR__ . '../../controller/parkingController.php';
 
+// Instantiate the controllercovoiturage class
 
-$reservationController = new ReservationController();
-$reservations = $reservationController->afficherReservationsAvecDetails();
-include_once __DIR__.'/../../database.php';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get the raw POST data
-    $data = json_decode(file_get_contents('php://input'), true);
-
-    // Log the received data for debugging
-    error_log(print_r($data, true));
-
-    if (isset($data['action']) && $data['action'] === 'deleteCovoiturage') {
-        $id_trajet = intval($data['id_trajet']); // Ensure it's an integer
-
-        if ($id_trajet > 0) {
-            // Call the delete function from the controller
-            $response = $covoiturageController->deleteCovoiturage($id_trajet);
-        } else {
-            $response = ['status' => 'error', 'message' => 'Invalid ID'];
-        }
-
-        header('Content-Type: application/json');
-        echo json_encode($response);
-        exit;
-    }
-}
+// Check if the form is submitted
 
 ?>
+
 <!doctype html>
 <html class="fixed">
 	<head>
 
+
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
-		<title>Basic Tables | Okler Themes | Porto-Admin</title>
+		<title>Form Validation | Okler Themes | Porto-Admin</title>
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
 
 		<!-- Mobile Metas -->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-
-		<!-- COVOITURAGE  -->
-		<link rel="stylesheet" href="covoiturage.css">
-
 
 		<!-- Web Fonts  -->
 		<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
@@ -70,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 		<!-- Head Libs -->
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
+		
 
 	</head>
 	<body>
@@ -264,17 +239,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 					<span class="separator"></span>
 			
 					<div id="userbox" class="userbox">
-					<a href="#" data-toggle="dropdown">
-							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@JSOFT.com">
-								
-							<?php if (isset($_SESSION['user_username'])): ?>
-								<span class="name"><?= htmlspecialchars($_SESSION['user_username']) ?></span>
-							<?php endif; ?>
+						<a href="#" data-toggle="dropdown">
+							<figure class="profile-picture">
+								<img src="assets/images/!logged-user.jpg" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/!logged-user.jpg" />
+							</figure>
+							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
+								<span class="name">John Doe Junior</span>
 								<span class="role">administrator</span>
 							</div>
-							
 			
+							<i class="fa custom-caret"></i>
 						</a>
+			
 						<div class="dropdown-menu">
 							<ul class="list-unstyled">
 								<li class="divider"></li>
@@ -521,13 +497,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent">
+									 <li class="nav-parent">
 										<a>
 											<i class="fa fa-list-alt" aria-hidden="true"></i>
 											<span>User</span>
 										</a>
 										<ul class="nav nav-children">
-										<li>
+											<li>
 												<a href="ajouter.php">
 													form User
 												</a>
@@ -540,37 +516,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 											
 										</ul>
 									</li>
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent  ">
 										<a>
 											<i class="fa fa-table" aria-hidden="true"></i>
 											<span>Covoiturage</span>
 										</a>
 										<ul class="nav nav-children">
-										<li>
+										<li >
 												<a href="indexc.php">
-													 form covoiturage
+													form Covoiturage
 												</a>
 											</li>
 											<li>
-												<a href="tablec.php">
+											<a href="tablec.php">
 													 table covoiturage
 												</a>
 											</li>
-											<li class="nav-active">
-												<a href="tablerceservation.php">
+											<li>
+												<a href="tablecreservation.php">
 													 reservation covoiturage
 												</a>
 											</li>
 											
 										</ul>
 									</li>
-									<li class="nav-parent"  >
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-map-marker" aria-hidden="true"></i>
 											<span>Parking</span>
 										</a>
 										<ul class="nav nav-children">
-											<li  >
+											<li class="nav-active">
 												<a href="indexparking.php">
 													 form parking
 												</a>
@@ -594,8 +570,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 										</a>
 										<ul class="nav nav-children">
 											<li>
-												<a href="layouts-default.html">
-													 Default
+												<a href="http://localhost/Urbanisme/view/backoffice/afficheabonnement.php">
+													 affiche reservation 
 												</a>
 											</li>
 											<li>
@@ -649,7 +625,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 										</ul>
 									</li>
 									<li>
-									<a href="../frontoffice/index.php" target="_blank">
+										<a href="http://localhost/urbanisme/view/frontoffice/index.php" target="_blank">
 											<i class="fa fa-external-link" aria-hidden="true"></i>
 											<span>Front-End <em class="not-included">(Not Included)</em></span>
 										</a>
@@ -721,8 +697,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Table de Reservation</h2>
-					
+						<h2>Form parking</h2>
+						<form  action="../../controller/parkingController.php" method="POST" onsubmit="return validerFormulaire();">
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
 								<li>
@@ -730,155 +706,191 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li><span>Tables</span></li>
-								<li><span>Basic</span></li>
+								<li><span>Forms</span></li>
+								<li><span>Validation</span></li>
 							</ol>
 					
 							<a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
 						</div>
 					</header>
 
-			
-
-                    <div class="col-md-12">  
-    <section class="panel">
-        <header class="panel-heading">
-            <h2 class="panel-title">Liste des Réservations</h2>
-        </header>
-        <div class="panel-body">
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped mb-none">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Nom Client</th> 
-                            <th>Phone</th> 
-                            <th>Départ</th>
-                            <th>Destination</th>
-							<th>date covoiturage</th>
-                            <th>Places Réservées</th>
-                            <th>Commentaire</th>
-                            <th>Status</th>
-                            <th>Date Réservation</th>
-                            <th>Actions</th>
-							<th>       </th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($reservations as $res): ?>
-                            <tr id="row-<?= htmlspecialchars($res['id_reservationc']) ?>">
-                                <td><?= htmlspecialchars($res['id_reservationc']) ?></td>
-                                <td><?= htmlspecialchars($res['username']) ?></td> 
-                                <td><?= htmlspecialchars($res['phone']) ?></td>  
-                                <td><?= htmlspecialchars($res['depart']) ?></td>
-                                <td><?= htmlspecialchars($res['destination']) ?></td>
-								<td><?= htmlspecialchars($res['date_heure']) ?></td>
-                                <td><?= htmlspecialchars($res['nbr_place']) ?></td>
-                                <td><?= htmlspecialchars($res['commentaire']) ?></td>
-                                <td class="statut-cell"><?= htmlspecialchars($res['statut']) ?></td>
-                                <td><?= htmlspecialchars($res['date_reservation']) ?></td>
-                                <td>
-                                    <form onsubmit="return confirmDelete(event);">
-                                        <input type="hidden" name="reservation_id" value="<?= htmlspecialchars($res['id_reservationc']) ?>">
-                                        <button type="submit" class="btn btn-danger">Supprimer</button>
-                                    </form>
-                                </td>
-                                <td>
-            <form>
-                <input type="hidden" name="reservation_id" value="<?= htmlspecialchars($res['id_reservationc']) ?>">
-                <input type="hidden" name="statut" value="confirmée">
-                <?php if ($res['statut'] !== 'confirmée'): ?>
-                    <button type="button" class="btn btn-success btn-sm update-btn" data-id="<?= $res['id_reservationc'] ?>">Confirmer</button>
-                <?php else: ?>
-                    <button type="button" class="btn btn-success btn-sm update-btn" disabled>Confirmée</button>
-                <?php endif; ?>
-            </form>
-        </td>
-
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-</div>
-
-
-<script src="../frontoffice/supprimerreservation.js"></script>
-
-    <!-- end: page -->
-
-			<aside id="sidebar-right" class="sidebar-right">
-				<div class="nano">
-					<div class="nano-content">
-						<a href="#" class="mobile-close visible-xs">
-							Collapse <i class="fa fa-chevron-right"></i>
-						</a>
-			
-						<div class="sidebar-right-wrapper">
-			
-							<div class="sidebar-widget widget-calendar">
-								<h6>Upcoming Tasks</h6>
-								<div data-plugin-datepicker data-plugin-skin="dark" ></div>
-			
-								<ul>
-									<li>
-										<time datetime="2014-04-19T00:00+00:00">04/19/2014</time>
-										<span>Company Meeting</span>
-									</li>
-								</ul>
-							</div>
-			
-							<div class="sidebar-widget widget-friends">
-								<h6>Friends</h6>
-								<ul>
-									<li class="status-online">
-										<figure class="profile-picture">
-											<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">
-										</figure>
-										<div class="profile-info">
-											<span class="name">Joseph Doe Junior</span>
-											<span class="title">Hey, how are you?</span>
+					<!-- start: page -->
+					<div class="row">
+						<div class="col-md-6">
+								<section class="panel">
+									<header class="panel-heading">
+										<div class="panel-actions">
+											<a href="#" class="fa fa-caret-down"></a>
+											<a href="#" class="fa fa-times"></a>
 										</div>
-									</li>
-									<li class="status-online">
-										<figure class="profile-picture">
-											<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">
-										</figure>
-										<div class="profile-info">
-											<span class="name">Joseph Doe Junior</span>
-											<span class="title">Hey, how are you?</span>
+					
+										<h2 class="panel-title">Parking Form</h2>
+										<p class="panel-subtitle">
+											Remplissez les informations sur le parking
+										</p>
+									</header>
+									 
+								
+									<div class="panel-body">
+										
+									 <!-- Nom du Parking -->
+									<div class="form-group">
+										<label for="nom_parking" class="col-sm-3 control-label">Nom du Parking</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<span class="icon"><i class="fa fa-building"></i></span>
+												</span>
+												<input type="text" id="nom_parking" name="nom_parking" class="form-control" placeholder="Ex : Parking Central" />
+											</div>
 										</div>
-									</li>
-									<li class="status-offline">
-										<figure class="profile-picture">
-											<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">
-										</figure>
-										<div class="profile-info">
-											<span class="name">Joseph Doe Junior</span>
-											<span class="title">Hey, how are you?</span>
+									</div>
+									<br>
+
+									<!-- Localisation -->
+									<div class="form-group">
+										<label for="localisation" class="col-sm-3 control-label">Localisation</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<span class="icon"><i class="fa fa-map-marker"></i></span>
+												</span>
+												<input type="text" id="localisation" name="localisation" class="form-control" placeholder="Adresse du parking" />
+											</div>
 										</div>
-									</li>
-									<li class="status-offline">
-										<figure class="profile-picture">
-											<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">
-										</figure>
-										<div class="profile-info">
-											<span class="name">Joseph Doe Junior</span>
-											<span class="title">Hey, how are you?</span>
+									</div>
+									<br>
+
+									<!-- Capacité Totale -->
+									<div class="form-group">
+										<label for="capacite_totale" class="col-sm-3 control-label">Capacité Totale</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<span class="icon"><i class="fa fa-users"></i></span>
+												</span>
+												<input type="number" id="capacite_totale" name="capacite_totale" class="form-control" placeholder="Ex : 100" />
+											</div>
 										</div>
-									</li>
-								</ul>
-							</div>
-			
-						</div>
-					</div>
-				</div>
+									</div>
+									<br>
+
+									<!-- Places Disponibles -->
+									<div class="form-group">
+										<label for="places_dispo" class="col-sm-3 control-label">Places Disponibles</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<span class="icon"><i class="fa fa-users"></i></span>
+												</span>
+												<input type="number" id="places_dispo" name="places_dispo" class="form-control" placeholder="Ex : 25" />
+											</div>
+										</div>
+									</div>
+									<br>
+
+									<!-- Tarif Horaire -->
+									<div class="form-group">
+										<label for="tarif_horaire" class="col-sm-3 control-label">Tarif Horaire (€)</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<span class="icon"><i class="fa fa-euro"></i></span>
+												</span>
+												<input type="number" step="0.01" id="tarif_horaire" name="tarif_horaire" class="form-control" placeholder="Ex : 2.50" />
+											</div>
+										</div>
+									</div>
+									<br>
+
+									<!-- Sécurisé -->
+									<div class="form-group">
+										<label for="securise" class="col-sm-3 control-label">Sécurisé</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<i class="fa fa-lock"></i>
+												</span>
+												<select id="securise" name="securise" class="form-control">
+													<option value="">-- Sélectionner --</option>
+													<option value="1">Oui</option>
+													<option value="0">Non</option>
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<!-- Ville -->
+									<div class="form-group">
+										<label for="ville" class="col-sm-3 control-label">Ville</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<span class="icon"><i class="fa fa-building"></i></span>
+												</span>
+												<input type="text" id="ville" name="ville" class="form-control" placeholder="Ville du parking" />
+											</div>
+										</div>
+									</div>
+									<br>
+
+											
+										
+									</div>
+									
+									<footer class="panel-footer">
+											<div class="row">
+												<div class="col-sm-9 col-sm-offset-3">
+													<button class="btn btn-primary" type="submit">Ajouter</button>
+													<button type="reset" class="btn btn-default">Réinitialiser</button>
+												</div>
+											</div>
+									</footer>
+
+										
+									</form>		
+									<div id="message" style="margin-top: 10px; color: green; font-weight: bold;"></div>
+
+										<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+										<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+										<script>
+										$(document).ready(function() {
+											$("form").submit(function(event) {
+												event.preventDefault();
+
+												if (!validerFormulaire()) {
+													return;
+												}
+
+												var formData = $(this).serialize();
+
+												$.ajax({
+													type: "POST",
+													url: "../../controller/parkingController.php",
+													data: formData,
+													success: function(response) {
+														$("#message").html(response);
+														$("form")[0].reset();
+													},
+													error: function() {
+														$("#message").html("<span style='color:red;'>Une erreur s'est produite.</span>");
+													}
+												});
+											});
+										});
+										</script>
+
+					
 			</aside>
 		</section>
-
+		<style>
+			.col-md-6 {
+				width: 80%; 
+				padding: 20px;  
+			
+			}
+		</style>
+		
 		<!-- Vendor -->
 		<script src="assets/vendor/jquery/jquery.js"></script>
 		<script src="assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
@@ -887,6 +899,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		<script src="assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
 		<script src="assets/vendor/magnific-popup/magnific-popup.js"></script>
 		<script src="assets/vendor/jquery-placeholder/jquery.placeholder.js"></script>
+		
+		<!-- Specific Page Vendor -->
+		<script src="assets/vendor/jquery-validation/jquery.validate.js"></script>
 		
 		<!-- Theme Base, Components and Settings -->
 		<script src="assets/javascripts/theme.js"></script>
@@ -897,9 +912,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		<!-- Theme Initialization Files -->
 		<script src="assets/javascripts/theme.init.js"></script>
 
+		<script src="validation.js"></script>
+
+		<!-- Examples -->
+		<script src="assets/javascripts/forms/examples.validation.js"></script>
+		
 	</body>
-        
-
-
-
 </html>
