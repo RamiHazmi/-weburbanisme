@@ -60,7 +60,12 @@ document.addEventListener('DOMContentLoaded', function () {
     
             if (data.success) {
                 alert('Statut mis à jour avec succès.');
+                console.log("Reloading now...");
+
                 // Tu peux aussi mettre à jour l'affichage ici
+                setTimeout(() => {
+                    location.reload(true); 
+                }, 1500);
             } else {
                 alert('Erreur : ' + data.message);
             }

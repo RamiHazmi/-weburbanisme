@@ -96,7 +96,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_email'])) {
                <a href="#" class="nav-item nav-link active" data-bs-toggle="dropdown">Services</a>
                 <div class="dropdown-menu fade-up m-0">
                     <a href="covoituragefront.php" class="dropdown-item active">Covoiturage</a>
-                    <a href="feature.html" class="dropdown-item">Parking</a>
+                    <a href="frontparking.php" class="dropdown-item">Parking</a>
                     <a href="quote.html" class="dropdown-item">Transport Public</a>
                     <a href="team.html" class="dropdown-item">Recharge Electrique</a>
                     
@@ -121,6 +121,9 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_email'])) {
 }
 ?>
 </a>
+<?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+    <li><a href="../backoffice/dashboard.php" class="nav-item nav-link ">Dashboard</a></li>
+<?php endif; ?>
         </div>
         <h4 class="m-0 pe-lg-5 d-none d-lg-block"><i class="fa fa-headphones text-primary me-3"></i>+216 20 265 186</h4>
     </div>

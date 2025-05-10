@@ -1,6 +1,7 @@
 <?php
+session_start();
 include('../../controller/controllercovoituragereservation.php');
-
+include'../../controller/userC.php';
 $controller = new ReservationController();
 $stats = $controller->getReservationStats();
 
@@ -12,6 +13,19 @@ $dateCounts = array_column($stats['dateData'], 'count');
 
 include_once __DIR__.'/../../database.php';
 
+$userC = new userC();
+$userStats = $userC->getUserStats();
+$userRegistrations = $userC->getUserRegistrationsPerDay();
+$registrationDates = array_column($userRegistrations, 'date');
+$registrationCounts = array_column($userRegistrations, 'count');
+
+
+// Traduire les clés anglais → français
+$statusLabelsUser = ['Actif', 'Bloqué'];
+$statusCountsUser = [
+    $userStats['active'],
+    $userStats['blocked']
+];
 
 ?>
 <!doctype html>
@@ -252,28 +266,22 @@ include_once __DIR__.'/../../database.php';
 			
 					<div id="userbox" class="userbox">
 						<a href="#" data-toggle="dropdown">
-							<figure class="profile-picture">
-								<img src="assets/images/!logged-user.jpg" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/!logged-user.jpg" />
-							</figure>
 							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@JSOFT.com">
-								<span class="name">John Doe Junior</span>
+								
+							<?php if (isset($_SESSION['user_username'])): ?>
+								<span class="name"><?= htmlspecialchars($_SESSION['user_username']) ?></span>
+							<?php endif; ?>
 								<span class="role">administrator</span>
 							</div>
-			
 							<i class="fa custom-caret"></i>
+					
 						</a>
 			
 						<div class="dropdown-menu">
 							<ul class="list-unstyled">
 								<li class="divider"></li>
 								<li>
-									<a role="menuitem" tabindex="-1" href="pages-user-profile.html"><i class="fa fa-user"></i> My Profile</a>
-								</li>
-								<li>
-									<a role="menuitem" tabindex="-1" href="#" data-lock-screen="true"><i class="fa fa-lock"></i> Lock Screen</a>
-								</li>
-								<li>
-									<a role="menuitem" tabindex="-1" href="pages-signin.html"><i class="fa fa-power-off"></i> Logout</a>
+									<a role="menuitem" tabindex="-1" href="../frontoffice/logout.php"><i class="fa fa-power-off"></i> Logout</a>
 								</li>
 							</ul>
 						</div>
@@ -551,25 +559,25 @@ include_once __DIR__.'/../../database.php';
 											
 										</ul>
 									</li>
-									<li class="nav-parent">
+									<li class="nav-parent"  >
 										<a>
 											<i class="fa fa-map-marker" aria-hidden="true"></i>
-											<span>Maps</span>
+											<span>Parking</span>
 										</a>
 										<ul class="nav nav-children">
-											<li>
-												<a href="maps-google-maps.html">
-													 Basic
+											<li  >
+												<a href="indexparking.php">
+													 form parking
 												</a>
 											</li>
-											<li>
-												<a href="maps-google-maps-builder.html">
-													 Map Builder
+											<li >
+												<a href="afficheparking.php">
+													 table parking
 												</a>
 											</li>
-											<li>
-												<a href="maps-vector.html">
-													 Vector
+											<li >
+												<a href="afficheabonnement.php">
+													 table abonnements
 												</a>
 											</li>
 										</ul>
@@ -724,18 +732,105 @@ include_once __DIR__.'/../../database.php';
 						</div>
 					</header>
 		<!-- malek -->
-
-
-
-		<!-- malek -->
-
-				<div style="margin-bottom: 30px;">
+		<div style="margin-bottom: 30px;">
     <h2 style="font-family: 'Jost', sans-serif; font-weight: bold; text-align: center; color: #2c3e50;">
-        Statistiques Covoiturage
+        Statistiques User
     </h2>
 </div>
 
 <div class="row">
+    <!-- Statut des Utilisateurs -->
+    <div class="col-md-6">
+        <section class="panel" style="min-height: 360px;">
+            <header class="panel-heading">
+                <h2 class="panel-title">Statut des Utilisateurs</h2>
+                <p class="panel-subtitle">Répartition des utilisateurs actifs et bloqués</p>
+            </header>
+            <div class="panel-body d-flex justify-content-center align-items-center">
+                <canvas id="userStatusChart" width="200" height="200" style="display: block; margin: 0 auto;"></canvas>
+            </div>
+        </section>
+    </div>
+
+    <!-- Inscriptions des Utilisateurs (Par Jour) -->
+    <div class="col-md-6">
+        <section class="panel">
+            <header class="panel-heading">
+                <h2 class="panel-title">Inscriptions des Utilisateurs (Par Jour)</h2>
+                <p class="panel-subtitle">Évolution quotidienne des nouvelles inscriptions</p>
+            </header>
+            <div class="panel-body">
+                <canvas id="userRegistrationsChart" width="800" height="300"></canvas>
+            </div>
+        </section>
+    </div>
+</div>
+
+
+    <script>
+const donutData = {
+    labels: <?= json_encode($statusLabelsUser) ?>,
+    datasets: [{
+        data: <?= json_encode($statusCountsUser) ?>,
+        backgroundColor: ['#2ecc71', '#e74c3c'],
+        borderColor: ['#27ae60', '#c0392b'],
+        borderWidth: 2
+    }]
+};
+
+
+        new Chart(document.getElementById('userStatusChart'), {
+            type: 'doughnut', // Type de graphique donut
+            data: donutData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+
+<script>
+const userRegistrationData = {
+    labels: <?= json_encode($registrationDates) ?>,
+    datasets: [{
+        label: 'Inscriptions par jour',
+        data: <?= json_encode($registrationCounts) ?>,
+        borderColor: '#8e44ad',
+        backgroundColor: 'rgba(142, 68, 173, 0.2)',
+        fill: true,
+        tension: 0.4
+    }]
+};
+
+new Chart(document.getElementById('userRegistrationsChart'), {
+    type: 'line',
+    data: userRegistrationData,
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top'
+            }
+        }
+    }
+});
+</script>
+		<!-- malek -->
+
+		<div style="margin-bottom: 30px;">
+  <h2 style="font-family: 'Jost', sans-serif; font-weight: bold; text-align: center; color: #2c3e50;">
+    Statistiques Covoiturage
+  </h2>
+</div>
+
+
+<div class="row" id="statistiquesCovoiturage">
     <!-- Pie Chart -->
     <div class="col-md-6">
         <section class="panel" style="min-height: 360px;">
@@ -779,38 +874,268 @@ include_once __DIR__.'/../../database.php';
             label: 'Réservations par jour',
             data: <?= json_encode($dateCounts) ?>,
             borderColor: '#3498db',
-            tension: 0.3,
-            fill: false
+            backgroundColor: 'rgba(52, 152, 219, 0.2)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#3498db'
         }]
     };
 
-    new Chart(document.getElementById('reservationStatusChart'), {
-        type: 'pie',
-        data: pieData,
-        options: {
-            responsive: false,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom'
+    let hasAnimated = false;
+
+    function renderCharts() {
+        if (hasAnimated) return; // prevent re-initialization
+        hasAnimated = true;
+
+        new Chart(document.getElementById('reservationStatusChart'), {
+            type: 'pie',
+            data: pieData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    animateRotate: true,
+                    animateScale: true,
+                    duration: 1500,
+                    easing: 'easeInOutCirc'
+                },
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: {
+                        display: true,
+                        text: 'Répartition des Réservations'
+                    }
                 }
             }
-        }
+        });
+
+        new Chart(document.getElementById('lineReservationsOverTime'), {
+            type: 'line',
+            data: lineData,
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: {
+                    duration: 0
+                },
+                animations: {
+                    borderDashOffset: {
+                        from: 1000,
+                        to: 0,
+                        duration: 2000,
+                        easing: 'linear'
+                    }
+                },
+                elements: {
+                    line: {
+                        borderWidth: 3,
+                        tension: 0.3,
+                        fill: true,
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderDash: [1000],
+                        borderDashOffset: 1000
+                    },
+                    point: {
+                        radius: 3,
+                        backgroundColor: '#3498db',
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }
+                },
+                plugins: {
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Date de Réservation'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Nombre de Réservations'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Observer to trigger chart rendering when section is visible
+    const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                renderCharts();
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.3 // triggers when 30% of the section is visible
     });
 
-    new Chart(document.getElementById('lineReservationsOverTime'), {
-        type: 'line',
-        data: lineData,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-	
+    observer.observe(document.getElementById('statistiquesCovoiturage'));
 </script>
 
+<?php require_once 'C:/xampp/htdocs/urbanisme/controller/dashboardControlleromar.php'; ?>
 
-		
+						 
+
+						<?php
+							// Générer les données pour le diagramme circulaire
+							$donneesCamembert = [];
+							foreach ($taux as $row) {
+								$donneesCamembert[] = [
+									'nom' => $row['nom_parking'],
+        							'nb' => (int)$row['total_places_reservees']
+								];
+							}
+							?>
+
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+					<!-- Graphique Taux d'occupation par parking -->
+				<!-- Header for the section -->
+<div style="margin-bottom: 30px;">
+  <h2 style="font-family: 'Jost', sans-serif; font-weight: bold; text-align: center; color: #2c3e50;">
+    Statistiques Parking
+  </h2>
+</div>
+
+<!-- Wrapper for the Bar Chart -->
+<div id="chart_taux_wrapper">
+  <div id="chart_taux_graph" style="width: 800px; height: 500px; margin: 40px auto; background-color: #f9f9f9; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); padding: 20px;"></div>
+</div>
+
+<!-- Wrapper for the Pie Chart -->
+<div id="piechart" style="width: 600px; height: 400px; margin: 40px auto; border: 2px solid #ccc; border-radius: 15px; padding: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.1); background-color: #fdfdfd;"></div>
+
+<!-- Google Charts Loader -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script type="text/javascript">
+  // Load Google Charts library
+  google.charts.load('current', { packages: ['corechart', 'bar'] });
+
+  // Prepare chart drawing function for Bar Chart
+  function drawTauxOccupationChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['Parking', 'Taux d\'occupation (%)'],
+      <?php foreach ($taux as $row): ?>
+        ['<?= addslashes($row["nom_parking"]) ?>', <?= (float)$row["taux"] ?>],
+      <?php endforeach; ?>
+    ]);
+
+    var options = {
+      title: 'Taux d\'occupation des parkings',
+      hAxis: { title: 'Taux d\'occupation (%)', minValue: 0 },
+      vAxis: { title: 'Nom du parking' },
+      legend: 'none',
+      bars: 'horizontal',
+      colors: ['#2ecc71'],
+      animation: {
+        startup: true,
+        duration: 1000,
+        easing: 'out'
+      }
+    };
+
+    var chart = new google.visualization.BarChart(document.getElementById('chart_taux_graph'));
+    chart.draw(data, options);
+  }
+
+  // Prepare chart drawing function for Pie Chart
+  function drawChart() {
+    const data = google.visualization.arrayToDataTable([
+      ['Parking', 'Nombre d\'abonnements'],
+      <?php foreach ($donneesCamembert as $row): ?>
+        ['<?= addslashes($row['nom']) ?>', <?= $row['nb'] ?>],
+      <?php endforeach; ?>
+    ]);
+
+    const options = {
+      title: 'Répartition des abonnements par parking',
+      is3D: true,
+      legend: { position: 'right', textStyle: { fontSize: 14, bold: true } },
+      chartArea: { width: '100%', height: '80%' },
+      colors: ['#8e44ad', '#9b59b6', '#af7ac5', '#bb8fce', '#d2b4de', '#e8daef'],
+      backgroundColor: 'transparent',
+      titleTextStyle: { fontSize: 20, bold: true, color: '#2c3e50' },
+      animation: {
+        startup: true,
+        duration: 1000,
+        easing: 'out'
+      }
+    };
+
+    const chart = new google.visualization.PieChart(document.getElementById('piechart'));
+    chart.draw(data, options);
+  }
+
+  // Use Intersection Observer to detect scroll into view for the Bar Chart
+  document.addEventListener("DOMContentLoaded", function () {
+    let chartDrawn = false;
+
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !chartDrawn) {
+          chartDrawn = true; // Prevent redrawing
+          google.charts.setOnLoadCallback(drawTauxOccupationChart);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 }); // 30% visibility before triggering
+
+    const chartElement = document.getElementById('chart_taux_wrapper');
+    if (chartElement) {
+      observer.observe(chartElement);
+    }
+  });
+
+  // Use Intersection Observer to detect scroll into view for the Pie Chart
+  document.addEventListener("DOMContentLoaded", function () {
+    let pieChartDrawn = false;
+
+    const pieChartObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !pieChartDrawn) {
+          pieChartDrawn = true; // Prevent redrawing
+          google.charts.setOnLoadCallback(drawChart);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 }); // 30% visibility before triggering
+
+    const pieChartElement = document.getElementById('piechart');
+    if (pieChartElement) {
+      pieChartObserver.observe(pieChartElement);
+    }
+  });
+</script>
+
+<style>
+  /* Animation for Pie Chart */
+  #piechart svg {
+    animation: rotatePie 1s ease-out;
+    transform-origin: center center;
+  }
+
+  @keyframes rotatePie {
+    from {
+      transform: rotateX(90deg);
+      opacity: 0;
+    }
+    to {
+      transform: rotateX(0deg);
+      opacity: 1;
+    }
+  }
+</style>
+
+
 
 			  <aside id="sidebar-right" class="sidebar-right">
 				<div class="nano">

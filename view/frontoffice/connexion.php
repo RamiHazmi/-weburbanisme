@@ -17,9 +17,12 @@ if (isset($_POST['email']) && isset($_POST['password']) && isset($_POST['action'
 		setcookie(session_name(), session_id(), time() + $lifetime, "/");
 
         $_SESSION['user_email'] = $user['email'];
+		$_SESSION['user_role'] = $user['role'];
+		$_SESSION['user_username'] = $user['username'];
+
 
         echo "<script>alert('Connexion réussie. Bienvenue !');</script>";
-        echo "<script>window.location.href='user_profile.php';</script>";
+        echo "<script>window.location.href='index.php';</script>";
         exit;
     } 
 	elseif ($user && $user['status'] === 'blocked') {

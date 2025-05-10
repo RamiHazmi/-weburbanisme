@@ -11,6 +11,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_email'])) {
 
     $userC = new userC();
     $user = $userC->getUserByEmail($user_email);
+
     
 
     if (!$user) {
@@ -116,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Services</a>
                     <div class="dropdown-menu fade-up m-0">
                         <a href="covoituragefront.php" class="dropdown-item">Covoiturage</a>
-                        <a href="feature.html" class="dropdown-item">Parking</a>
+                        <a href="frontparking.php" class="dropdown-item">Parking</a>
                         <a href="quote.html" class="dropdown-item">Transport Public</a>
                         <a href="team.html" class="dropdown-item">Recharge Electrique</a>
                         
@@ -141,6 +142,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 </a>
+<?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+    <li><a href="../backoffice/dashboard.php" class="nav-item nav-link ">Dashboard</a></li>
+<?php endif; ?>
+
 
             </div>
             </div>

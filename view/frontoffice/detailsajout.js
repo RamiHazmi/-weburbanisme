@@ -87,13 +87,17 @@ $(document).on("click", "#reserver-form", function () {
                 return;
             }
 
-            if (result.success) {
+            if (result.success === true || result.success === "true") {
                 alert("Réservation effectuée avec succès.");
                 $formContainer.slideUp();
                 modal.children().not(".reservation-form").css("filter", "none");
+                setTimeout(() => {
+                    location.reload(true); 
+                }, 1500);
             } else {
                 alert(result.message || "Erreur lors de la réservation.");
             }
+            
         })
         .catch(error => {
             console.error("Erreur AJAX:", error);

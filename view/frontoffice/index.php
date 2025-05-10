@@ -78,7 +78,7 @@ include '../../controller/userC.php';
                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Services</a>
                     <div class="dropdown-menu fade-up m-0">
                         <a href="covoituragefront.php" class="dropdown-item">Covoiturage</a>
-                        <a href="feature.html" class="dropdown-item">Parking</a>
+                        <a href="frontparking.php" class="dropdown-item">Parking</a>
                         <a href="quote.html" class="dropdown-item">Velos et Stations</a>
                         <a href="team.html" class="dropdown-item">Recharge Electrique</a>
                         
@@ -103,10 +103,10 @@ include '../../controller/userC.php';
     echo "Profile"; 
 }
 ?>
-
-
-
 </a>
+<?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+    <li><a href="../backoffice/dashboard.php" class="nav-item nav-link ">Dashboard</a></li>
+<?php endif; ?>
             </div>
 
             <h4 class="m-0 pe-lg-5 d-none d-lg-block"><i class="fa fa-headphones text-primary me-3"></i>+216 27 118 673</h4>

@@ -1,7 +1,9 @@
 <?php
 session_start();
+
 // Include the controllercovoiturage file
-include __DIR__ . '/../../controller/controllercovoiturage.php';
+include __DIR__ . '/../../controller/parkingController.php';
+
 
 // Instantiate the controllercovoiturage class
 
@@ -12,6 +14,7 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 <!doctype html>
 <html class="fixed">
 	<head>
+
 
 		<!-- Basic -->
 		<meta charset="UTF-8">
@@ -35,8 +38,6 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 
 		<!-- Theme CSS -->
 		<link rel="stylesheet" href="assets/stylesheets/theme.css" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 
 		<!-- Skin CSS -->
 		<link rel="stylesheet" href="assets/stylesheets/skins/default.css" />
@@ -262,7 +263,7 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 							</ul>
 						</div>
 					</div>
-								</div>
+				</div>
 				<!-- end: search & user box -->
 			</header>
 			<!-- end: header -->
@@ -493,7 +494,7 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent">
+									 <li class="nav-parent">
 										<a>
 											<i class="fa fa-list-alt" aria-hidden="true"></i>
 											<span>User</span>
@@ -512,13 +513,13 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 											
 										</ul>
 									</li>
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent  ">
 										<a>
 											<i class="fa fa-table" aria-hidden="true"></i>
 											<span>Covoiturage</span>
 										</a>
 										<ul class="nav nav-children">
-										<li class="nav-active">
+										<li >
 												<a href="indexc.php">
 													form Covoiturage
 												</a>
@@ -536,13 +537,13 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 											
 										</ul>
 									</li>
-									<li class="nav-parent"  >
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-map-marker" aria-hidden="true"></i>
 											<span>Parking</span>
 										</a>
 										<ul class="nav nav-children">
-											<li  >
+											<li class="nav-active">
 												<a href="indexparking.php">
 													 form parking
 												</a>
@@ -566,8 +567,8 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 										</a>
 										<ul class="nav nav-children">
 											<li>
-												<a href="layouts-default.html">
-													 Default
+												<a href="http://localhost/Urbanisme/view/backoffice/afficheabonnement.php">
+													 affiche reservation 
 												</a>
 											</li>
 											<li>
@@ -621,12 +622,11 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 										</ul>
 									</li>
 									<li>
-										<a href="../frontoffice/index.php" target="_blank">
+										<a href="http://localhost/urbanisme/view/frontoffice/index.php" target="_blank">
 											<i class="fa fa-external-link" aria-hidden="true"></i>
 											<span>Front-End <em class="not-included">(Not Included)</em></span>
 										</a>
 									</li>
-
 								</ul>
 							</nav>
 				
@@ -694,8 +694,8 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Form Validation</h2>
-					
+						<h2>Form parking</h2>
+						<form  action="../../controller/parkingController.php" method="POST" onsubmit="return validerFormulaire();">
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
 								<li>
@@ -710,108 +710,172 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 							<a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
 						</div>
 					</header>
-					<a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
 
 					<!-- start: page -->
 					<div class="row">
-    <div class="col-md-6">
-        <form class="form-horizontal" action="../../controller/controllercovoiturage.php" method="POST" enctype="multipart/form-data" id="covoiturageForm">
+						<div class="col-md-6">
+								<section class="panel">
+									<header class="panel-heading">
+										<div class="panel-actions">
+											<a href="#" class="fa fa-caret-down"></a>
+											<a href="#" class="fa fa-times"></a>
+										</div>
+					
+										<h2 class="panel-title">Parking Form</h2>
+										<p class="panel-subtitle">
+											Remplissez les informations sur le parking
+										</p>
+									</header>
+									 
+								
+									<div class="panel-body">
+										
+									 <!-- Nom du Parking -->
+									<div class="form-group">
+										<label for="nom_parking" class="col-sm-3 control-label">Nom du Parking</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<span class="icon"><i class="fa fa-building"></i></span>
+												</span>
+												<input type="text" id="nom_parking" name="nom_parking" class="form-control" placeholder="Ex : Parking Central" />
+											</div>
+										</div>
+									</div>
+									<br>
 
-            <section class="panel">
-                <header class="panel-heading">
-                    <h2 class="panel-title">Covoiturage Form</h2>
-                    <p class="panel-subtitle">Remplissez les informations sur votre trajet de covoiturage.</p>
-                </header>
-                <input type="hidden" name="action" value="addCovoiturage">
+									<!-- Localisation -->
+									<div class="form-group">
+										<label for="localisation" class="col-sm-3 control-label">Localisation</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<span class="icon"><i class="fa fa-map-marker"></i></span>
+												</span>
+												<input type="text" id="localisation" name="localisation" class="form-control" placeholder="Adresse du parking" />
+											</div>
+										</div>
+									</div>
+									<br>
 
-                <div class="panel-body">
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Lieu de départ <span class="icon"><i class="fa fa-map-marker-alt" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="text" name="depart" class="form-control" placeholder="Ex : Tunis" id="depart" />
-                            <span class="error" id="depart_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Lieu d'arrivée <span class="icon"><i class="fa fa-map-marker-alt" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="text" name="destination" class="form-control" placeholder="Ex : Esprit" id="destination" />
-                            <span class="error" id="destination_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Date et Heure du départ <span class="icon"><i class="fa fa-calendar" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="datetime-local" name="date_heure" class="form-control" id="date_heure" />
-                            <span class="error" id="date_heure_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Tarif<i class="fas fa-money-bill-alt" style="margin-left: 5px;"></i></label>
-                        <div class="col-sm-9">
-                            <input type="number" name="tarif" class="form-control" placeholder="Ex : 15.50" id="tarif" step="0.01" />
-                            <span class="error" id="tarif_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Places disponibles<span class="icon"><i class="fa fa-users" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="number" name="places_dispo" class="form-control" placeholder="Ex : 3" id="places_dispo" />
-                            <span class="error" id="places_dispo_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Matricule du véhicule <span class="icon"><i class="fa fa-car" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="text" name="matricule_voiture" class="form-control" placeholder="Entrez la matricule du véhicule" id="matricule_voiture" />
-                            <span class="error" id="matricule_voiture_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Marque du véhicule <span class="icon"><i class="fa fa-tag" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="text" name="marque" class="form-control" placeholder="Entrez la marque du véhicule" id="marque" />
-                            <span class="error" id="marque_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Couleur du véhicule <span class="icon"><i class="fa fa-palette" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="text" name="couleur" class="form-control" placeholder="Entrez la couleur du véhicule" id="couleur" />
-                            <span class="error" id="couleur_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Image du véhicule <span class="icon"><i class="fa fa-image" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="file" name="image" id="image" />
-                            <span class="error" id="image_error"></span>
-                        </div>
-                    </div>
-                </div>
-                <footer class="panel-footer">
-                    <div class="row">
-                        <div class="col-sm-9 col-sm-offset-3">
-                            <button type="submit" class="btn btn-primary">Ajouter le trajet</button>
-                            <button type="reset" class="btn btn-default">Réinitialiser</button>
-                        </div>
-                    </div>
-                </footer>
-            </section>
-        </form>
-        <div id="message"></div>
-    </div>
-</div>
+									<!-- Capacité Totale -->
+									<div class="form-group">
+										<label for="capacite_totale" class="col-sm-3 control-label">Capacité Totale</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<span class="icon"><i class="fa fa-users"></i></span>
+												</span>
+												<input type="number" id="capacite_totale" name="capacite_totale" class="form-control" placeholder="Ex : 100" />
+											</div>
+										</div>
+									</div>
+									<br>
 
+									<!-- Places Disponibles -->
+									<div class="form-group">
+										<label for="places_dispo" class="col-sm-3 control-label">Places Disponibles</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<span class="icon"><i class="fa fa-users"></i></span>
+												</span>
+												<input type="number" id="places_dispo" name="places_dispo" class="form-control" placeholder="Ex : 25" />
+											</div>
+										</div>
+									</div>
+									<br>
 
+									<!-- Tarif Horaire -->
+									<div class="form-group">
+										<label for="tarif_horaire" class="col-sm-3 control-label">Tarif Horaire (€)</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<span class="icon"><i class="fa fa-euro"></i></span>
+												</span>
+												<input type="number" step="0.01" id="tarif_horaire" name="tarif_horaire" class="form-control" placeholder="Ex : 2.50" />
+											</div>
+										</div>
+									</div>
+									<br>
 
-<script src="ajoutcovoiturage.js"></script>
+									<!-- Sécurisé -->
+									<div class="form-group">
+										<label for="securise" class="col-sm-3 control-label">Sécurisé</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<i class="fa fa-lock"></i>
+												</span>
+												<select id="securise" name="securise" class="form-control">
+													<option value="">-- Sélectionner --</option>
+													<option value="1">Oui</option>
+													<option value="0">Non</option>
+												</select>
+											</div>
+										</div>
+									</div>
 
+									<!-- Ville -->
+									<div class="form-group">
+										<label for="ville" class="col-sm-3 control-label">Ville</label>
+										<div class="col-sm-9">
+											<div class="input-group input-group-icon">
+												<span class="input-group-addon">
+													<span class="icon"><i class="fa fa-building"></i></span>
+												</span>
+												<input type="text" id="ville" name="ville" class="form-control" placeholder="Ville du parking" />
+											</div>
+										</div>
+									</div>
+									<br>
 
-<!-- jQuery -->
+											
+										
+									</div>
+									
+									<footer class="panel-footer">
+											<div class="row">
+												<div class="col-sm-9 col-sm-offset-3">
+													<button class="btn btn-primary" type="submit">Ajouter</button>
+													<button type="reset" class="btn btn-default">Réinitialiser</button>
+												</div>
+											</div>
+									</footer>
 
+										
+									</form>		
+									<div id="message" style="margin-top: 10px; color: green; font-weight: bold;"></div>
 
+										<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+										<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+										<script>
+										$(document).ready(function() {
+											$("form").submit(function(event) {
+												event.preventDefault();
 
+												if (!validerFormulaire()) {
+													return;
+												}
+
+												var formData = $(this).serialize();
+
+												$.ajax({
+													type: "POST",
+													url: "../../controller/parkingController.php",
+													data: formData,
+													success: function(response) {
+														$("#message").html(response);
+														$("form")[0].reset();
+													},
+													error: function() {
+														$("#message").html("<span style='color:red;'>Une erreur s'est produite.</span>");
+													}
+												});
+											});
+										});
+										</script>
 
 					
 			</aside>
@@ -822,10 +886,6 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 				padding: 20px;  
 			
 			}
-			.error {
-            color: red;
-            font-size: 0.9em;
-        }
 		</style>
 		
 		<!-- Vendor -->
@@ -849,8 +909,10 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 		<!-- Theme Initialization Files -->
 		<script src="assets/javascripts/theme.init.js"></script>
 
+		<script src="validation.js"></script>
 
 		<!-- Examples -->
 		<script src="assets/javascripts/forms/examples.validation.js"></script>
+		
 	</body>
 </html>

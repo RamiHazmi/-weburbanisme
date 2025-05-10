@@ -1,3 +1,4 @@
+
 <?php
 include_once __DIR__ . '/../database.php';
 
@@ -161,9 +162,49 @@ class userC
     }
     
     
+
+
+    public function getUserStats() {
+        $sql = "SELECT status, COUNT(*) as count FROM user GROUP BY status";  // Compter les utilisateurs par statut
+        $db = config::getConnexion();
+        try {
+            $stmt = $db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Initialiser les variables pour les utilisateurs actifs et bloqués
+            $activeCount = 0;
+            $blockedCount = 0;
+
+            // Parcourir les résultats pour obtenir les comptes actifs et bloqués
+            foreach ($result as $row) {
+                if ($row['status'] === 'active') {
+                    $activeCount = $row['count'];
+                } elseif ($row['status'] === 'blocked') {
+                    $blockedCount = $row['count'];
+                }
+            }
+
+            return ['active' => $activeCount, 'blocked' => $blockedCount];
+        } catch (Exception $e) {
+            die('Erreur: ' . $e->getMessage());
+        }
+    }
+    public function getUserRegistrationsPerDay() {
+        $sql = "SELECT DATE(created_at) AS date, COUNT(*) AS count
+                FROM user
+                GROUP BY DATE(created_at)
+                ORDER BY DATE(created_at)";
+        $db = config::getConnexion();
+        try {
+            $query = $db->query($sql);
+            return $query->fetchAll();
+        } catch (Exception $e) {
+            die('Erreur: ' . $e->getMessage());
+        }
+    }
     
-
-
+    
 
 }
 

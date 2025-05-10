@@ -1,13 +1,28 @@
 <?php
 session_start();
-// Include the controllercovoiturage file
-include __DIR__ . '/../../controller/controllercovoiturage.php';
 
-// Instantiate the controllercovoiturage class
+require_once 'C:/xampp/htdocs/urbanisme/database.php';
+require_once 'C:/xampp/htdocs/urbanisme/model/abonnement.php';
+require_once 'C:/xampp/htdocs/urbanisme/controller/notificationController.php';
 
-// Check if the form is submitted
+ 
 
+$conn = config::getConnexion();
+
+$sql = "SELECT a.*, p.nom_parking, u.username, u.phone
+        FROM abonnement a
+        JOIN parking p ON a.id_parking = p.id_parking
+        JOIN user u ON a.id_user = u.id";
+
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$abonnements = $stmt->fetchAll();
+
+
+ 
 ?>
+
+  
 
 <!doctype html>
 <html class="fixed">
@@ -16,7 +31,7 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
-		<title>Form Validation | Okler Themes | Porto-Admin</title>
+		<title>Default Layout | Okler Themes | Porto-Admin</title>
 		<meta name="keywords" content="HTML5 Admin Template" />
 		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
 		<meta name="author" content="okler.net">
@@ -35,8 +50,6 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 
 		<!-- Theme CSS -->
 		<link rel="stylesheet" href="assets/stylesheets/theme.css" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 
 		<!-- Skin CSS -->
 		<link rel="stylesheet" href="assets/stylesheets/skins/default.css" />
@@ -46,7 +59,9 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 
 		<!-- Head Libs -->
 		<script src="assets/vendor/modernizr/modernizr.js"></script>
-		
+
+	 
+
 
 	</head>
 	<body>
@@ -56,7 +71,7 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 			<header class="header">
 				<div class="logo-container">
 					<a href="../" class="logo">
-						<img src="assets/images/logo.png" height="35" alt="Porto Admin" />
+						<img src="assets/images/logosansnom555.png" height="35" alt="Porto Admin" />
 					</a>
 					<div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
 						<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
@@ -262,7 +277,7 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 							</ul>
 						</div>
 					</div>
-								</div>
+				</div>
 				<!-- end: search & user box -->
 			</header>
 			<!-- end: header -->
@@ -512,13 +527,13 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 											
 										</ul>
 									</li>
-									<li class="nav-parent nav-expanded nav-active">
+									<li class="nav-parent  ">
 										<a>
 											<i class="fa fa-table" aria-hidden="true"></i>
 											<span>Covoiturage</span>
 										</a>
 										<ul class="nav nav-children">
-										<li class="nav-active">
+										<li >
 												<a href="indexc.php">
 													form Covoiturage
 												</a>
@@ -536,38 +551,38 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 											
 										</ul>
 									</li>
-									<li class="nav-parent"  >
+									<li class="nav-parent nav-expanded nav-active">
 										<a>
 											<i class="fa fa-map-marker" aria-hidden="true"></i>
 											<span>Parking</span>
 										</a>
 										<ul class="nav nav-children">
-											<li  >
+											<li >
 												<a href="indexparking.php">
 													 form parking
 												</a>
 											</li>
-											<li >
+											<li>
 												<a href="afficheparking.php">
 													 table parking
 												</a>
 											</li>
-											<li >
+											<li class="nav-active">
 												<a href="afficheabonnement.php">
 													 table abonnements
 												</a>
 											</li>
 										</ul>
 									</li>
-									<li class="nav-parent">
+									<li class="nav-parent   ">
 										<a>
 											<i class="fa fa-columns" aria-hidden="true"></i>
 											<span>Layouts</span>
 										</a>
 										<ul class="nav nav-children">
-											<li>
-												<a href="layouts-default.html">
-													 Default
+											<li  >
+                                                <a  >
+													  erffrrf
 												</a>
 											</li>
 											<li>
@@ -621,12 +636,11 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 										</ul>
 									</li>
 									<li>
-										<a href="../frontoffice/index.php" target="_blank">
+										<a href="http://localhost/urbanisme/view/frontoffice/index.php"  target="_blank">
 											<i class="fa fa-external-link" aria-hidden="true"></i>
 											<span>Front-End <em class="not-included">(Not Included)</em></span>
 										</a>
 									</li>
-
 								</ul>
 							</nav>
 				
@@ -694,7 +708,7 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 
 				<section role="main" class="content-body">
 					<header class="page-header">
-						<h2>Form Validation</h2>
+						<h2>Default Layout</h2>
 					
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
@@ -703,154 +717,423 @@ include __DIR__ . '/../../controller/controllercovoiturage.php';
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
-								<li><span>Forms</span></li>
-								<li><span>Validation</span></li>
+								<li><span>Layouts</span></li>
+								<li><span>Default</span></li>
 							</ol>
 					
 							<a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
 						</div>
 					</header>
-					<a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
 
 					<!-- start: page -->
-					<div class="row">
-    <div class="col-md-6">
-        <form class="form-horizontal" action="../../controller/controllercovoiturage.php" method="POST" enctype="multipart/form-data" id="covoiturageForm">
+                    <h2 style="font-family: Arial, sans-serif;">Liste des Abonnements</h2>
+					 
 
-            <section class="panel">
-                <header class="panel-heading">
-                    <h2 class="panel-title">Covoiturage Form</h2>
-                    <p class="panel-subtitle">Remplissez les informations sur votre trajet de covoiturage.</p>
-                </header>
-                <input type="hidden" name="action" value="addCovoiturage">
+						
+                        <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden;">
+                            <thead>
+                                <tr style="background-color: #2c3e50; color: white;">
+                                    <th style="padding: 12px; border: 1px solid #ddd;">Nom Client</th>
+									<th style="padding: 12px; border: 1px solid #ddd;">Num Client</th>
+                                    <th style="padding: 12px; border: 1px solid #ddd;">Parking</th>
+                                    <th style="padding: 12px; border: 1px solid #ddd;">Date Début</th>
+                                    <th style="padding: 12px; border: 1px solid #ddd;">Date Fin</th>
+                                    <th style="padding: 12px; border: 1px solid #ddd;">Places Réservées</th>
+									<th style="padding: 12px; border: 1px solid #ddd;">statut</th>
+                                    <th style="padding: 12px; border: 1px solid #ddd;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($abonnements as $abonnement): ?>
+                                    <tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#d6eaf8';" onmouseout="this.style.backgroundColor='#f9f9f9';">
+                                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['username']) ?></td>
+										<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['phone']) ?></td>
+                                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['nom_parking']) ?></td>
+                                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['date_debut']) ?></td>
+                                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['date_fin']) ?></td>
+                                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['places_reservees']) ?></td>
+										<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['status']) ?></td>
+                                        <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                                            <!-- Exemple de bouton de suppression ou modification -->
+                                            <form class="form_supp_abonnement" method="POST" onsubmit="return false;" style="display: inline;">
+												<input type="hidden" name="id_abonnement" value="<?= $abonnement['id_abonnement'] ?>">
+												<button type="button" class="btn-delete-abonnement" data-id="<?= $abonnement['id_abonnement'] ?>" style="padding: 6px 12px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">
+													Supprimer
+												</button>
+											</form>
 
-                <div class="panel-body">
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Lieu de départ <span class="icon"><i class="fa fa-map-marker-alt" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="text" name="depart" class="form-control" placeholder="Ex : Tunis" id="depart" />
-                            <span class="error" id="depart_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Lieu d'arrivée <span class="icon"><i class="fa fa-map-marker-alt" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="text" name="destination" class="form-control" placeholder="Ex : Esprit" id="destination" />
-                            <span class="error" id="destination_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Date et Heure du départ <span class="icon"><i class="fa fa-calendar" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="datetime-local" name="date_heure" class="form-control" id="date_heure" />
-                            <span class="error" id="date_heure_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Tarif<i class="fas fa-money-bill-alt" style="margin-left: 5px;"></i></label>
-                        <div class="col-sm-9">
-                            <input type="number" name="tarif" class="form-control" placeholder="Ex : 15.50" id="tarif" step="0.01" />
-                            <span class="error" id="tarif_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Places disponibles<span class="icon"><i class="fa fa-users" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="number" name="places_dispo" class="form-control" placeholder="Ex : 3" id="places_dispo" />
-                            <span class="error" id="places_dispo_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Matricule du véhicule <span class="icon"><i class="fa fa-car" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="text" name="matricule_voiture" class="form-control" placeholder="Entrez la matricule du véhicule" id="matricule_voiture" />
-                            <span class="error" id="matricule_voiture_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Marque du véhicule <span class="icon"><i class="fa fa-tag" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="text" name="marque" class="form-control" placeholder="Entrez la marque du véhicule" id="marque" />
-                            <span class="error" id="marque_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Couleur du véhicule <span class="icon"><i class="fa fa-palette" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="text" name="couleur" class="form-control" placeholder="Entrez la couleur du véhicule" id="couleur" />
-                            <span class="error" id="couleur_error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Image du véhicule <span class="icon"><i class="fa fa-image" style="margin-left: 5px;"></i></span></label>
-                        <div class="col-sm-9">
-                            <input type="file" name="image" id="image" />
-                            <span class="error" id="image_error"></span>
-                        </div>
-                    </div>
-                </div>
-                <footer class="panel-footer">
-                    <div class="row">
-                        <div class="col-sm-9 col-sm-offset-3">
-                            <button type="submit" class="btn btn-primary">Ajouter le trajet</button>
-                            <button type="reset" class="btn btn-default">Réinitialiser</button>
-                        </div>
-                    </div>
-                </footer>
-            </section>
-        </form>
-        <div id="message"></div>
-    </div>
-</div>
-
-
-
-<script src="ajoutcovoiturage.js"></script>
-
-
-<!-- jQuery -->
+											<button class="btn-edit-abonnement" data-id="<?= $abonnement['id_abonnement'] ?>" data-username="<?= htmlspecialchars($abonnement['username']) ?>" data-parking="<?= htmlspecialchars($abonnement['nom_parking']) ?>" data-debut="<?= $abonnement['date_debut'] ?>" data-fin="<?= $abonnement['date_fin'] ?>" data-places="<?= $abonnement['places_reservees'] ?>" style="padding: 6px 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+												Modifier
+											</button>
+											
+											 
 
 
 
 
-					
-			</aside>
-		</section>
-		<style>
-			.col-md-6 {
-				width: 80%; 
-				padding: 20px;  
+
+                                            <!-- Tu peux ajouter ici un bouton Modifier avec une modale si besoin -->
+                                        </td>
+                                    </tr>
+									<div id="modal-supp-abonnement" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
+										<div style="background: white; padding: 20px; border-radius: 5px; width: 350px;">
+											<h4>Confirmation</h4>
+											<p>Voulez-vous vraiment supprimer cet abonnement ?</p>
+											<form id="form-confirm-supp-abonnement" method="POST" action="../../controller/suppabonnement.php">
+												<input type="hidden" name="id_abonnement" id="id-abonnement-supp">  <!-- ID caché -->
+												<button type="submit" style="background-color: red; color: white; padding: 10px 20px; border: none; border-radius: 5px;">Supprimer</button>
+												<button type="button" onclick="$('#modal-supp-abonnement').hide();" style="margin-left: 10px; padding: 10px 20px;">Annuler</button>
+											</form>
+										</div>
+									</div>
+
+									
+
+
+									
+
+                                <?php endforeach; ?>
+								<div id="modal-edit-abonnement" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
+									<div style="background: white; padding: 20px; border-radius: 5px; width: 400px;">
+										<h4>Modifier l'abonnement</h4>
+										<form id="form-edit-abonnement" method="POST" action="../../controller/modifierabonnement.php">
+											<input type="hidden" name="id_abonnement" id="edit-id-abonnement">
+											
+											<label>Nom Client :</label>
+											<input type="text" name="username" id="edit-username" style="width: 100%; padding: 8px; margin-bottom: 10px;" readonly>
+
+											<label>Parking :</label>
+											<input type="text" name="nom_parking" id="edit-parking" style="width: 100%; padding: 8px; margin-bottom: 10px;" readonly>
+
+											<label>Date Début :</label>
+											<input type="datetime-local" name="date_debut" id="edit-date-debut" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+											<span id="erreur_nom" class="erreur-message"></span>
+
+											<label>Date Fin :</label>
+											<input type="datetime-local"name="date_fin" id="edit-date-fin" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+											<label>Places Réservées :</label>
+											<input type="number" name="places_reservees" id="edit-places" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+
+											<!-- ✅ Champ caché pour stocker l’ancienne valeur des places -->
+											<input type="hidden" id="edit-old-places" name="old_places_reservees">
+
+											<div id="error-message" class="erreur-message" style="color: red; margin-bottom: 10px;"></div>
+
+											<button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px;">Enregistrer</button>
+											<button type="button" onclick="$('#modal-edit-abonnement').hide();" style="margin-left: 10px; padding: 10px 20px;">Annuler</button>
+										</form>
+									</div>
+								</div>
+
+								 
+
+
+								 
+
+                            </tbody>
+                        </table>
+						 
+					<button onclick="exporterPDF()"style="margin: 20px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+						Exporter PDF
+					</button>
+
+						
+						<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+						<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+					<script>
+						async function exporterPDF() {
+							const container = document.createElement("div");
+							container.innerHTML = `
+								<div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 30px; background-color: #e0e3e7;">
+									<div style="text-align: center;">
+										<img src="assets/images/logosansnom555.png" alt="Logo" style="width: 250px; margin-bottom: 30px;">
+									</div>
+									<h2 style="text-align: center; color: #1a1a1a; margin-bottom: 30px;">Liste des abonnements</h2>
+									<table style="width: 100%; border-collapse: separate; border-spacing: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden;">
+										<thead>
+											<tr style="background-color: #34495e; color: #ffffff;">
+												<th style="padding: 12px; border: 1px solid #ddd;">Nom Client</th>
+												<th style="padding: 12px; border: 1px solid #ddd;">Num Client</th>
+												<th style="padding: 12px; border: 1px solid #ddd;">Parking</th>
+												<th style="padding: 12px; border: 1px solid #ddd;">Date Début</th>
+												<th style="padding: 12px; border: 1px solid #ddd;">Date Fin</th>
+												<th style="padding: 12px; border: 1px solid #ddd;">Places Réservées</th>
+												<th style="padding: 12px; border: 1px solid #ddd;">statut</th>
+											</tr>
+										</thead>
+										<tbody>
+											 <?php foreach ($abonnements as $abonnement): ?>
+												<tr style="background-color: #f9f9f9; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor='#d6eaf8';" onmouseout="this.style.backgroundColor='#f9f9f9';">
+													<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['username']) ?></td>
+													<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['phone']) ?></td>
+													<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['nom_parking']) ?></td>
+													<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['date_debut']) ?></td>
+													<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['date_fin']) ?></td>
+													<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['places_reservees']) ?></td>
+													<td style="padding: 10px; border: 1px solid #ddd; text-align: center;"><?= htmlspecialchars($abonnement['status']) ?></td>
+											</tr>
+											<?php endforeach; ?>
+										</tbody>
+									</table>
+								</div>
+							`;
+
+							document.body.appendChild(container);
+
+							setTimeout(() => {
+								html2canvas(container).then(canvas => {
+									const imgData = canvas.toDataURL("image/png");
+									const pdf = new jspdf.jsPDF("p", "mm", "a4");
+									const pageWidth = pdf.internal.pageSize.getWidth();
+									const imgWidth = pageWidth - 20;
+									const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+									pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+									pdf.save("liste_abonnements.pdf");
+
+									document.body.removeChild(container);
+								});
+							}, 300);
+						}
+						</script>
+
+						 
+
+						 
+						 
+
+						
+						
+						
+						<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+						<script>
+							$(document).ready(function() {
+								// Ouvrir la modale lors du clic sur le bouton de suppression
+								$(".btn-delete-abonnement").click(function() {
+									var id = $(this).data('id');  // Récupère l'ID depuis l'attribut data-id
+									$("#id-abonnement-supp").val(id);  // Remplir l'input caché avec l'ID
+									$("#modal-supp-abonnement").css("display", "flex");  // Affiche la modale
+								});
+
+								// Fermeture de la modale si on clique en dehors de la boîte
+								$("#modal-supp-abonnement").on("click", function(e) {
+									if (e.target === this) {
+										$(this).hide();
+									}
+								});
+
+								// Soumission du formulaire de confirmation de suppression (AJAX)
+								$("#form-confirm-supp-abonnement").submit(function(e) {
+									e.preventDefault();  // Empêche la soumission classique du formulaire
+									var formData = $(this).serialize();  // Sérialise les données du formulaire
+
+									// Envoi de la requête AJAX
+									$.ajax({
+										type: "POST",
+										url: "../../controller/suppabonnement.php",  // Le fichier PHP pour traiter la suppression
+										data: formData,  // Données à envoyer (ID de l'abonnement)
+										success: function(response) {
+											console.log(response);  // Affiche la réponse pour le debug
+
+											if (response === "success") {  // Si la suppression a réussi
+												$("#modal-supp-abonnement").hide();  // Cache la modale
+												$("tr[data-id='" + $("#id-abonnement-supp").val() + "']").fadeOut();  // Masque l'élément correspondant à l'ID dans le tableau
+
+												// Recharge la page après un court délai (1 seconde ici)
+												setTimeout(function() {
+													location.reload();
+												}, 1000);
+											} else {
+												// Si la suppression échoue, affiche un message d'erreur
+												$("#message").html("<span style='color:red;'>Erreur lors de la suppression de l'abonnement.</span>");
+											}
+										},
+										error: function() {
+											// En cas d'erreur AJAX
+											$("#message").html("<span style='color:red;'>Erreur lors de la suppression.</span>");
+										}
+									});
+								});
+							});
+
+						</script>
+					<script>
+						function afficherErreurModal(message) {
+							$("#error-message").text(message);
+						}
+
+						$(document).ready(function () {
+
+							// Afficher le formulaire de modification rempli avec les données
+							$(".btn-edit-abonnement").click(function () {
+								var id = $(this).data('id');
+								var username = $(this).data('username');
+								var parking = $(this).data('parking');
+								var debut = $(this).data('debut');
+								var fin = $(this).data('fin');
+								var places = $(this).data('places');
+
+								$("#edit-id-abonnement").val(id);
+								$("#edit-username").val(username);
+								$("#edit-parking").val(parking);
+								$("#edit-date-debut").val(debut);
+								$("#edit-date-fin").val(fin);
+								$("#edit-places").val(places);
+								$("#edit-old-places").val(places); // important pour la logique de comparaison
+
+								$("#modal-edit-abonnement").css("display", "flex");
+							});
+
+							// Formulaire de modification
+							$("#form-edit-abonnement").submit(function (e) {
+								e.preventDefault();
+
+								if (!validerFormulaire()) {
+									return;
+								}
+
+								var formData = $(this).serialize();
+
+								$.ajax({
+									type: "POST",
+									url: "../../controller/modabonnement.php",
+									data: formData,
+									success: function(response) {
+										try {
+											var data = JSON.parse(response);
+
+											if (data.status === "success") {
+												// Remplacer l'alerte par un message dans une modale ou un autre feedback
+												// alert(data.message); // Supprimer ou commenter cette ligne
+												$("#notification").text(data.message).fadeIn().delay(2000).fadeOut(); // Afficher un message discret
+												location.reload();
+											} else {
+												// Si c'est une erreur, l'afficher proprement
+												$('#error-message').text(data.message); // ce div existe déjà dans ton formulaire
+											}
+										} catch (e) {
+											console.error("Erreur de parsing JSON :", e, response);
+											$('#error-message').text("Erreur inattendue. Veuillez réessayer.");
+										}
+									}
+								});
+							});
+
+							// Fermer la modale si on clique à l'extérieur
+							$("#modal-edit-abonnement").on("click", function (e) {
+								if (e.target === this) {
+									$(this).hide();
+								}
+							});
+
+						});
+					</script>
+
+
+
+					 	
+
+
+
+				 
+
+
+					<!-- end: page -->
+				</section>
+			</div>
+
+			<aside id="sidebar-right" class="sidebar-right">
+				<div class="nano">
+					<div class="nano-content">
+						<a href="#" class="mobile-close visible-xs">
+							Collapse <i class="fa fa-chevron-right"></i>
+						</a>
 			
-			}
-			.error {
-            color: red;
-            font-size: 0.9em;
-        }
-		</style>
-		
-		<!-- Vendor -->
-		<script src="assets/vendor/jquery/jquery.js"></script>
-		<script src="assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
-		<script src="assets/vendor/bootstrap/js/bootstrap.js"></script>
-		<script src="assets/vendor/nanoscroller/nanoscroller.js"></script>
-		<script src="assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
-		<script src="assets/vendor/magnific-popup/magnific-popup.js"></script>
-		<script src="assets/vendor/jquery-placeholder/jquery.placeholder.js"></script>
-		
-		<!-- Specific Page Vendor -->
-		<script src="assets/vendor/jquery-validation/jquery.validate.js"></script>
-		
-		<!-- Theme Base, Components and Settings -->
-		<script src="assets/javascripts/theme.js"></script>
-		
-		<!-- Theme Custom -->
-		<script src="assets/javascripts/theme.custom.js"></script>
-		
-		<!-- Theme Initialization Files -->
-		<script src="assets/javascripts/theme.init.js"></script>
+						<div class="sidebar-right-wrapper">
+			
+							<div class="sidebar-widget widget-calendar">
+								<h6>Upcoming Tasks</h6>
+								<div data-plugin-datepicker data-plugin-skin="dark" ></div>
+			
+								<ul>
+									<li>
+										<time datetime="2014-04-19T00:00+00:00">04/19/2014</time>
+										<span>Company Meeting</span>
+									</li>
+								</ul>
+							</div>
+			
+							<div class="sidebar-widget widget-friends">
+								<h6>Friends</h6>
+								<ul>
+									<li class="status-online">
+										<figure class="profile-picture">
+											<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">
+										</figure>
+										<div class="profile-info">
+											<span class="name">Joseph Doe Junior</span>
+											<span class="title">Hey, how are you?</span>
+										</div>
+									</li>
+									<li class="status-online">
+										<figure class="profile-picture">
+											<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">
+										</figure>
+										<div class="profile-info">
+											<span class="name">Joseph Doe Junior</span>
+											<span class="title">Hey, how are you?</span>
+										</div>
+									</li>
+									<li class="status-offline">
+										<figure class="profile-picture">
+											<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">
+										</figure>
+										<div class="profile-info">
+											<span class="name">Joseph Doe Junior</span>
+											<span class="title">Hey, how are you?</span>
+										</div>
+									</li>
+									<li class="status-offline">
+										<figure class="profile-picture">
+											<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">
+										</figure>
+										<div class="profile-info">
+											<span class="name">Joseph Doe Junior</span>
+											<span class="title">Hey, how are you?</span>
+										</div>
+									</li>
+								</ul>
+							</div>
+			
+						</div>
+					</div>
+				</div>
+			</aside>
 
+			<!-- Vendor -->
+			<script src="assets/vendor/jquery/jquery.js"></script>
+			<script src="assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
+			<script src="assets/vendor/bootstrap/js/bootstrap.js"></script>
+			<script src="assets/vendor/nanoscroller/nanoscroller.js"></script>
+			<script src="assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+			<script src="assets/vendor/magnific-popup/magnific-popup.js"></script>
+			<script src="assets/vendor/jquery-placeholder/jquery.placeholder.js"></script>
+			
+			<!-- Specific Page Vendor -->
+			
+			<!-- Theme Base, Components and Settings -->
+			<script src="assets/javascripts/theme.js"></script>
+			
+			<!-- Theme Custom -->
+			<script src="assets/javascripts/theme.custom.js"></script>
+			
+			<!-- Theme Initialization Files -->
+			<script src="assets/javascripts/theme.init.js"></script>
+			<script src="validationmodabonnement.js"></script>
 
-		<!-- Examples -->
-		<script src="assets/javascripts/forms/examples.validation.js"></script>
+		</section>
 	</body>
 </html>

@@ -1,4 +1,5 @@
 <?php
+session_start();
     include '../../controller/userC.php';
 	include '../../model/user.php';
     $userC = new UserC();
@@ -360,28 +361,22 @@ $liste = $userC->afficher();
 			
 					<div id="userbox" class="userbox">
 						<a href="#" data-toggle="dropdown">
-							<figure class="profile-picture">
-								<img src="assets/images/!logged-user.jpg" alt="Joseph Doe" class="img-circle" data-lock-picture="assets/images/!logged-user.jpg" />
-							</figure>
-							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@okler.com">
-								<span class="name">John Doe Junior</span>
+							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@JSOFT.com">
+								
+							<?php if (isset($_SESSION['user_username'])): ?>
+								<span class="name"><?= htmlspecialchars($_SESSION['user_username']) ?></span>
+							<?php endif; ?>
 								<span class="role">administrator</span>
 							</div>
-			
 							<i class="fa custom-caret"></i>
+					
 						</a>
 			
 						<div class="dropdown-menu">
 							<ul class="list-unstyled">
 								<li class="divider"></li>
 								<li>
-									<a role="menuitem" tabindex="-1" href="pages-user-profile.html"><i class="fa fa-user"></i> My Profile</a>
-								</li>
-								<li>
-									<a role="menuitem" tabindex="-1" href="#" data-lock-screen="true"><i class="fa fa-lock"></i> Lock Screen</a>
-								</li>
-								<li>
-									<a role="menuitem" tabindex="-1" href="pages-signin.html"><i class="fa fa-power-off"></i> Logout</a>
+									<a role="menuitem" tabindex="-1" href="../frontoffice/logout.php"><i class="fa fa-power-off"></i> Logout</a>
 								</li>
 							</ul>
 						</div>
@@ -660,25 +655,25 @@ $liste = $userC->afficher();
 											
 										</ul>
 									</li>
-									<li class="nav-parent">
+									<li class="nav-parent"  >
 										<a>
 											<i class="fa fa-map-marker" aria-hidden="true"></i>
-											<span>Maps</span>
+											<span>Parking</span>
 										</a>
 										<ul class="nav nav-children">
-											<li>
-												<a href="maps-google-maps.html">
-													 Basic
+											<li  >
+												<a href="indexparking.php">
+													 form parking
 												</a>
 											</li>
-											<li>
-												<a href="maps-google-maps-builder.html">
-													 Map Builder
+											<li >
+												<a href="afficheparking.php">
+													 table parking
 												</a>
 											</li>
-											<li>
-												<a href="maps-vector.html">
-													 Vector
+											<li >
+												<a href="afficheabonnement.php">
+													 table abonnements
 												</a>
 											</li>
 										</ul>

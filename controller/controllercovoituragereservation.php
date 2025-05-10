@@ -212,7 +212,7 @@ public function updateReservation($reservation_id, $statut) {
                 $dateHeure = $result['date_heure'];
 
                 if (substr($userPhone, 0, 1) !== '+') {
-                    $userPhone = "+216" . $userPhone; 
+                    $userPhone = "+216" . $userPhone;
                 }
 
                 error_log("User phone number: " . $userPhone);
@@ -221,7 +221,7 @@ public function updateReservation($reservation_id, $statut) {
                 $smsMessage = "Bonjour " . $username . ",\nVotre réservation a été acceptée !\nDépart: " . $depart . "\nDestination: " . $destination . "\nDate et Heure: " . $dateHeure;
 
                 
-             
+                
                 $client = new Client($account_sid, $auth_token);
 
                 try {
