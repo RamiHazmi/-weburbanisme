@@ -61,7 +61,7 @@ include '../../controller/userC.php';
 
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow border-top border-5 border-primary sticky-top p-0">
-        <a href="index.html" class="navbar-brand bg-primary d-flex align-items-center px-4 px-lg-5">
+        <a href="index.php" class="navbar-brand bg-primary d-flex align-items-center px-4 px-lg-5">
             <!--<h2 class="mb-2 text-white">Logistica</h2>-->
             <img class="img-fluid" src="img/logosansnom.png" alt="" width=250px height=200px >
 
@@ -71,8 +71,7 @@ include '../../controller/userC.php';
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="index.html" class="nav-item nav-link active">Acceuil</a>
-                <a href="about.html" class="nav-item nav-link">À Propos</a>
+                <a href="index.php" class="nav-item nav-link active">Acceuil</a>
                <!---- <a href="service.html" class="nav-item nav-link">Services</a> -->
                 <div class="nav-item dropdown">
                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Services</a>
@@ -80,7 +79,7 @@ include '../../controller/userC.php';
                         <a href="covoituragefront.php" class="dropdown-item">Covoiturage</a>
                         <a href="frontparking.php" class="dropdown-item">Parking</a>
                         <a href="Stations.php" class="dropdown-item">Velos et Stations</a>
-                        <a href="team.html" class="dropdown-item">Recharge Electrique</a>
+                        <a href="ReservationBorne.php" class="dropdown-item">Recharge Electrique</a>
                         
                     </div>
                 
@@ -132,8 +131,6 @@ include '../../controller/userC.php';
                                   
                                 </h1>
                                 <p class="fs-5 fw-medium text-white mb-4 pb-2">Chez Ride4All, nous facilitons vos déplacements quotidiens en offrant des solutions de transport partagées, écologiques et économiques, adaptées à vos besoins.</p>
-                                <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Nos Services</a>
-                                <a href="" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Nos Tarifs</a>
                             </div>
                         </div>
                     </div>
@@ -153,8 +150,7 @@ include '../../controller/userC.php';
                                     <span class="text-primary">Recharge Electrique</span>
                                 </h1> 
                                 <p class="fs-5 fw-medium text-white mb-4 pb-2">Chez Ride4All, nous facilitons vos déplacements quotidiens en offrant des solutions de transport partagées, écologiques et économiques, adaptées à vos besoins.</p>
-                                <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Nos Services</a>
-                                <a href="" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Nos Tarifs</a>
+                                
                             </div>
                         </div>
                     </div>
@@ -193,7 +189,6 @@ include '../../controller/userC.php';
                             </p>
                         </div>
                     </div>
-                    <a href="" class="btn btn-primary py-3 px-5">Plus d'informations</a>
                 </div>
             </div>
         </div>
@@ -411,7 +406,7 @@ include '../../controller/userC.php';
                             <p><i class="fa fa-check text-success me-3"></i>Accès 24/7 🕒</p>
                             <p><i class="fa fa-check text-success me-3"></i>Paiement simple et sécurisé 💳</p>
                             <p><i class="fa fa-check text-success me-3"></i>Stations éco-responsables 🌱</p>
-                            <a class="btn-slide mt-2" href=""><i class="fa fa-arrow-right"></i><span >👉 Réservez maintenant !</span></a>
+                            <a class="btn-slide mt-2" href="ReservationBorne.php"><i class="fa fa-arrow-right"></i><span >👉 Réservez maintenant !</span></a>
                         </div>
                     </div>
                 </div>
@@ -542,9 +537,9 @@ include '../../controller/userC.php';
             <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-light mb-4">Address</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Esprit Ariana Soghra</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+216 27 118 673</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>Ride4ALL@gmail.com</p>
                     <div class="d-flex pt-2">
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
@@ -554,39 +549,26 @@ include '../../controller/userC.php';
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-light mb-4">Services</h4>
-                    <a class="btn btn-link" href="">Air Freight</a>
-                    <a class="btn btn-link" href="">Sea Freight</a>
-                    <a class="btn btn-link" href="">Road Freight</a>
-                    <a class="btn btn-link" href="">Logistic Solutions</a>
-                    <a class="btn btn-link" href="">Industry solutions</a>
+                    <a class="btn btn-link" href="covoituragefront.php">Covoiturage</a>
+                    <a class="btn btn-link" href="frontparking.php">Parking</a>
+                    <a class="btn btn-link" href="Stations.php">Velos et Stations</a>
+                    <a class="btn btn-link" href="ReservationBorne.php">Borne Electrique</a>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Quick Links</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Our Services</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">Support</a>
+                <div class="col-lg-6 col-md-12 d-flex align-items-center">
+
+                <img class="img-fluid" src="img/equipe.JPEG " alt="" width=5000px height=1000px >
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Newsletter</h4>
-                    <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
-                    <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                    </div>
-                </div>
+
             </div>
+
         </div>
         <div class="container">
             <div class="copyright">
                 <div class="row">
                     <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
+                        &copy; <a class="border-bottom" href="#">Ride4ALL</a>, All Right Reserved.
                     </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                        Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
-                    </div>
+                  
                 </div>
             </div>
         </div>

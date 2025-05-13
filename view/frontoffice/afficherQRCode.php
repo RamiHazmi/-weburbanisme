@@ -1,9 +1,9 @@
 
+
 <?php
 session_start();
 
-require_once __DIR__ . '/../../model/ModelReservation.php';
-require_once __DIR__ .'/../../controller/ControllerReservation.php';
+
 include '../../model/user.php';
 include '../../controller/userC.php';
 
@@ -28,17 +28,23 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_email']) &&  isset($_SE
     </script>";
     exit;
 }
+
+
 ?>
 
-
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>Logistica - Shipping Company Website Template</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
+
+            <!-- cssreservation -->
+    <link rel="stylesheet" href="stylereservation.css">
+
 
     <!-- Favicon -->
     <link href="img/favicon.ico" rel="icon">
@@ -62,33 +68,40 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_email']) &&  isset($_SE
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
 </head>
-<body>
-<nav class="navbar navbar-expand-lg bg-white navbar-light shadow border-top border-5 border-primary sticky-top p-0">
-        <a href="index.html" class="navbar-brand bg-primary d-flex align-items-center px-4 px-lg-5">
-            <!--<h2 class="mb-2 text-white">Logistica</h2>-->
-            <img class="img-fluid" src="img/logosansnom.png" alt="" width=250px height=200px >
 
-        </a>
-        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="index.php" class="nav-item nav-link ">Acceuil</a>
-                <a href="about.html" class="nav-item nav-link">À Propos</a>
-               <!---- <a href="service.html" class="nav-item nav-link">Services</a> -->
-                <div class="nav-item dropdown">
-                   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Services</a>
-                    <div class="dropdown-menu fade-up m-0">
-                        <a href="covoituragefront.php" class="dropdown-item">Covoiturage</a>
-                        <a href="frontparking.php" class="dropdown-item">Parking</a>
-                        <a href="quote.html" class="dropdown-item">Transport Public</a>
-                        <a href="AffichageReservation.php" class="dropdown-item">Recharge Electrique</a>
-                        
-                    </div>
-                
+<body>
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+<!-- Navbar Start -->
+<nav class="navbar navbar-expand-lg bg-white navbar-light shadow border-top border-5 border-primary sticky-top p-0">
+<a href="index.php" class="navbar-brand bg-primary d-flex align-items-center px-4 px-lg-5">
+        <!--<h2 class="mb-2 text-white">Logistica</h2>-->
+        <img class="img-fluid" src="img/logo.png" alt="" width=250px height=200px >
+
+    </a>
+   
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="navbar-nav ms-auto p-4 p-lg-0">
+            <a href="index.php" class="nav-item nav-link">Acceuil</a>
+           <!---- <a href="service.html" class="nav-item nav-link">Services</a> -->
+            <div class="nav-item dropdown">
+               <a href="#" class="nav-item nav-link active" data-bs-toggle="dropdown">Services</a>
+                <div class="dropdown-menu fade-up m-0">
+                    <a href="covoituragefront.php" class="dropdown-item">Covoiturage</a>
+                    <a href="frontparking.php" class="dropdown-item">Parking</a>
+                    <a href="Stations.php" class="dropdown-item">Velos et Stations</a>
+                    <a href="ReservationBorne.php" class="dropdown-item active">Recharge Electrique</a>
+                    
                 </div>
-                <a href="user_profile.php" class="nav-item nav-link active">
+            
+            </div>
+            <a href="user_profile.php" class="nav-item nav-link">
                 <i class="fa fa-user text-primary me-3"></i>
                 <?php
 
@@ -109,32 +122,31 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_email']) &&  isset($_SE
 <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
     <li><a href="../backoffice/dashboard.php" class="nav-item nav-link ">Dashboard</a></li>
 <?php endif; ?>
-
-
-            </div>
-            </div>
-            <h4 class="m-0 pe-lg-5 d-none d-lg-block"><i class="fa fa-headphones text-primary me-3"></i>+216 26 253 807</h4>
         </div>
-    </nav>
-    <!-- Navbar End -->
+        <h4 class="m-0 pe-lg-5 d-none d-lg-block"><i class="fa fa-headphones text-primary me-3"></i>+216 20 265 186</h4>
+    </div>
+</nav>
+<!-- Navbar End -->
+
 
 
     <!-- Page Header Start -->
-    <div class="container-fluid page-header-rechage-electrique py-5" style="margin-bottom: 6rem;">
+    <div class="container-fluid page-header py-5" style="margin-bottom: 6rem;">
         <div class="container py-5">
-            <h1 class="display-3 text-white mb-3 animated slideInDown">Recharge Electrique</h1>
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Services</h1>
             <nav aria-label="breadcrumb animated slideInDown">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a class="text-white" href="#">Home</a></li>
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Pages</a></li>
-                    <li class="breadcrumb-item text-white active" aria-current="page">Recharge Electrique</li>
+                    <li class="breadcrumb-item"><a class="text-white" href="#">Services</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">Borne electrique</li>
                 </ol>
             </nav>
         </div>
     </div>
     <!-- Page Header End -->
-     
-    <style>
+    <!-- Page Header End -->
+
+      <style>
 
 .center-container {
     display: flex;
@@ -181,6 +193,7 @@ p {
 }
 
     </style>
+
     <?php
 $id_reservation = $_GET['id_reservation'] ?? null;
 
@@ -221,16 +234,15 @@ $qrText = "Nom: " . $reservation['nomClient'] . "\n" .
 
 
 
-
-<!-- Footer Start -->
-<div class="container-fluid bg-dark text-light footer pt-5 wow fadeIn" data-wow-delay="0.1s" style="margin-top: 6rem;">
+ <!-- Footer Start -->
+ <div class="container-fluid bg-dark text-light footer pt-5 wow fadeIn" data-wow-delay="0.1s" style="margin-top: 6rem;">
         <div class="container py-5">
             <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-light mb-4">Address</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Esprit Ariana Soghra</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+216 27 118 673</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>Ride4ALL@gmail.com</p>
                     <div class="d-flex pt-2">
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
@@ -239,45 +251,32 @@ $qrText = "Nom: " . $reservation['nomClient'] . "\n" .
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Reservation</h4>
-                    <a class="btn btn-link" href="">Reservation Client</a>
-                  
+                    <h4 class="text-light mb-4">Services</h4>
+                    <a class="btn btn-link" href="covoituragefront.php">Covoiturage</a>
+                    <a class="btn btn-link" href="frontparking.php">Parking</a>
+                    <a class="btn btn-link" href="Stations.php">Velos et Stations</a>
+                    <a class="btn btn-link" href="ReservationBorne.php">Borne Electrique</a>
+                </div>
+                <div class="col-lg-6 col-md-12 d-flex align-items-center">
+
+                <img class="img-fluid" src="img/equipe.JPEG " alt="" width=5000px height=1000px >
                 </div>
 
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Quick Links</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Our Services</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">Support</a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Newsletter</h4>
-                    <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
-                    <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                    </div>
-                </div>
             </div>
+
         </div>
         <div class="container">
             <div class="copyright">
                 <div class="row">
                     <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
+                        &copy; <a class="border-bottom" href="#">Ride4ALL</a>, All Right Reserved.
                     </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                        Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
-                    </div>
+                  
                 </div>
             </div>
         </div>
     </div>
     <!-- Footer End -->
-
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-0 back-to-top"><i class="bi bi-arrow-up"></i></a>

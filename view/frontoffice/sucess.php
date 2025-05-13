@@ -1,50 +1,48 @@
 <?php
-require_once 'C:/xampp/htdocs/urbanisme/vendor/autoload.php';
+// Tu peux enregistrer ici la session Stripe dans ta base de données si besoin
 
-
-// Connexion à la base de données
-$host = 'localhost';
-$db = 'urbanisme';
-$user = 'root';
-$pass = '';
-$pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-
-// Récupération des données POST
-$nomClient = $_POST['nomClient'] ?? 'John';
-$prenomClient = $_POST['prenomClient'] ?? 'Doe';
-$emailClient = $_POST['emailClient'] ?? 'john.doe@example.com';
-$tarif_estime = $_POST['tarif_estime'] ?? 10.50;
-$id_borne = $_POST['id_borne'] ?? 1;
-$heure_debut = $_POST['heure_debut'] ?? '12:00';
-$heure_fin = $_POST['heure_fin'] ?? '14:00';
-$duree_charge = $_POST['duree_charge'] ?? 2;
-
-// ID de réservation (généré automatiquement)
-$id_reservation = uniqid('res_');
-
-// Création de la session Stripe
-try {
-    $session = \Stripe\Checkout\Session::create([
-        'payment_method_types' => ['card'],
-        'line_items' => [[
-            'price_data' => [
-                'currency' => 'eur',
-                'product_data' => ['name' => 'Paiement Réservation Borne'],
-                'unit_amount' => $tarif_estime * 100, // Conversion en centimes
-            ],
-            'quantity' => 1,
-        ]],
-        'mode' => 'payment',
-        'success_url' => 'http://localhost/AffichageReservation.php?id_reservation=' . $id_reservation . '&session_id={CHECKOUT_SESSION_ID}',
-        'cancel_url' => 'http://localhost/cancel.php',
-    ]);
-
-    // Rediriger l'utilisateur vers Stripe
-    header('Location: ' . $session->url);
-    exit;
-
-} catch (Exception $e) {
-    echo 'Erreur lors de la création de la session Stripe: ' . $e->getMessage();
-    exit;
-}
+// Tu peux aussi afficher des détails via $_GET['id_reservation'] si tu veux
 ?>
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Paiement réussi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .message {
+            font-size: 22px;
+            color: green;
+            margin-bottom: 20px;
+        }
+
+        .redirect {
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="message">✅ Paiement effectué avec succès !</div>
+        <div class="redirect">Redirection vers la page de réservation dans quelques secondes...</div>
+    </div>
+
+    <script>
+        // Redirection automatique après 5 secondes
+        setTimeout(function() {
+            window.location.href = "ReservationBorne.php";
+        }, 5000);
+    </script>
+</body>
+</html>

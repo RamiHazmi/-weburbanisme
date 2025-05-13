@@ -1,3 +1,26 @@
+<?php
+session_start();
+
+include '../../Model/ModelBorne.php';
+include '../../Controller/ControllerBorne.php';
+
+$ControllerBorneElectrique = new ControllerBorneElectrique();
+$liste = $ControllerBorneElectrique->afficher();
+
+// Suppression
+if (isset($_GET['id_borne']) && !empty($_GET['id_borne'])) {
+    $id_borne = $_GET['id_borne'];
+    $resultat = $ControllerBorneElectrique->supprimer($id_borne);
+
+    if ($resultat) {
+        header('Location: TableBorneElectrique.php?success=1');
+        exit();
+    } else {
+        header('Location: TableBorneElectrique.php?error=1');
+        exit();
+    }
+}
+?>
 <!doctype html>
 <html class="fixed">
 	<head>
@@ -381,7 +404,7 @@
                     <div class="right-wrapper pull-right">
                         <ol class="breadcrumbs">
                             <li>
-                                <a href="index.html">
+                                <a href="dashboard.php">
                                     <i class="fa fa-home"></i>
                                 </a>
                             </li>
@@ -412,7 +435,26 @@
     </div>
   </div>
 </div>
-
+<script src="assets/vendor/jquery/jquery.js"></script>
+		<script src="assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
+		<script src="assets/vendor/bootstrap/js/bootstrap.js"></script>
+		<script src="assets/vendor/nanoscroller/nanoscroller.js"></script>
+		<script src="assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+		<script src="assets/vendor/magnific-popup/magnific-popup.js"></script>
+		<script src="assets/vendor/jquery-placeholder/jquery.placeholder.js"></script>
+		
+		<!-- Specific Page Vendor -->
+		<script src="assets/vendor/jquery-autosize/jquery.autosize.js"></script>
+		<script src="assets/vendor/bootstrap-fileupload/bootstrap-fileupload.min.js"></script>
+		
+		<!-- Theme Base, Components and Settings -->
+		<script src="assets/javascripts/theme.js"></script>
+		
+		<!-- Theme Custom -->
+		<script src="assets/javascripts/theme.custom.js"></script>
+		
+		<!-- Theme Initialization Files -->
+		<script src="assets/javascripts/theme.init.js"></script>
 <!-- Scripts JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>

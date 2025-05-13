@@ -6,7 +6,6 @@ use Twilio\Rest\Client;
 class Notification
 {
   
-  
    
     public function sendSMS($to, $message)
     {

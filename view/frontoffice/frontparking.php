@@ -87,14 +87,13 @@ $abonnementController = new AbonnementController();
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto p-4 p-lg-0">
                 <a href="index.php" class="nav-item nav-link">Acceuil</a>
-                <a href="quote.html" class="nav-item nav-link">A propos</a>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-item nav-link active" data-bs-toggle="dropdown">Services</a>
                         <div class="dropdown-menu fade-up m-0">
                             <a href="covoituragefront.php" class="dropdown-item">Covoiturage</a>
                             <a href="frontparking.php" class="dropdown-item active">Parking</a>
                             <a href="Stations.php" class="dropdown-item">Velos et Stations</a>
-                            <a href="team.html" class="dropdown-item">Recharge Electrique</a>
+                            <a href="ReservationBorne.php" class="dropdown-item">Recharge Electrique</a>
                             
                         </div>
                     
@@ -395,16 +394,15 @@ $abonnementController = new AbonnementController();
 
     <!-- Feature End -->
         
-
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light footer pt-5 wow fadeIn" data-wow-delay="0.1s" style="margin-top: 6rem;">
+ <!-- Footer Start -->
+ <div class="container-fluid bg-dark text-light footer pt-5 wow fadeIn" data-wow-delay="0.1s" style="margin-top: 6rem;">
         <div class="container py-5">
             <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-light mb-4">Address</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Esprit Street, Tunis, TUNISIA</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+216 95 023 331</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>ride4all@gmail.com</p>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Esprit Ariana Soghra</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+216 27 118 673</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>Ride4ALL@gmail.com</p>
                     <div class="d-flex pt-2">
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
@@ -414,40 +412,26 @@ $abonnementController = new AbonnementController();
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-light mb-4">Services</h4>
-                    <a class="btn btn-link" href="">Covoiturage</a>
-                    <a class="btn btn-link" href="">parking</a>
-                    <a class="btn btn-link" href="">recharge electrique</a>
-                    <a class="btn btn-link" href="">vélos</a>
-                     
+                    <a class="btn btn-link" href="covoituragefront.php">Covoiturage</a>
+                    <a class="btn btn-link" href="frontparking.php">Parking</a>
+                    <a class="btn btn-link" href="Stations.php">Velos et Stations</a>
+                    <a class="btn btn-link" href="ReservationBorne.php">Borne Electrique</a>
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Quick Links</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Our Services</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">Support</a>
+                <div class="col-lg-6 col-md-12 d-flex align-items-center">
+
+                <img class="img-fluid" src="img/equipe.JPEG " alt="" width=5000px height=1000px >
                 </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Newsletter</h4>
-                    <p>veulliez entrer votre email</p>
-                    <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                    </div>
-                </div>
+
             </div>
+
         </div>
         <div class="container">
             <div class="copyright">
                 <div class="row">
                     <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
+                        &copy; <a class="border-bottom" href="#">Ride4ALL</a>, All Right Reserved.
                     </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                        Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
-                    </div>
+                  
                 </div>
             </div>
         </div>

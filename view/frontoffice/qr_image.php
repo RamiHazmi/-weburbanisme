@@ -1,6 +1,5 @@
 <?php
-require_once 'C:/xampp/htdocs/urbanisme/vendor/autoload.php';
-
+require_once 'C:/xampp/htdocs/Urbanisme/vendor/autoload.php';
 require_once __DIR__ . '/../../database.php';
 
 use Endroid\QrCode\Builder\Builder;

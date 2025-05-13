@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg bg-white navbar-light shadow border-top border-5 border-primary sticky-top p-0">
-        <a href="index.html" class="navbar-brand bg-primary d-flex align-items-center px-4 px-lg-5">
+        <a href="index.php" class="navbar-brand bg-primary d-flex align-items-center px-4 px-lg-5">
             <h2 class="mb-2 text-white">Logistica</h2>
         </a>
         <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="index.html" class="nav-item nav-link">Home</a>
+                <a href="index.php" class="nav-item nav-link">Home</a>
                 <a href="about.html" class="nav-item nav-link">About</a>
                 <a href="service.html" class="nav-item nav-link">Services</a>
                 <div class="nav-item dropdown">
@@ -171,82 +171,83 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Page Header End -->
     <div class="form-wrapper">
     <h2>Modifier Réservation</h2>
-    <form id="formReservation" action="" method="POST">
-       <div class="form-group">
-    <label>Nom et Prénom :</label>
-    <!-- Adding readonly to prevent modification -->
-    <input type="text" name="nomClient" id="nomClient" required value="<?= htmlspecialchars($reservationData['nomClient'] ?? '') ?>" readonly>
-    <div id="nomClient_error" class="error-message" style="color: red;"></div>
-</div>
+<form id="formReservation" action="" method="POST">
+    <div class="form-group">
+        <label>Nom et Prénom :</label>
+        <!-- Utilisation de htmlspecialchars() et isset() pour afficher les valeurs correctement -->
+        <input type="text" name="nomClient" id="nomClient" required value="<?= htmlspecialchars($reservationData['nomClient'] ?? '') ?>" readonly>
+        <div id="nomClient_error" class="error-message" style="color: red;"></div>
+    </div>
 
-<!-- Ligne unique pour l'email -->
-<div class="form-group">
-    <label>Email :</label>
-    <!-- Adding readonly to prevent modification -->
-    <input type="email" name="emailClient" id="emailClient" required value="<?= htmlspecialchars($reservationData['emailClient'] ?? '') ?>" readonly>
-    <div class="error-message" id="emailClient_error" style="color: red;"></div>
-</div>
+    <!-- Ligne unique pour l'email -->
+    <div class="form-group">
+        <label>Email :</label>
+        <input type="email" name="emailClient" id="emailClient" required value="<?= htmlspecialchars($reservationData['emailClient'] ?? '') ?>" readonly>
+        <div class="error-message" id="emailClient_error" style="color: red;"></div>
+    </div>
 
-        <!-- Ligne unique pour la date de réservation -->
+    <!-- Ligne pour la date de réservation -->
+    <div class="form-group">
+        <label>Date de Réservation :</label>
+        <input type="date" name="date_reservation" id="date_reservation" required value="<?= htmlspecialchars($reservationData['date_reservation'] ?? '') ?>">
+        <div class="error-message" id="date_reservation_error" style="color: red;"></div>
+    </div>
+
+    <!-- Heure de début, heure de fin et durée de charge dans une même ligne -->
+    <div class="form-row">
         <div class="form-group">
-            <label>Date de Réservation :</label>
-            <input type="date" name="date_reservation" id="date_reservation" required value="<?= htmlspecialchars($reservationData['date_reservation'] ?? '') ?>">
-            <div class="error-message" id="date_reservation_error"  style="color: red;"></div>
+            <label>Heure de Début :</label>
+            <input type="time" name="heure_debut" id="heure_debut" required value="<?= htmlspecialchars($reservationData['heure_debut'] ?? '') ?>">
+            <div class="error-message" id="heure_debut_error" style="color: red;"></div>
         </div>
 
-        <!-- Heure de début, heure de fin et durée de charge dans une même ligne -->
-        <div class="form-row">
-            <div class="form-group">
-                <label>Heure de Début :</label>
-                <input type="time" name="heure_debut" id="heure_debut" required value="<?= htmlspecialchars($reservationData['heure_debut'] ?? '') ?>">
-                <div class="error-message" id="heure_debut_error"  style="color: red;"></div>
-            </div>
-
-            <div class="form-group">
-                <label>Heure de Fin :</label>
-                <input type="time" name="heure_fin" id="heure_fin" required value="<?= htmlspecialchars($reservationData['heure_fin'] ?? '') ?>">
-                <div class="error-message" id="heure_fin_error"  style="color: red;"> </div>
-            </div>
-
-            <div class="form-group">
-                <label>Durée de Charge :</label>
-                <input type="text" id="duree_charge" name="duree_charge" readonly value="<?= htmlspecialchars($reservationData['duree_charge'] ?? '') ?>">
-                <div id="duree_charge_error" style="color: red;" class="error-message" ></div>
-            </div>
-        </div>
-
-        <!-- Pourcentage de charge et tarif estimé dans la même ligne -->
-        <div class="form-row">
-            <div class="form-group">
-                <label>Pourcentage de Charge :</label>
-                <input type="range" name="pourcentage_charge" id="pourcentage_charge" min="20" max="100" step="20"
-                       value="<?= htmlspecialchars($reservationData['pourcentage_charge'] ?? 100) ?>"
-                       oninput="outputPourcentage.value = this.value + '%'">
-                <output id="outputPourcentage"><?= htmlspecialchars($reservationData['pourcentage_charge'] ?? 100) ?>%</output>
-                <div id="pourcentage_charge_error" style="color: red;" class="error-message"></div>
-            </div>
-
-            <div class="form-group">
-                <label>Tarif Estimé :</label>
-                <input type="text" name="tarif_estime" id="tarif_estime" readonly value="<?= htmlspecialchars($reservationData['tarif_estime'] ?? '') ?>">
-                <div class="error-message"  id="tarif_estime_error" style="color: red;" > </div>
-            </div>
-        </div>
-
-        <!-- Mode de paiement dans une ligne unique avec les radios côte à côte -->
         <div class="form-group">
-            <label>Mode de Paiement :</label>
-            <div class="radio-group">
-                <label><input type="radio" name="mode_paiement" value="en_ligne" <?= (isset($reservationData['mode_paiement']) && $reservationData['mode_paiement'] === 'en_ligne') ? 'checked' : '' ?>> En ligne</label>
-                <label><input type="radio" name="mode_paiement" value="sur_place" <?= (isset($reservationData['mode_paiement']) && $reservationData['mode_paiement'] === 'sur_place') ? 'checked' : '' ?>> Sur place</label>
-            </div>
-            <div  class="error-message" id="mode_paiement_error"  style="color: red;"></div>
+            <label>Heure de Fin :</label>
+            <input type="time" name="heure_fin" id="heure_fin" required value="<?= htmlspecialchars($reservationData['heure_fin'] ?? '') ?>">
+            <div class="error-message" id="heure_fin_error" style="color: red;"></div>
         </div>
 
-        <input type="hidden" name="id_borne" value="<?= htmlspecialchars($reservationData['id_borne'] ?? '') ?>">
+        <div class="form-group">
+            <label>Durée de Charge :</label>
+            <input type="text" id="duree_charge" name="duree_charge" readonly value="<?= htmlspecialchars($reservationData['duree_charge'] ?? '') ?>">
+            <div id="duree_charge_error" style="color: red;" class="error-message"></div>
+        </div>
+    </div>
 
-        <button type="submit" class="formeSpecial">Modifier Réservation</button>
-    </form>
+    <!-- Pourcentage de charge et tarif estimé dans la même ligne -->
+    <div class="form-row">
+        <div class="form-group">
+            <label>Pourcentage de Charge :</label>
+            <input type="range" name="pourcentage_charge" id="pourcentage_charge" min="20" max="100" step="20"
+                   value="<?= htmlspecialchars($reservationData['pourcentage_charge'] ?? 100) ?>"
+                   oninput="outputPourcentage.value = this.value + '%'">
+            <output id="outputPourcentage"><?= htmlspecialchars($reservationData['pourcentage_charge'] ?? 100) ?>%</output>
+            <div id="pourcentage_charge_error" style="color: red;" class="error-message"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Tarif Estimé :</label>
+            <input type="text" name="tarif_estime" id="tarif_estime" readonly value="<?= htmlspecialchars($reservationData['tarif_estime'] ?? '') ?>">
+            <div class="error-message" id="tarif_estime_error" style="color: red;"></div>
+        </div>
+    </div>
+
+    <!-- Mode de paiement dans une ligne unique avec les radios côte à côte -->
+    <div class="form-group">
+        <label>Mode de Paiement :</label>
+        <div class="radio-group">
+            <label><input type="radio" name="mode_paiement" value="en_ligne" <?= (isset($reservationData['mode_paiement']) && $reservationData['mode_paiement'] === 'en_ligne') ? 'checked' : '' ?>> En ligne</label>
+            <label><input type="radio" name="mode_paiement" value="sur_place" <?= (isset($reservationData['mode_paiement']) && $reservationData['mode_paiement'] === 'sur_place') ? 'checked' : '' ?>> Sur place</label>
+        </div>
+        <div class="error-message" id="mode_paiement_error" style="color: red;"></div>
+    </div>
+    <input type="hidden" name="qr_code" id="qr_code" value="QR_CODE_GENERATED_VALUE">
+
+    <input type="hidden" name="id_borne" value="<?= htmlspecialchars($reservationData['id_borne'] ?? '') ?>">
+
+    <button type="submit" class="formeSpecial">Modifier Réservation</button>
+</form>
+
 </div>
 
 <style>
@@ -397,16 +398,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <script src="OnlinePayment.js"></script>
 
 
-
  <!-- Footer Start -->
  <div class="container-fluid bg-dark text-light footer pt-5 wow fadeIn" data-wow-delay="0.1s" style="margin-top: 6rem;">
         <div class="container py-5">
             <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
                     <h4 class="text-light mb-4">Address</h4>
-                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>123 Street, New York, USA</p>
-                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+012 345 67890</p>
-                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Esprit Ariana Soghra</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+216 27 118 673</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>Ride4ALL@gmail.com</p>
                     <div class="d-flex pt-2">
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-twitter"></i></a>
                         <a class="btn btn-outline-light btn-social" href=""><i class="fab fa-facebook-f"></i></a>
@@ -415,45 +415,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Reservation</h4>
-                    <a class="btn btn-link" href="">Reservation Client</a>
-                  
+                    <h4 class="text-light mb-4">Services</h4>
+                    <a class="btn btn-link" href="covoituragefront.php">Covoiturage</a>
+                    <a class="btn btn-link" href="frontparking.php">Parking</a>
+                    <a class="btn btn-link" href="Stations.php">Velos et Stations</a>
+                    <a class="btn btn-link" href="ReservationBorne.php">Borne Electrique</a>
+                </div>
+                <div class="col-lg-6 col-md-12 d-flex align-items-center">
+
+                <img class="img-fluid" src="img/equipe.JPEG " alt="" width=5000px height=1000px >
                 </div>
 
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Quick Links</h4>
-                    <a class="btn btn-link" href="">About Us</a>
-                    <a class="btn btn-link" href="">Contact Us</a>
-                    <a class="btn btn-link" href="">Our Services</a>
-                    <a class="btn btn-link" href="">Terms & Condition</a>
-                    <a class="btn btn-link" href="">Support</a>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <h4 class="text-light mb-4">Newsletter</h4>
-                    <p>Dolor amet sit justo amet elitr clita ipsum elitr est.</p>
-                    <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
-                    </div>
-                </div>
             </div>
+
         </div>
         <div class="container">
             <div class="copyright">
                 <div class="row">
                     <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                        &copy; <a class="border-bottom" href="#">Your Site Name</a>, All Right Reserved.
+                        &copy; <a class="border-bottom" href="#">Ride4ALL</a>, All Right Reserved.
                     </div>
-                    <div class="col-md-6 text-center text-md-end">
-                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                        Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
-                    </div>
+                  
                 </div>
             </div>
         </div>
     </div>
     <!-- Footer End -->
-
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-0 back-to-top"><i class="bi bi-arrow-up"></i></a>

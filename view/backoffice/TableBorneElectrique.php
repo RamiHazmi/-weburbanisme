@@ -59,7 +59,25 @@ $liste = $ControllerBorneElectrique->afficher();
 <!doctype html>
 <html class="fixed">
 	<head>
+	<script src="controleSaisie.js"></script>
+	<link rel="stylesheet" href="errorMessage.css">
+	<script src="assets/vendor/modernizr/modernizr.js"></script>
 
+        <script src="IdBorne.js"></script>
+        <link rel="stylesheet" href="IdBorne.css">
+
+        <!-- Leaflet CSS pour la carte -->
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+        <!-- Lien vers le fichier JS externe -->
+        <script src="map.js"></script>
+
+        <!-- Leaflet JS pour la carte -->
+		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+        <link rel="stylesheet" href="map.css">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+	
 		<!-- Basic -->
 		<meta charset="UTF-8">
 
@@ -333,7 +351,7 @@ $liste = $ControllerBorneElectrique->afficher();
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
 								<li>
-									<a href="index.html">
+									<a href="dashboard.php">
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
@@ -405,7 +423,26 @@ $liste = $ControllerBorneElectrique->afficher();
 
 </div>
 
-	
+<script src="assets/vendor/jquery/jquery.js"></script>
+		<script src="assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
+		<script src="assets/vendor/bootstrap/js/bootstrap.js"></script>
+		<script src="assets/vendor/nanoscroller/nanoscroller.js"></script>
+		<script src="assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+		<script src="assets/vendor/magnific-popup/magnific-popup.js"></script>
+		<script src="assets/vendor/jquery-placeholder/jquery.placeholder.js"></script>
+		
+		<!-- Specific Page Vendor -->
+		<script src="assets/vendor/jquery-autosize/jquery.autosize.js"></script>
+		<script src="assets/vendor/bootstrap-fileupload/bootstrap-fileupload.min.js"></script>
+		
+		<!-- Theme Base, Components and Settings -->
+		<script src="assets/javascripts/theme.js"></script>
+		
+		<!-- Theme Custom -->
+		<script src="assets/javascripts/theme.custom.js"></script>
+		
+		<!-- Theme Initialization Files -->
+		<script src="assets/javascripts/theme.init.js"></script>
 	
 	</body>
 </html>

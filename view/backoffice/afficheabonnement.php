@@ -294,7 +294,7 @@ $abonnements = $stmt->fetchAll();
 						<div class="right-wrapper pull-right">
 							<ol class="breadcrumbs">
 								<li>
-									<a href="index.html">
+									<a href="dashboard.php">
 										<i class="fa fa-home"></i>
 									</a>
 								</li>
