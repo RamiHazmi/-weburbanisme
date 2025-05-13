@@ -1,4 +1,3 @@
-
 <?php
 include_once __DIR__ . '/../database.php';
 
@@ -204,8 +203,19 @@ class userC
         }
     }
     
+    public function getUsernameById($userId) {
+        $sql = "SELECT username FROM user WHERE id = :id";
+        $db = config::getConnexion();
+        try {
+            $query = $db->prepare($sql);
+            $query->execute(['id' => $userId]);
+            $result = $query->fetch(PDO::FETCH_ASSOC);
+            return $result ? $result['username'] : null;
+        } catch (Exception $e) {
+            die('Erreur: ' . $e->getMessage());
+        }
+    }
     
-
 }
 
 

@@ -2,7 +2,7 @@
 require_once 'C:/xampp/htdocs/urbanisme/database.php';
 require_once 'C:/xampp/htdocs/urbanisme/model/StripeModel.php';  
 require_once 'C:/xampp/htdocs/urbanisme/vendor/Stripe/init.php';  
-
+ 
  class StripeController {
     private $model;
 

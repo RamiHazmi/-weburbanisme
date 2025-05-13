@@ -27,9 +27,6 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['user_email'])) {
 require_once 'C:/xampp/htdocs/urbanisme/controller/AbonnementController.php';
 $abonnementController = new AbonnementController();
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $abonnementController->ajouterAbonnement();
-}
 ?>
 
 
@@ -96,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="dropdown-menu fade-up m-0">
                             <a href="covoituragefront.php" class="dropdown-item">Covoiturage</a>
                             <a href="frontparking.php" class="dropdown-item active">Parking</a>
-                            <a href="quote.html" class="dropdown-item">Transport Public</a>
+                            <a href="Stations.php" class="dropdown-item">Velos et Stations</a>
                             <a href="team.html" class="dropdown-item">Recharge Electrique</a>
                             
                         </div>

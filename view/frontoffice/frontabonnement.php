@@ -118,7 +118,7 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
                         <div class="dropdown-menu fade-up m-0">
                             <a href="covoituragefront.php" class="dropdown-item ">Covoiturage</a>
                             <a href="frontparking.php" class="dropdown-item active">Parking</a>
-                            <a href="quote.html" class="dropdown-item">Transport Public</a>
+                            <a href="Stations.php" class="dropdown-item">Velos et Stations</a>
                             <a href="team.html" class="dropdown-item">Recharge Electrique</a>
                             
                         </div>
@@ -553,14 +553,13 @@ if (isset($_GET['payment']) && $_GET['payment'] === 'success' && isset($_GET['id
                         });
 
 
-                        // Fonction pour fermer la modale
+                        // omar
                         function closeModal() {
                             document.getElementById('paymentModal').style.display = 'none';
                         }
                         </script>
 
                         <script>
-                            
                             document.getElementById('paymentForm').addEventListener("click", function () {
                                 let idAbonnement = document.getElementById('payment_id_abonnement').value;
 

@@ -1,0 +1,666 @@
+<?php 
+session_start();
+?>
+<?php
+require_once __DIR__ . '/../../Controller/BikeStationController.php';
+
+$controller = new BikeStationController();
+$bikeStations = $controller->listStations();
+?>
+
+<!doctype html>
+<html class="fixed">
+	<head>
+
+		<!-- Basic -->
+		<meta charset="UTF-8">
+
+		<title>Basic Tables | Okler Themes | Porto-Admin</title>
+		<meta name="keywords" content="HTML5 Admin Template" />
+		<meta name="description" content="Porto Admin - Responsive HTML5 Template">
+		<meta name="author" content="okler.net">
+
+		<!-- Mobile Metas -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+		<!-- Web Fonts  -->
+		<link href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
+
+		<!-- Vendor CSS -->
+		<link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.css" />
+		<link rel="stylesheet" href="assets/vendor/font-awesome/css/font-awesome.css" />
+		<link rel="stylesheet" href="assets/vendor/magnific-popup/magnific-popup.css" />
+		<link rel="stylesheet" href="assets/vendor/bootstrap-datepicker/css/datepicker3.css" />
+		<link rel="stylesheet" href="assets/stylesheets/popUp.css"> <!-- Path to your CSS file -->
+
+
+		<!-- Theme CSS -->
+		<link rel="stylesheet" href="assets/stylesheets/theme.css" />
+
+		<!-- Skin CSS -->
+		<link rel="stylesheet" href="assets/stylesheets/skins/default.css" />
+
+		<!-- Theme Custom CSS -->
+		<link rel="stylesheet" href="assets/stylesheets/theme-custom.css">
+
+		<!-- Head Libs -->
+		<script src="assets/vendor/modernizr/modernizr.js"></script>
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+	</head>
+
+	<script>
+  $(document).ready(function() {
+    $('.edit-btn').click(function() {
+      // Set values
+      $('#edit-id').val($(this).data('id'));
+      $('#edit-name').val($(this).data('name'));
+      $('#edit-location').val($(this).data('location'));
+
+      $('#edit-status').val($(this).data('status'));
+
+      // Clear previous validation messages
+      $('#error-edit-name').text('');
+      $('#error-edit-location').text('');
+
+    });
+  });
+</script>
+
+<script>
+  $(document).ready(function() {
+    $('.delete-row').click(function(e) {
+      e.preventDefault();  // Prevent the default action (navigating to DeleteStation.php)
+
+      // Show confirmation dialog
+      var result = confirm("Are you sure you want to delete this station?");
+      if (result) {
+        var id = $(this).data('id');
+        window.location.href = 'DeleteStation.php?id=' + id;  // If confirmed, redirect to delete URL
+      }
+    });
+  });
+</script>
+
+
+
+
+
+	<body>
+	<section class="body">
+
+<!-- start: header -->
+<header class="header">
+	<div class="logo-container">
+		<a href="../" class="logo">
+			<img src="../frontoffice/img/53a05df8-1974-4df6-b98f-ad661231eddd.JPEG" height="45" alt="JSOFT Admin" />
+		</a>
+
+		<div class="visible-xs toggle-sidebar-left" data-toggle-class="sidebar-left-opened" data-target="html" data-fire-event="sidebar-left-opened">
+			<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+		</div>
+	</div>
+
+	<!-- start: search & user box -->
+	<div class="header-right">
+
+		
+			
+					<span class="separator"></span>
+			
+					<div id="userbox" class="userbox">
+						<a href="#" data-toggle="dropdown">
+							<div class="profile-info" data-lock-name="John Doe" data-lock-email="johndoe@JSOFT.com">
+								
+							<?php if (isset($_SESSION['user_username'])): ?>
+								<span class="name"><?= htmlspecialchars($_SESSION['user_username']) ?></span>
+							<?php endif; ?>
+								<span class="role">administrator</span>
+							</div>
+							<i class="fa custom-caret"></i>
+					
+						</a>
+			
+						<div class="dropdown-menu">
+							<ul class="list-unstyled">
+								<li class="divider"></li>
+								<li>
+									<a role="menuitem" tabindex="-1" href="../frontoffice/logout.php"><i class="fa fa-power-off"></i> Logout</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<!-- end: search & user box -->
+			</header>
+			<!-- end: header -->
+
+			<div class="inner-wrapper">
+				<!-- start: sidebar -->
+				<aside id="sidebar-left" class="sidebar-left">
+				
+					<div class="sidebar-header">
+						<div class="sidebar-title">
+							Navigation
+						</div>
+						<div class="sidebar-toggle hidden-xs" data-toggle-class="sidebar-left-collapsed" data-target="html" data-fire-event="sidebar-left-toggle">
+							<i class="fa fa-bars" aria-label="Toggle sidebar"></i>
+						</div>
+					</div>
+				
+					<div class="nano">
+						<div class="nano-content">
+							<nav id="menu" class="nav-main" role="navigation">
+							<ul class="nav nav-main">
+									<li>
+										<a href="dashboard.php">
+											<i class="fa fa-home" aria-hidden="true"></i>
+											<span>Dashboard</span>
+										</a>
+									</li>
+									
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-list-alt" aria-hidden="true"></i>
+											<span>User</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="ajouter.php">
+													form User
+												</a>
+											</li>
+											<li>
+												<a href="afficher.php">
+													table User
+												</a>
+											</li>
+											
+										</ul>
+									</li>
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-table" aria-hidden="true"></i>
+											<span>Covoiturage</span>
+										</a>
+										<ul class="nav nav-children">
+										<li >
+												<a href="indexc.php">
+													form Covoiturage
+												</a>
+											</li>
+											<li>
+											<a href="tablec.php">
+													 table covoiturage
+												</a>
+											</li>
+											<li>
+												<a href="tablecreservation.php">
+													 reservation covoiturage
+												</a>
+											</li>
+											
+										</ul>
+									</li>
+									<li class="nav-parent"  >
+										<a>
+											<i class="fa fa-map-marker" aria-hidden="true"></i>
+											<span>Parking</span>
+										</a>
+										<ul class="nav nav-children">
+											<li  >
+												<a href="indexparking.php">
+													 form parking
+												</a>
+											</li>
+											<li >
+												<a href="afficheparking.php">
+													 table parking
+												</a>
+											</li>
+											<li >
+												<a href="afficheabonnement.php">
+													 table abonnements
+												</a>
+											</li>
+										</ul>
+									</li>
+									<li class="nav-parent  nav-expanded nav-active">
+										<a>
+											<i class="fa fa-columns" aria-hidden="true"></i>
+											<span>SmartBikeRental</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="Bikes.php">
+													 Form Bike
+												</a>
+											</li>
+											<li>
+												<a href="Bike.php">
+													 Form Station
+												</a>
+											</li>
+											<li>
+												<a href="addMapStation.php">
+													 Form Location Station
+												</a>
+											</li>
+											<li>
+												<a href="BikeList.php">
+													 Table Bikes
+												</a>
+											</li>
+											<li class="nav-active">
+												<a href="TableBike.php">
+													 Table Stations
+												</a>
+											</li>
+											<li>
+												<a href="showRentals.php">
+													 Table Rentals
+												</a>
+											</li></a>
+										</ul>
+									</li>
+									<li class="nav-parent">
+										<a>
+											<i class="fa fa-align-left" aria-hidden="true"></i>
+											<span>Borne Electrique</span>
+										</a>
+										<ul class="nav nav-children">
+											<li>
+												<a href="FormBorneElectrique.php">
+													Form borne electrique
+												</a>
+											</li>
+											<li>
+												<a href="TableBorneElectrique.php">
+													Table borne electrique
+												</a>
+											</li>
+											<li>
+												<a href="Reservation.php">
+													Table reservation borne electrique
+												</a>
+											</li>
+                                            <li>
+												<a href="calendrier.php">
+													Calendrier borbe electrique
+												</a>
+											</li>
+											
+										</ul>
+									</li>
+									<li>
+										<a href="../frontoffice/index.php" target="_blank">
+											<i class="fa fa-external-link" aria-hidden="true"></i>
+											<span>Front-End <em class="not-included">(Not Included)</em></span>
+										</a>
+									</li>
+
+								</ul>
+							</nav>
+				
+							<hr class="separator" />
+				
+							<div class="sidebar-widget widget-tasks">
+								<div class="widget-header">
+									<h6>Projects</h6>
+									<div class="widget-toggle">+</div>
+								</div>
+								<div class="widget-content">
+									<ul class="list-unstyled m-none">
+										<li><a href="#">Porto HTML5 Template</a></li>
+										<li><a href="#">Tucson Template</a></li>
+										<li><a href="#">Porto Admin</a></li>
+									</ul>
+								</div>
+							</div>
+				
+						</div>
+				
+					</div>
+				
+				</aside>
+				<!-- end: sidebar -->
+
+				<section role="main" class="content-body">
+					<header class="page-header">
+						<h2>Table station</h2>
+					
+						<div class="right-wrapper pull-right">
+							<ol class="breadcrumbs">
+								<li>
+									<a href="index.html">
+										<i class="fa fa-home"></i>
+									</a>
+								</li>
+								<li><span>SmartBikeRental</span></li>
+								<li><span>Table station</span></li>
+							</ol>
+					
+							<a class="sidebar-right-toggle" data-open="sidebar-right"><i class="fa fa-chevron-left"></i></a>
+						</div>
+					</header>
+
+					<!-- start: page -->
+						
+						
+					<div class="row">
+						<div class="col-md-12">
+							<section class="panel">
+								<header class="panel-heading">
+									<h2 class="panel-title">Bike Stations</h2>
+								</header>
+								<div class="row mb-3">
+									<div class="col-md-6">
+										<input type="text" id="searchInput" class="form-control" placeholder="Search stations...">
+									</div>
+									<div class="col-md-6 text-right">
+										<select id="sortSelect" class="form-control" style="width: auto; display: inline-block;">
+											<option value="">Sort by...</option>
+											<option value="available_bikes">Available Bikes (Most First)</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="panel-body">
+									<div class="table-responsive">
+										
+										<table class="table mb-none">
+											<thead>
+												<tr>
+													<th>Id</th>
+													<th>Station Name</th>
+													<th>Location</th>
+													<th>Total Bikes</th>
+													<th>Available Bikes</th>
+													<th>Status</th>
+													<th>Actions</th>
+												</tr>
+											</thead>
+											<tbody>
+												<?php
+												if (!empty($bikeStations)) {
+													$i = 1;
+													foreach ($bikeStations as $station) {
+														echo "<tr>";
+														echo "<td>" . htmlspecialchars($station['id_station']) . "</td>";
+														echo "<td>" . htmlspecialchars($station['name']) . "</td>";
+														echo "<td>" . htmlspecialchars($station['location']) . "</td>";
+														echo "<td>" . htmlspecialchars($station['total_bikes']) . "</td>";
+														echo "<td>" . htmlspecialchars($station['available_bikes']) . "</td>";
+														echo "<td>" . ($station['status'] == 1 ? 'Active' : 'Inactive') . "</td>";
+														echo "<td class='actions'>";
+														echo "<a href='#' class='delete-row' data-id='" . $station['id_station'] . "'><i class='fa fa-trash-o'></i></a>";
+														echo "<a href='#' class='edit-btn' 
+																data-id='" . htmlspecialchars($station['id_station']) . "' 
+																data-name='" . htmlspecialchars($station['name']) . "' 
+																data-location='" . htmlspecialchars($station['location']) . "' 
+																data-total='" . htmlspecialchars($station['total_bikes']) . "' 
+																data-available='" . htmlspecialchars($station['available_bikes']) . "' 
+																data-status='" . htmlspecialchars($station['status']) . "' 
+																data-toggle='modal' data-target='#editModal'>
+																<i class='fa fa-pencil'></i>
+															</a>";
+														echo "</td>";
+														echo "</tr>";
+													}
+												} else {
+													echo "<tr><td colspan='7' class='text-center'>No stations found.</td></tr>";
+												}
+												?>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</section>
+						</div>
+					</div>
+
+
+
+						
+						
+						
+					<!-- end: page -->
+				</section>
+			</div>
+
+			<aside id="sidebar-right" class="sidebar-right">
+				<div class="nano">
+					<div class="nano-content">
+						<a href="#" class="mobile-close visible-xs">
+							Collapse <i class="fa fa-chevron-right"></i>
+						</a>
+			
+						<div class="sidebar-right-wrapper">
+			
+							<div class="sidebar-widget widget-calendar">
+								<h6>Upcoming Tasks</h6>
+								<div data-plugin-datepicker data-plugin-skin="dark" ></div>
+			
+								<ul>
+									<li>
+										<time datetime="2014-04-19T00:00+00:00">04/19/2014</time>
+										<span>Company Meeting</span>
+									</li>
+								</ul>
+							</div>
+			
+							<div class="sidebar-widget widget-friends">
+								<h6>Friends</h6>
+								<ul>
+									<li class="status-online">
+										<figure class="profile-picture">
+											<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">
+										</figure>
+										<div class="profile-info">
+											<span class="name">Joseph Doe Junior</span>
+											<span class="title">Hey, how are you?</span>
+										</div>
+									</li>
+									<li class="status-online">
+										<figure class="profile-picture">
+											<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">
+										</figure>
+										<div class="profile-info">
+											<span class="name">Joseph Doe Junior</span>
+											<span class="title">Hey, how are you?</span>
+										</div>
+									</li>
+									<li class="status-offline">
+										<figure class="profile-picture">
+											<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">
+										</figure>
+										<div class="profile-info">
+											<span class="name">Joseph Doe Junior</span>
+											<span class="title">Hey, how are you?</span>
+										</div>
+									</li>
+									<li class="status-offline">
+										<figure class="profile-picture">
+											<img src="assets/images/!sample-user.jpg" alt="Joseph Doe" class="img-circle">
+										</figure>
+										<div class="profile-info">
+											<span class="name">Joseph Doe Junior</span>
+											<span class="title">Hey, how are you?</span>
+										</div>
+									</li>
+								</ul>
+							</div>
+			
+						</div>
+					</div>
+				</div>
+			</aside>
+		</section>
+
+		<!-- Vendor -->
+		<script src="assets/vendor/jquery/jquery.js"></script>
+		<script src="assets/vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
+		<script src="assets/vendor/bootstrap/js/bootstrap.js"></script>
+		<script src="assets/vendor/nanoscroller/nanoscroller.js"></script>
+		<script src="assets/vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+		<script src="assets/vendor/magnific-popup/magnific-popup.js"></script>
+		<script src="assets/vendor/jquery-placeholder/jquery.placeholder.js"></script>
+		
+		<!-- Theme Base, Components and Settings -->
+		<script src="assets/javascripts/theme.js"></script>
+		
+		<!-- Theme Custom -->
+		<script src="assets/javascripts/theme.custom.js"></script>
+		
+		<!-- Theme Initialization Files -->
+		<script src="assets/javascripts/theme.init.js"></script>
+		
+
+	</body>
+
+	<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel">
+  <div class="modal-dialog" role="document">
+    <form action="UpdateStation.php" method="post" id="edit-form">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Modifier la Station</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <!-- Hidden ID -->
+          <input type="hidden" name="id_station" id="edit-id">
+
+          <!-- Nom -->
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" name="name" id="edit-name" class="form-control" required>
+            <small id="error-edit-name" class="text-danger"></small>
+          </div>
+
+          <!-- Location -->
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" name="location" id="edit-location" class="form-control" required>
+            <small id="error-edit-location" class="text-danger"></small>
+          </div>
+
+
+
+          <!-- Status -->
+          <div class="form-group">
+            <label>Status</label>
+            <select name="status" id="edit-status" class="form-control">
+              <option value="1">Active</option>
+              <option value="0">Inactive</option>
+            </select>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector('#editModal form');
+
+    const nameInput = document.getElementById("edit-name");
+    const locationInput = document.getElementById("edit-location");
+
+
+    const nameError = document.getElementById("error-edit-name");
+    const locationError = document.getElementById("error-edit-location");
+
+
+    function validateFields() {
+        let isValid = true;
+
+       
+        if (nameInput.value.trim() === "") {
+            nameError.textContent = "Le nom ne peut pas être vide.";
+            isValid = false;
+        } else {
+            nameError.textContent = "";
+        }
+
+        // Location
+        if (locationInput.value.trim() === "") {
+            locationError.textContent = "L'emplacement ne peut pas être vide.";
+            isValid = false;
+        } else if (!/^[a-zA-Z\s]+$/.test(locationInput.value.trim())) {
+            locationError.textContent = "L'emplacement ne doit contenir que des lettres.";
+            isValid = false;
+        } else {
+            locationError.textContent = "";
+        }
+
+        return isValid;
+    }
+
+    [nameInput, locationInput].forEach(input => {
+        input.addEventListener("input", validateFields);
+    });
+
+    form.addEventListener("submit", function (e) {
+        if (!validateFields()) {
+            e.preventDefault();
+            alert("localhost indique : Veuillez corriger les erreurs avant de soumettre.");
+        }
+    });
+});
+
+</script>
+<script>
+$(document).ready(function() {
+    $('#searchInput').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $('table tbody tr').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+
+    
+    
+
+});
+</script>
+<script>
+document.getElementById('sortSelect').addEventListener('change', function() {
+    var tbody = document.querySelector('table tbody');
+    var rows = Array.from(tbody.querySelectorAll('tr')).filter(row => {
+        return row.querySelectorAll('td').length > 0;
+    });
+
+    var selectedOption = this.value;
+
+    if (selectedOption === 'available_bikes') {
+        rows.sort(function(a, b) {
+            var aAvailable = parseInt(a.children[4].textContent.trim(), 10) || 0;
+            var bAvailable = parseInt(b.children[4].textContent.trim(), 10) || 0;
+            return bAvailable - aAvailable; 
+        });
+    }
+
+    tbody.innerHTML = '';
+    rows.forEach(function(row) {
+        tbody.appendChild(row);
+    });
+});
+</script>
+
+
+
+
+
+
+
+</html>
+
+
+

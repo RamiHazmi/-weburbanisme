@@ -79,7 +79,7 @@ include '../../controller/userC.php';
                     <div class="dropdown-menu fade-up m-0">
                         <a href="covoituragefront.php" class="dropdown-item">Covoiturage</a>
                         <a href="frontparking.php" class="dropdown-item">Parking</a>
-                        <a href="quote.html" class="dropdown-item">Velos et Stations</a>
+                        <a href="Stations.php" class="dropdown-item">Velos et Stations</a>
                         <a href="team.html" class="dropdown-item">Recharge Electrique</a>
                         
                     </div>
@@ -126,9 +126,9 @@ include '../../controller/userC.php';
                             <div class="col-10 col-lg-8">
                                 <h5 class="text-white text-uppercase mb-3 animated slideInDown">Solutions de Mobilité Partagée</h5>
                                 <h1 class="display-3 text-white animated slideInDown mb-4">
-                                    Votre Partenaire Fiable pour le 
-                                    <span class="text-primary">Covoiturage</span>, le 
-                                    <span class="text-primary">Parking</span>, le
+                                    Votre Partenaire Fiable pour 
+                                    <span class="text-primary">Covoiturage</span> et
+                                    <span class="text-primary">Parking</span>, 
                                   
                                 </h1>
                                 <p class="fs-5 fw-medium text-white mb-4 pb-2">Chez Ride4All, nous facilitons vos déplacements quotidiens en offrant des solutions de transport partagées, écologiques et économiques, adaptées à vos besoins.</p>
@@ -262,7 +262,6 @@ include '../../controller/userC.php';
                         </div>
                         <h4 class="mb-3">Covoiturage</h4>
                         <p> Organisation et supervision des trajets partagés entre conducteurs et passagers pour optimiser les déplacements.</p>
-                        <a class="btn-slide mt-2" href="covoituragefront.php"><i class="fa fa-arrow-right"></i><span>Lire Plus</span></a>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.5s">
@@ -273,7 +272,6 @@ include '../../controller/userC.php';
                         <h4 class="mb-3">Parking</h4>
                         <p>Supervision des disponibilités, abonnements et tarifications des espaces de stationnement.
                         </p>
-                        <a class="btn-slide mt-2" href=""><i class="fa fa-arrow-right"></i><span>Lire Plus</span></a>
                     </div>
                 </div>
                 <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.7s">
@@ -282,8 +280,7 @@ include '../../controller/userC.php';
                             <img class="img-fluid" src="img/service-1.jpg" alt="">
                         </div>
                         <h4 class="mb-3">Velos et Stations</h4>
-                        <p>Suivi des lignes, horaires, états du trafic et services associés aux transports en commun.</p>
-                        <a class="btn-slide mt-2" href=""><i class="fa fa-arrow-right"></i><span>Lire Plus</span></a>
+                        <p>Suivi des stations, disponibilités des vélos, itinéraires optimisés et services associés à la mobilité urbaine.</p>
                     </div>
                 </div>
                
@@ -294,7 +291,6 @@ include '../../controller/userC.php';
                         </div>
                         <h4 class="mb-3">Recharge Electrique</h4>
                         <p> Contrôle des stations de recharge pour véhicules électriques, incluant leur disponibilité et tarification.</p>
-                        <a class="btn-slide mt-2" href=""><i class="fa fa-arrow-right"></i><span>Lire Plus</span></a>
                     </div>
                 </div>
                 
@@ -363,7 +359,7 @@ include '../../controller/userC.php';
                         </div>
                         <div class="p-4 pt-0">
                             <p><i class="fa fa-check text-success me-3"></i>Trajets partagés sécurisés 🚗</p>
-                            <p><i class="fa fa-check text-success me-3"></i>Application mobile intuitive 📱</p>
+                            <p><i class="fa fa-check text-success me-3"></i>Chatbot pour réserver directement 🤖</p>
                             <p><i class="fa fa-check text-success me-3"></i>Réduction des frais de transport 💸</p>
                             <p><i class="fa fa-check text-success me-3"></i>Respect de l’environnement 🌱</p>
                             <p><i class="fa fa-check text-success me-3"></i>Assistance et support 24/7 📞</p>
@@ -375,10 +371,7 @@ include '../../controller/userC.php';
                     <div class="price-item">
                         <div class="border-bottom p-4 mb-4">
                             <h5 class="text-primary mb-1">Parking</h5>
-                            <h1 class="display-5 mb-0">
-                                <small class="align-top" style="font-size: 22px; line-height: 45px;">$</small>29.00<small
-                                    class="align-bottom" style="font-size: 16px; line-height: 40px;">/ Month</small>
-                            </h1>
+                           
                         </div>
                         <div class="p-4 pt-0">
                             <p><i class="fa fa-check text-success me-3"></i>Stationnement sécurisé 🚗🔒</p>
@@ -386,18 +379,31 @@ include '../../controller/userC.php';
                             <p><i class="fa fa-check text-success me-3"></i>Surveillance vidéo 📹</p>
                             <p><i class="fa fa-check text-success me-3"></i>Emplacements couverts 🏢</p>
                             <p><i class="fa fa-check text-success me-3"></i>Réservation en ligne facile 📲</p>
-                            <a class="btn-slide mt-2" href=""><i class="fa fa-arrow-right"></i><span >👉 Réservez maintenant !</span></a>
+                            <a class="btn-slide mt-2" href="frontparking.php"><i class="fa fa-arrow-right"></i><span >👉 Réservez maintenant !</span></a>
                         </div>
                     </div>
                 </div>
+                <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.5s">
+    <div class="price-item">
+        <div class="border-bottom p-4 mb-4">
+            <h5 class="text-primary mb-1">Vélos & Stations Intelligentes 🚴‍♂️🤖</h5>
+        </div>
+        <div class="p-4 pt-0">
+            <p><i class="fa fa-check text-success me-3"></i>Stationnement sécurisé 24/7 🔐</p>
+            <p><i class="fa fa-check text-success me-3"></i>Disponibilité en temps réel 📊</p>
+            <p><i class="fa fa-check text-success me-3"></i>Contrôle par Assistant Vocal IA 🎙️</p>
+            <p><i class="fa fa-check text-success me-3"></i>Suivi de trajet avec météo intégrée 🌦️🗺️</p>
+            <p><i class="fa fa-check text-success me-3"></i>Caméras & capteurs intelligents 📷</p>
+            
+            <a class="btn-slide mt-2" href="Stations.php"><i class="fa fa-arrow-right"></i><span>👉 Réservez maintenant !</span></a><br>
+        </div>
+    </div>
+</div>
                 <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.7s">
                     <div class="price-item">
                         <div class="border-bottom p-4 mb-4">
                             <h5 class="text-primary mb-1">Recharge Electrique</h5>
-                            <h1 class="display-5 mb-0">
-                                <small class="align-top" style="font-size: 22px; line-height: 45px;">$</small>69.00<small
-                                    class="align-bottom" style="font-size: 16px; line-height: 40px;">/ Month</small>
-                            </h1>
+                            
                         </div>
                         <div class="p-4 pt-0">
                             <p><i class="fa fa-check text-success me-3"></i>Bornes de recharge rapides ⚡🔋</p>

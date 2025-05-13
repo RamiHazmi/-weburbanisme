@@ -221,7 +221,7 @@ public function updateReservation($reservation_id, $statut) {
                 $smsMessage = "Bonjour " . $username . ",\nVotre réservation a été acceptée !\nDépart: " . $depart . "\nDestination: " . $destination . "\nDate et Heure: " . $dateHeure;
 
                 
-                
+              
                 $client = new Client($account_sid, $auth_token);
 
                 try {
